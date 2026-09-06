@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Über mich | Unique by Lea</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = { theme: { extend: { colors: { sand: '#EAE3D9', creme: '#F9F6F2', terracotta: '#B08968', darkbrown: '#4A3728' } } } }
+    </script>
+</head>
+<body class="bg-sand text-darkbrown font-sans leading-relaxed">
+    <header class="pt-8 text-center bg-sand border-b border-darkbrown/5 pb-4">
+        <nav class="flex justify-center gap-6 md:gap-10 uppercase text-[10px] font-bold">
+            <a href="index.html">Startseite</a>
+            <a href="shop.html">Shop</a>
+            <a href="ueber-mich.html" class="text-terracotta">Über mich</a>
+            <a href="kontakt.html">Kontakt</a>
+        </nav>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 md:py-20 text-center">
+        <h1 class="font-serif text-3xl md:text-4xl mb-12 italic text-terracotta">Meine Geschichte</h1>
+        
+        <!-- Bilder: Untereinander auf Mobile -->
+        <div class="grid md:grid-cols-2 gap-6 md:gap-12 mb-12">
+            <img src="images/uebermich.jpg" class="rounded-3xl grayscale shadow-lg w-full h-80 object-cover">
+            <img src="images/uebermich2.jpg" class="rounded-3xl grayscale shadow-lg w-full h-80 object-cover md:mt-12">
+        </div>
+
+        <div class="max-w-2xl mx-auto text-sm md:text-base space-y-6 opacity-90 text-justify md:text-center">
+            <p>Ich habe in einer Kita gearbeitet und war absolut begeistert von den individuell genähten Kleidungsstücken der Kinder. Es war einfach unglaublich süß und so einzigartig.</p>
+            <p>Seit 2018 verwandle ich diese Inspiration in mein eigenes Label. Jedes Stück, das mein Atelier verlässt, wurde von Hand gefertigt.</p>
+        </div>
+    </main>
+</body>
+</html>
