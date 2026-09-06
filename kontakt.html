@@ -11,25 +11,23 @@
     </script>
 </head>
 <body class="bg-sand text-darkbrown font-sans">
-    <header class="pt-8 text-center bg-sand pb-4 border-b border-darkbrown/5">
-        <nav class="flex justify-center gap-6 uppercase text-[10px] font-bold">
-            <a href="index.html">Startseite</a><a href="shop.html">Shop</a><a href="ueber-mich.html">Über mich</a><a href="kontakt.html" class="text-terracotta">Kontakt</a>
-        </nav>
+    <header class="pt-8 text-center bg-sand border-b border-darkbrown/5 pb-4">
+        <nav class="flex justify-center gap-10 uppercase text-[10px] font-bold"><a href="index.html">Startseite</a><a href="shop.html">Shop</a><a href="ueber-mich.html">Über mich</a><a href="kontakt.html" class="text-terracotta">Kontakt</a></nav>
     </header>
-    <main class="max-w-5xl mx-auto px-6 py-12 grid md:grid-cols-2 gap-12">
+    <main class="max-w-5xl mx-auto px-6 py-12 md:py-20 grid md:grid-cols-2 gap-12">
         <div class="order-2 md:order-1">
             <h1 class="font-serif text-3xl mb-8 text-terracotta italic">Schreib mir</h1>
             <form action="https://api.web3forms.com/submit" method="POST" class="space-y-4">
                 <input type="hidden" name="access_key" value="2b4e9f51-bdd3-4391-9732-39f55bb17727">
-                <input type="text" name="name" placeholder="Name" required class="w-full bg-creme rounded-full py-3 px-6 text-sm outline-none border-none shadow-sm">
-                <input type="email" name="email" placeholder="E-Mail" required class="w-full bg-creme rounded-full py-3 px-6 text-sm outline-none border-none shadow-sm">
-                <textarea name="message" id="msg" rows="5" placeholder="Deine Nachricht" class="w-full bg-creme rounded-2xl py-3 px-6 text-sm outline-none border-none shadow-sm"></textarea>
+                <input type="text" name="name" placeholder="Name" required class="w-full bg-creme rounded-full py-3 px-6 text-sm outline-none border-none">
+                <input type="email" name="email" placeholder="E-Mail" required class="w-full bg-creme rounded-full py-3 px-6 text-sm outline-none border-none">
+                <textarea name="message" id="msg" rows="5" placeholder="Deine Nachricht" class="w-full bg-creme rounded-2xl py-3 px-6 text-sm outline-none border-none"></textarea>
                 <button type="submit" class="w-full bg-terracotta text-white py-3 rounded-full font-bold uppercase text-[11px] tracking-widest shadow-lg">Absenden</button>
             </form>
         </div>
         <div class="order-1 md:order-2 flex flex-col justify-center">
             <img src="images/uebermich3.jpg" class="rounded-3xl shadow-xl border-8 border-white/50 w-full h-80 object-cover">
-            <p class="mt-6 text-[10px] tracking-widest uppercase opacity-60">Lea Limburg | Interlaken, Schweiz</p>
+            <p class="mt-6 text-[10px] tracking-widest uppercase opacity-60 text-center">Interlaken, Schweiz | uniquebylea@outlook.com</p>
         </div>
     </main>
     <script>const p = new URLSearchParams(window.location.search).get('produkt'); if(p) document.getElementById('msg').value = "Hallo Lea, ich interessiere mich für: " + p;</script>
