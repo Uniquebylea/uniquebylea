@@ -29,5 +29,12 @@ collections:
                 widget: "select"
                 options: ["Baby", "Kinder", "Erwachsene", "Makramee", "Taschen", "Gutscheine", "Accessoires"]
               - {label: "Preis", name: "price", widget: "string"}
-              - {label: "Bild", name: "img", widget: "image"}
+              - label: "Hauptbild (Titelbild)"
+                name: "img"
+                widget: "image"
+              - label: "Weitere Fotos (Detailansichten / Galerie)"
+                name: "gallery"
+                widget: "list"
+                required: false
+                field: {label: "Foto", name: "image", widget: "image"}
               - {label: "Stripe Link (Optional)", name: "link", widget: "string", required: false}
