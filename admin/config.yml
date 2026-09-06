@@ -9,68 +9,47 @@ media_folder: "images"
 public_folder: "/images"
 
 collections:
-  - name: "shop_data"
-    label: "Shop Verwaltung"
-    files:
-      - label: "Alle Produkte"
-        name: "products"
-        file: "content/products.json"
-        format: "json"
+  - name: "products"
+    label: "Produkte"
+    folder: "content/products"
+    create: true
+    slug: "{{slug}}"
+    format: "json"
+    extension: "json"
+    summary: "{{name}} - {{price}} ({{cat}})"
+    fields:
+      - {label: "Produktname", name: "name", widget: "string"}
+      - label: "Kategorie"
+        name: "cat"
+        widget: "select"
+        options: ["Baby", "Kinder", "Erwachsene", "Makramee", "Taschen", "Gutscheine", "Accessoires"]
+      - {label: "Basispreis (z. B. 79.00 CHF)", name: "price", widget: "string"}
+      - {label: "Badge (Optional, z. B. Neu, Unikat, Bestseller)", name: "badge", widget: "string", required: false}
+      - {label: "Standard-Bestand (falls keine Farben)", name: "stock", widget: "number", default: 1, value_type: "int", min: 0, required: false}
+      - {label: "Beschreibung", name: "description", widget: "text", required: false}
+      - {label: "Hauptbild", name: "img", widget: "image"}
+      
+      # Farben mit eigenem Foto & eigenem Lagerbestand:
+      - label: "Farben (mit eigenem Foto & Bestand)"
+        name: "variants_color"
+        widget: "list"
+        required: false
+        collapsed: true
+        summary: "{{fields.name}} (Bestand: {{fields.stock}})"
         fields:
-          - label: "Produktliste"
-            name: "produkte"
-            widget: "list"
-            collapsed: true
-            summary: "{{fields.name}} ({{fields.price}}) - {{fields.cat}}"
-            fields:
-              - {label: "Produktname", name: "name", widget: "string"}
-              - label: "Kategorie"
-                name: "cat"
-                widget: "select"
-                options: ["Baby", "Kinder", "Erwachsene", "Makramee", "Taschen", "Gutscheine", "Accessoires"]
-              - {label: "Basispreis (z. B. 79.00 CHF)", name: "price", widget: "string"}
-              
-              - label: "Badge (Optional)"
-                name: "badge"
-                widget: "select"
-                required: false
-                options: ["", "Unikat", "Neu", "Bestseller", "Aktion"]
-                
-              - {label: "Standard-Bestand (falls keine Farben)", name: "stock", widget: "number", default: 1, value_type: "int", min: 0, required: false}
+          - {label: "Farbe (z. B. Gelb, Grün)", name: "name", widget: "string"}
+          - {label: "Foto dieser Farbe", name: "img", widget: "image", required: false}
+          - {label: "Bestand dieser Farbe (0 = Ausverkauft)", name: "stock", widget: "number", default: 1, value_type: "int", min: 0}
 
-              - {label: "Beschreibung", name: "description", widget: "text", required: false}
-              - {label: "Material & Pflege (Optional)", name: "material", widget: "string", required: false}
+      # Größen mit Aufpreis in CHF:
+      - label: "Größen (mit Aufpreis in CHF)"
+        name: "variants_size"
+        widget: "list"
+        required: false
+        collapsed: true
+        summary: "{{fields.name}} (+{{fields.price_add}} CHF)"
+        fields:
+          - {label: "Größe (z. B. 6,5 cm oder 10 cm)", name: "name", widget: "string"}
+          - {label: "Aufpreis in CHF (z. B. 0 oder 5.00)", name: "price_add", widget: "number", default: 0, value_type: "float", min: 0, required: false}
 
-              - {label: "Hauptbild", name: "img", widget: "image"}
-              
-              - label: "Weitere Fotos (Galerie)"
-                name: "gallery"
-                widget: "list"
-                required: false
-                collapsed: true
-                field: {label: "Foto", name: "image", widget: "image"}
-
-              # Farb-Varianten mit eigenem Foto & eigenem Lagerbestand:
-              - label: "Farben (mit eigenem Foto & Bestand)"
-                name: "variants_color"
-                widget: "list"
-                required: false
-                collapsed: true
-                summary: "{{fields.name}} (Bestand: {{fields.stock}})"
-                fields:
-                  - {label: "Farbe (z. B. Gelb, Grün)", name: "name", widget: "string"}
-                  - {label: "Foto dieser Farbe", name: "img", widget: "image", required: false}
-                  - {label: "Bestand dieser Farbe (0 = Ausverkauft)", name: "stock", widget: "number", default: 1, value_type: "int", min: 0}
-
-              # Größen-Varianten mit Aufpreis in CHF:
-              - label: "Größen (mit Aufpreis in CHF)"
-                name: "variants_size"
-                widget: "list"
-                required: false
-                collapsed: true
-                summary: "{{fields.name}} (+{{fields.price_add}} CHF)"
-                fields:
-                  - {label: "Größe (z. B. 6,5 cm oder 10 cm)", name: "name", widget: "string"}
-                  - {label: "Aufpreis in CHF (z. B. 0 oder 5.00)", name: "price_add", widget: "number", default: 0, value_type: "float", min: 0, required: false}
-
-              - {label: "Wunschname für Bestickung erlauben?", name: "allow_custom_name", widget: "boolean", default: false, required: false}
+      - {label: "Wunschname für Bestickung erlauben?", name: "allow_custom_name", widget: "boolean", default: false, required: false}
