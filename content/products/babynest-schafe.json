@@ -1,0 +1,23 @@
+{
+  "name": "Babynest Schafe",
+  "cat": "Baby",
+  "price": "79.00 CHF",
+  "badge": "Unikat",
+  "stock": 1,
+  "description": "Handgefertigtes Babynest mit süßen Schafen für die Kleinsten.",
+  "img": "images/baby-babynest.jpeg",
+  "variants_color": [
+    {
+      "name": "Blau",
+      "img": "images/baby-babynest.jpeg",
+      "stock": 1
+    },
+    {
+      "name": "Grün",
+      "img": "images/baby-babynest.jpeg",
+      "stock": 1
+    }
+  ],
+  "variants_size": [],
+  "allow_custom_name": false
+}
