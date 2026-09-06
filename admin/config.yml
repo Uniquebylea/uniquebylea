@@ -19,9 +19,9 @@ collections:
           - label: "Produktliste"
             name: "produkte"
             widget: "list"
-            fields:
-              - {label: "Produktname", name: "name", widget: "string"}
-              - {label: "Kategorie", name: "cat", widget: "select", options: ["Baby", "Kinder", "Erwachsene", "Makramee", "Taschen", "Gutscheine", "Accessoires"]}
-              - {label: "Preis", name: "price", widget: "string"}
-              - {label: "Bild", name: "img", widget: "image"}
-              - {label: "Stripe Link (Optional)", name: "link", widget: "string", required: false}
+                fields:
+                - {label: "Produktname", name: "name", widget: "string"}
+                - {label: "Kategorie", name: "cat", widget: "select", options: ["Baby", "Kinder", "Erwachsene", "Makramee", "Taschen", "Gutscheine", "Accessoires"]}
+                - {label: "Preis", name: "price", widget: "string"}
+                - {label: "Bild", name: "img", widget: "image"}
+                - {label: "Stripe Link (Optional)", name: "link", widget: "string", required: false}
