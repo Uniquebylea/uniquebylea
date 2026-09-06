@@ -1,6 +1,6 @@
 backend:
   name: git-gateway
-  branch: main
+  branch: main # Hier muss "main" stehen, so wie dein Branch auf GitHub heißt
 
 media_folder: "images"
 public_folder: "images"
