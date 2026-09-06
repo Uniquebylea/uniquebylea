@@ -167,13 +167,8 @@
             <!-- Großes Bild im Modal (wechselt bei Farbwahl) -->
             <div class="relative w-full aspect-[4/5] bg-white rounded-2xl overflow-hidden mb-3 flex items-center justify-center">
                 <img id="modalCurrentImg" src="" alt="Produktfoto" class="w-full h-full object-cover transition duration-300">
-                <button id="modalPrevBtn" onclick="changeModalImage(-1)" class="absolute left-2 bg-creme/80 hover:bg-creme text-darkbrown w-9 h-9 rounded-full shadow flex items-center justify-center text-sm font-bold">❮</button>
-                <button id="modalNextBtn" onclick="changeModalImage(1)" class="absolute right-2 bg-creme/80 hover:bg-creme text-darkbrown w-9 h-9 rounded-full shadow flex items-center justify-center text-sm font-bold">❯</button>
                 <div id="modalBadge" class="absolute top-3 left-3 bg-terracotta text-white text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider hidden"></div>
             </div>
-
-            <!-- Miniatur-Vorschaubilder -->
-            <div id="modalThumbs" class="flex gap-2 overflow-x-auto max-w-full pb-2 mb-3 no-scrollbar"></div>
 
             <!-- Titel, Preis & Verfügbarkeit -->
             <div class="mb-3">
@@ -184,12 +179,9 @@
                 <div id="modalStockStatus" class="text-[10px] font-bold mt-0.5"></div>
             </div>
 
-            <!-- Beschreibung & Material -->
+            <!-- Beschreibung -->
             <div id="modalDescSection" class="border-t border-darkbrown/10 pt-2.5 mb-3 text-xs text-darkbrown/80 space-y-1.5">
                 <p id="modalDescription" class="leading-relaxed whitespace-pre-line"></p>
-                <p id="modalMaterial" class="text-[11px] font-medium text-darkbrown/70 flex items-center gap-1.5 hidden">
-                    <span>🌿</span><span id="modalMaterialText"></span>
-                </p>
             </div>
 
             <!-- PRODUKT-OPTIONEN ALS DROPDOWNS -->
@@ -234,8 +226,6 @@
     <script>
         let allProducts = [];
         let currentCategory = '';
-        let activeModalImages = [];
-        let currentModalIndex = 0;
         let activeProductIndex = null;
 
         // Aktuelle Auswahl im Modal
@@ -256,21 +246,10 @@
             return val.toFixed(2) + " CHF";
         }
 
-        function getProductImages(item) {
-            const list = [];
-            if (item.img) list.push(item.img);
-            if (Array.isArray(item.gallery)) {
-                item.gallery.forEach(g => {
-                    const src = typeof g === 'string' ? g : (g && g.image ? g.image : null);
-                    if (src && !list.includes(src)) list.push(src);
-                });
-            }
-            return list;
-        }
-
         async function load() {
             try {
-                const res = await fetch('content/products.json');
+                let res = await fetch('api/products');
+                if (!res.ok) res = await fetch('content/products.json');
                 const data = await res.json();
                 allProducts = data.produkte || [];
 
@@ -310,7 +289,6 @@
             render(filtered);
         }
 
-        // Berechnet den Gesamtbestand (über alle Farben oder Standardbestand)
         function getProductTotalStock(item) {
             if (Array.isArray(item.variants_color) && item.variants_color.length > 0) {
                 return item.variants_color.reduce((sum, c) => sum + (Number(c.stock) || 0), 0);
@@ -331,10 +309,7 @@
 
             list.forEach((item) => {
                 const globalIndex = allProducts.indexOf(item);
-                const images = getProductImages(item);
-                const imgSrc = images[0] || 'images/logo.png.jpeg';
-                const hasMultiple = images.length > 1;
-
+                const imgSrc = item.img || 'images/logo.png.jpeg';
                 const totalStock = getProductTotalStock(item);
                 const isOutOfStock = totalStock <= 0;
 
@@ -352,7 +327,6 @@
                              class="w-full h-full object-cover group-hover:scale-105 transition duration-300 ${isOutOfStock ? 'opacity-50 grayscale' : ''}">
                         
                         ${badgeText ? `<span class="absolute top-2 left-2 ${isOutOfStock ? 'bg-darkbrown text-white' : 'bg-terracotta text-white'} text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider shadow-sm">${badgeText}</span>` : ''}
-                        ${hasMultiple ? `<span class="absolute top-2 right-2 bg-darkbrown/70 text-white text-[9px] px-2 py-0.5 rounded-full backdrop-blur-sm font-semibold">📷 ${images.length}</span>` : ''}
                     </div>
                     <div>
                         <h3 class="font-serif text-[11px] md:text-sm uppercase tracking-wider mb-1 truncate">${item.name}</h3>
@@ -378,40 +352,27 @@
             });
         }
 
-        // ================= MODAL LOGIK MIT DROPDOWNS =================
+        // ================= MODAL LOGIK =================
 
         window.openModal = function(productIndex) {
             activeProductIndex = productIndex;
             const item = allProducts[productIndex];
             if (!item) return;
 
-            activeModalImages = getProductImages(item);
-            currentModalIndex = 0;
             activeBasePriceNum = parsePrice(item.price);
             activeSizeSurcharge = 0;
 
+            document.getElementById('modalCurrentImg').src = item.img || 'images/logo.png.jpeg';
             document.getElementById('modalTitle').textContent = item.name;
             updateModalPriceDisplay();
 
-            // Beschreibung & Material
             document.getElementById('modalDescription').textContent = item.description || 'Liebevoll handgefertigtes Unikat aus Interlaken.';
-            const matElem = document.getElementById('modalMaterial');
-            if (item.material) {
-                document.getElementById('modalMaterialText').textContent = item.material;
-                matElem.classList.remove('hidden');
-            } else {
-                matElem.classList.add('hidden');
-            }
 
-            // Dropdowns für Farben & Größen füllen
             setupDropdowns(item);
-
-            updateModalView();
             document.getElementById('galleryModal').classList.remove('hidden');
         };
 
         function setupDropdowns(item) {
-            // Farben Dropdown
             const colorContainer = document.getElementById('colorDropdownContainer');
             const colorSelect = document.getElementById('colorSelect');
             colorSelect.innerHTML = '';
@@ -437,7 +398,6 @@
                 updateAvailabilityDisplay(Number(item.stock) || 1);
             }
 
-            // Größen Dropdown
             const sizeContainer = document.getElementById('sizeDropdownContainer');
             const sizeSelect = document.getElementById('sizeSelect');
             sizeSelect.innerHTML = '';
@@ -461,33 +421,27 @@
                 updateModalPriceDisplay();
             }
 
-            // Wunschname
             const customNameBox = document.getElementById('customNameContainer');
             document.getElementById('customNameInput').value = '';
             if (item.allow_custom_name) customNameBox.classList.remove('hidden');
             else customNameBox.classList.add('hidden');
         }
 
-        // Wenn eine Farbe im Dropdown gewählt wird
         window.onColorChange = function() {
             const colorSelect = document.getElementById('colorSelect');
             const opt = colorSelect.options[colorSelect.selectedIndex];
             if (!opt) return;
 
-            // BILD-WECHSEL: Wenn die Farbe ein eigenes Foto hat, sofort anzeigen!
-            const colorImg = opt.dataset.img;
-            if (colorImg) {
-                document.getElementById('modalCurrentImg').src = colorImg;
-            } else if (activeModalImages.length > 0) {
-                document.getElementById('modalCurrentImg').src = activeModalImages[0];
+            if (opt.dataset.img) {
+                document.getElementById('modalCurrentImg').src = opt.dataset.img;
+            } else if (activeProductIndex !== null && allProducts[activeProductIndex].img) {
+                document.getElementById('modalCurrentImg').src = allProducts[activeProductIndex].img;
             }
 
-            // LAGERBESTAND DER GEWÄHLTEN FARBE PRÜFEN
             const stock = Number(opt.dataset.stock);
             updateAvailabilityDisplay(stock);
         };
 
-        // Wenn eine Größe im Dropdown gewählt wird
         window.onSizeChange = function() {
             const sizeSelect = document.getElementById('sizeSelect');
             const opt = sizeSelect.options[sizeSelect.selectedIndex];
@@ -539,7 +493,6 @@
             const prod = allProducts[activeProductIndex];
             if (!prod) return;
 
-            // Ausgewählte Farbe
             let chosenColor = '';
             let chosenImg = prod.img || 'images/logo.png.jpeg';
             let chosenStock = Number(prod.stock) || 1;
@@ -557,7 +510,6 @@
                 return;
             }
 
-            // Ausgewählte Größe
             let chosenSize = '';
             let sizeAdd = 0;
             const sizeSelect = document.getElementById('sizeSelect');
@@ -580,7 +532,7 @@
 
             if (existingIndex > -1) {
                 if (cart[existingIndex].quantity >= maxStock) {
-                    alert(`Dieser Artikel ist nur noch ${maxStock}x verfügbar!`);
+                    alert(`Dieser Artikel ist nur ${maxStock}x verfügbar!`);
                     openCart();
                     return;
                 }
@@ -602,41 +554,6 @@
             saveCart();
             openCart();
         }
-
-        function updateModalView() {
-            // Bilder-Karussell
-            const prevBtn = document.getElementById('modalPrevBtn');
-            const nextBtn = document.getElementById('modalNextBtn');
-            if (activeModalImages.length > 1) {
-                prevBtn.classList.remove('hidden');
-                nextBtn.classList.remove('hidden');
-            } else {
-                prevBtn.classList.add('hidden');
-                nextBtn.classList.add('hidden');
-            }
-
-            const thumbsContainer = document.getElementById('modalThumbs');
-            thumbsContainer.innerHTML = '';
-            if (activeModalImages.length > 1) {
-                activeModalImages.forEach((imgSrc, i) => {
-                    thumbsContainer.innerHTML += `
-                    <img src="${imgSrc}" class="w-12 h-12 object-cover rounded-lg cursor-pointer border-2 ${i === currentModalIndex ? 'border-terracotta scale-105' : 'border-transparent opacity-60 hover:opacity-100'} transition"
-                         onclick="setModalImage(${i})">`;
-                });
-            }
-        }
-
-        window.changeModalImage = function(direction) {
-            currentModalIndex = (currentModalIndex + direction + activeModalImages.length) % activeModalImages.length;
-            document.getElementById('modalCurrentImg').src = activeModalImages[currentModalIndex];
-            updateModalView();
-        };
-
-        window.setModalImage = function(index) {
-            currentModalIndex = index;
-            document.getElementById('modalCurrentImg').src = activeModalImages[currentModalIndex];
-            updateModalView();
-        };
 
         window.closeModal = function() {
             document.getElementById('galleryModal').classList.add('hidden');
