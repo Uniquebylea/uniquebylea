@@ -8,53 +8,233 @@
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <script>
-        tailwind.config = { theme: { extend: { colors: { sand: '#EAE3D9', creme: '#F9F6F2', terracotta: '#B08968', darkbrown: '#4A3728' } } } }
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { sand: '#EAE3D9', creme: '#F9F6F2', terracotta: '#B08968', darkbrown: '#4A3728' },
+                    fontFamily: { serif: ['Playfair Display', 'serif'], sans: ['Montserrat', 'sans-serif'] }
+                }
+            }
+        }
     </script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </head>
-<body class="bg-sand text-darkbrown font-sans">
-    <header class="bg-sand sticky top-0 z-50 border-b border-darkbrown/5 flex flex-col items-center py-4">
-        <nav class="flex gap-6 uppercase text-[10px] font-bold mb-4">
-            <a href="index.html">Startseite</a><a href="shop.html" class="text-terracotta">Shop</a><a href="ueber-mich.html">Über mich</a><a href="kontakt.html">Kontakt</a>
+<body class="bg-sand text-darkbrown font-sans min-h-screen flex flex-col">
+
+    <!-- Header & Navigation -->
+    <header class="bg-sand/95 backdrop-blur-md sticky top-0 z-40 border-b border-darkbrown/5 flex flex-col items-center py-4">
+        <nav class="flex gap-6 uppercase text-[10px] tracking-widest font-bold mb-4">
+            <a href="index.html" class="hover:text-terracotta transition">Startseite</a>
+            <a href="shop.html" class="text-terracotta border-b border-terracotta">Shop</a>
+            <a href="ueber-mich.html" class="hover:text-terracotta transition">Über mich</a>
+            <a href="kontakt.html" class="hover:text-terracotta transition">Kontakt</a>
         </nav>
-        <div class="w-full max-w-md px-4"><input type="text" id="searchBar" placeholder="Suchen..." class="w-full bg-creme border border-darkbrown/10 rounded-full py-2 px-6 text-xs outline-none focus:ring-1 focus:ring-terracotta"></div>
+        
+        <!-- Suchleiste -->
+        <div class="w-full max-w-md px-4 mb-3">
+            <input type="text" id="searchBar" placeholder="Produkt suchen..." 
+                   class="w-full bg-creme border border-darkbrown/10 rounded-full py-2.5 px-6 text-xs outline-none focus:ring-2 focus:ring-terracotta/40 shadow-sm transition">
+        </div>
+        
+        <!-- Kategorie-Filterleiste -->
+        <div class="w-full max-w-4xl px-4 overflow-x-auto no-scrollbar flex gap-2 justify-start md:justify-center py-1 text-xs">
+            <button onclick="setCategory('')" class="cat-pill px-4 py-1.5 rounded-full uppercase text-[10px] font-bold tracking-wider transition bg-terracotta text-white shadow-sm" data-cat="">Alle</button>
+            <button onclick="setCategory('Baby')" class="cat-pill px-4 py-1.5 rounded-full uppercase text-[10px] font-bold tracking-wider transition bg-creme border border-darkbrown/10 hover:border-terracotta text-darkbrown" data-cat="Baby">Baby</button>
+            <button onclick="setCategory('Kinder')" class="cat-pill px-4 py-1.5 rounded-full uppercase text-[10px] font-bold tracking-wider transition bg-creme border border-darkbrown/10 hover:border-terracotta text-darkbrown" data-cat="Kinder">Kinder</button>
+            <button onclick="setCategory('Erwachsene')" class="cat-pill px-4 py-1.5 rounded-full uppercase text-[10px] font-bold tracking-wider transition bg-creme border border-darkbrown/10 hover:border-terracotta text-darkbrown" data-cat="Erwachsene">Erwachsene</button>
+            <button onclick="setCategory('Makramee')" class="cat-pill px-4 py-1.5 rounded-full uppercase text-[10px] font-bold tracking-wider transition bg-creme border border-darkbrown/10 hover:border-terracotta text-darkbrown" data-cat="Makramee">Makramee</button>
+            <button onclick="setCategory('Taschen')" class="cat-pill px-4 py-1.5 rounded-full uppercase text-[10px] font-bold tracking-wider transition bg-creme border border-darkbrown/10 hover:border-terracotta text-darkbrown" data-cat="Taschen">Taschen</button>
+            <button onclick="setCategory('Accessoires')" class="cat-pill px-4 py-1.5 rounded-full uppercase text-[10px] font-bold tracking-wider transition bg-creme border border-darkbrown/10 hover:border-terracotta text-darkbrown" data-cat="Accessoires">Accessoires</button>
+            <button onclick="setCategory('Gutscheine')" class="cat-pill px-4 py-1.5 rounded-full uppercase text-[10px] font-bold tracking-wider transition bg-creme border border-darkbrown/10 hover:border-terracotta text-darkbrown" data-cat="Gutscheine">Gutscheine</button>
+        </div>
     </header>
-    <main class="max-w-7xl mx-auto px-4 py-8">
-        <div id="productGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8"></div>
-        <div id="noResults" class="hidden text-center py-20 italic">Keine Produkte gefunden...</div>
+
+    <!-- Produkt-Raster -->
+    <main class="max-w-7xl mx-auto px-4 py-8 flex-1 w-full">
+        <div id="productGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6"></div>
+        <div id="noResults" class="hidden text-center py-20 italic text-darkbrown/60">Keine passenden Produkte gefunden...</div>
     </main>
+
+    <!-- Großansicht-Modal (Bildergalerie / Detailansicht) -->
+    <div id="galleryModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex items-center justify-center p-4" onclick="closeModal(event)">
+        <div class="relative bg-creme rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-white/40 flex flex-col items-center" onclick="event.stopPropagation()">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-darkbrown/60 hover:text-darkbrown text-xl font-bold w-8 h-8 flex items-center justify-center rounded-full bg-sand/60">✕</button>
+            
+            <!-- Großes Bild im Modal -->
+            <div class="relative w-full aspect-[4/5] bg-white rounded-2xl overflow-hidden mb-4 flex items-center justify-center">
+                <img id="modalCurrentImg" src="" alt="Produktfoto" class="w-full h-full object-cover">
+                <!-- Vor-/Zurück-Pfeile -->
+                <button id="modalPrevBtn" onclick="changeModalImage(-1)" class="absolute left-2 bg-creme/80 hover:bg-creme text-darkbrown w-9 h-9 rounded-full shadow flex items-center justify-center text-sm font-bold">❮</button>
+                <button id="modalNextBtn" onclick="changeModalImage(1)" class="absolute right-2 bg-creme/80 hover:bg-creme text-darkbrown w-9 h-9 rounded-full shadow flex items-center justify-center text-sm font-bold">❯</button>
+            </div>
+
+            <!-- Miniatur-Vorschaubilder -->
+            <div id="modalThumbs" class="flex gap-2 overflow-x-auto max-w-full pb-2 mb-4 no-scrollbar"></div>
+
+            <h3 id="modalTitle" class="font-serif text-base md:text-lg uppercase tracking-wider text-center mb-1"></h3>
+            <p id="modalPrice" class="text-terracotta font-bold text-sm mb-4"></p>
+            <a id="modalActionBtn" href="#" class="w-full block text-center bg-darkbrown text-white py-3 rounded-xl text-[10px] uppercase font-bold tracking-widest hover:bg-terracotta transition shadow-md"></a>
+        </div>
+    </div>
+
+    <!-- JavaScript Logik -->
     <script>
         let allProducts = [];
+        let currentCategory = '';
+        let activeModalImages = [];
+        let currentModalIndex = 0;
+
+        function getProductImages(item) {
+            const list = [];
+            if (item.img) list.push(item.img);
+            if (Array.isArray(item.gallery)) {
+                item.gallery.forEach(g => {
+                    const src = typeof g === 'string' ? g : (g && g.image ? g.image : null);
+                    if (src && !list.includes(src)) list.push(src);
+                });
+            }
+            return list;
+        }
+
         async function load() {
             try {
                 const res = await fetch('content/products.json');
                 const data = await res.json();
                 allProducts = data.produkte || [];
-                const cat = new URLSearchParams(window.location.search).get('cat');
-                render(cat ? allProducts.filter(p => p.cat === cat) : allProducts);
-            } catch (e) { console.error(e); }
+
+                const urlCat = new URLSearchParams(window.location.search).get('cat');
+                setCategory(urlCat || '', false);
+            } catch (e) {
+                console.error("Fehler beim Laden der Produkte:", e);
+            }
         }
+
+        function setCategory(cat, doRender = true) {
+            currentCategory = cat;
+            document.querySelectorAll('.cat-pill').forEach(btn => {
+                if (btn.dataset.cat === cat) {
+                    btn.className = 'cat-pill px-4 py-1.5 rounded-full uppercase text-[10px] font-bold tracking-wider transition bg-terracotta text-white shadow-sm';
+                } else {
+                    btn.className = 'cat-pill px-4 py-1.5 rounded-full uppercase text-[10px] font-bold tracking-wider transition bg-creme border border-darkbrown/10 hover:border-terracotta text-darkbrown';
+                }
+            });
+            if (doRender) applyFilters();
+        }
+
+        function applyFilters() {
+            const query = document.getElementById('searchBar').value.trim();
+            let filtered = allProducts;
+
+            if (currentCategory) {
+                filtered = filtered.filter(p => p.cat === currentCategory);
+            }
+
+            if (query) {
+                const fuse = new Fuse(filtered, { keys: ['name', 'cat'], threshold: 0.35 });
+                filtered = fuse.search(query).map(res => res.item);
+            }
+
+            render(filtered);
+        }
+
         function render(list) {
-            const grid = document.getElementById('productGrid'); grid.innerHTML = '';
-            if(list.length === 0) document.getElementById('noResults').classList.remove('hidden');
-            else {
-                document.getElementById('noResults').classList.add('hidden');
-                list.forEach(prod => {
-                    const item = prod.item || prod;
-                    grid.innerHTML += `
-                    <div class="bg-creme p-3 md:p-5 rounded-2xl shadow-sm border border-darkbrown/5">
-                        <img src="${item.img}" class="w-full aspect-[4/5] object-cover rounded-xl mb-4 bg-white">
+            const grid = document.getElementById('productGrid');
+            const noResults = document.getElementById('noResults');
+            grid.innerHTML = '';
+
+            if (list.length === 0) {
+                noResults.classList.remove('hidden');
+                return;
+            }
+            noResults.classList.add('hidden');
+
+            list.forEach((item, index) => {
+                const images = getProductImages(item);
+                const hasMultiple = images.length > 1;
+
+                grid.innerHTML += `
+                <div class="bg-creme p-3.5 md:p-5 rounded-2xl shadow-sm border border-darkbrown/5 flex flex-col justify-between hover:shadow-md transition">
+                    <div class="relative cursor-pointer group mb-3 overflow-hidden rounded-xl bg-white aspect-[4/5]" onclick="openModal(${index})">
+                        <img src="${images[0] || 'images/logo.png.jpeg'}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                        ${hasMultiple ? `<span class="absolute top-2 right-2 bg-darkbrown/70 text-white text-[9px] px-2 py-0.5 rounded-full backdrop-blur-sm font-semibold">📷 ${images.length}</span>` : ''}
+                    </div>
+                    <div>
                         <h3 class="font-serif text-[11px] md:text-sm uppercase tracking-wider mb-1 truncate">${item.name}</h3>
-                        <p class="text-terracotta font-bold text-xs mb-4">${item.price}</p>
-                        <a href="${item.link || 'kontakt.html?produkt=' + encodeURIComponent(item.name)}" class="block text-center border border-darkbrown/20 py-2 rounded-lg text-[9px] uppercase font-bold hover:bg-darkbrown hover:text-white transition">${item.link ? 'Kaufen' : 'Anfragen'}</a>
-                    </div>`;
+                        <p class="text-terracotta font-bold text-xs mb-3">${item.price}</p>
+                        <a href="${item.link || 'kontakt.html?produkt=' + encodeURIComponent(item.name)}" 
+                           class="block text-center border border-darkbrown/20 py-2 rounded-lg text-[9px] uppercase font-bold hover:bg-darkbrown hover:text-white transition">
+                            ${item.link ? 'Kaufen' : 'Anfragen'}
+                        </a>
+                    </div>
+                </div>`;
+            });
+        }
+
+        window.openModal = function(productIndex) {
+            const item = allProducts[productIndex];
+            if (!item) return;
+
+            activeModalImages = getProductImages(item);
+            currentModalIndex = 0;
+
+            document.getElementById('modalTitle').textContent = item.name;
+            document.getElementById('modalPrice').textContent = item.price;
+            
+            const btn = document.getElementById('modalActionBtn');
+            btn.textContent = item.link ? 'Jetzt kaufen' : 'Produkt anfragen';
+            btn.href = item.link || 'kontakt.html?produkt=' + encodeURIComponent(item.name);
+
+            updateModalView();
+            document.getElementById('galleryModal').classList.remove('hidden');
+        };
+
+        function updateModalView() {
+            document.getElementById('modalCurrentImg').src = activeModalImages[currentModalIndex] || '';
+
+            const prevBtn = document.getElementById('modalPrevBtn');
+            const nextBtn = document.getElementById('modalNextBtn');
+            if (activeModalImages.length > 1) {
+                prevBtn.classList.remove('hidden');
+                nextBtn.classList.remove('hidden');
+            } else {
+                prevBtn.classList.add('hidden');
+                nextBtn.classList.add('hidden');
+            }
+
+            const thumbsContainer = document.getElementById('modalThumbs');
+            thumbsContainer.innerHTML = '';
+            if (activeModalImages.length > 1) {
+                activeModalImages.forEach((imgSrc, i) => {
+                    thumbsContainer.innerHTML += `
+                    <img src="${imgSrc}" class="w-12 h-12 object-cover rounded-lg cursor-pointer border-2 ${i === currentModalIndex ? 'border-terracotta scale-105' : 'border-transparent opacity-60 hover:opacity-100'} transition"
+                         onclick="setModalImage(${i})">`;
                 });
             }
         }
-        const fuse = new Fuse([], { keys: ['name', 'cat'], threshold: 0.4 });
-        document.getElementById('searchBar').addEventListener('input', (e) => {
-            fuse.setCollection(allProducts);
-            render(e.target.value ? fuse.search(e.target.value) : allProducts);
+
+        window.changeModalImage = function(direction) {
+            currentModalIndex = (currentModalIndex + direction + activeModalImages.length) % activeModalImages.length;
+            updateModalView();
+        };
+
+        window.setModalImage = function(index) {
+            currentModalIndex = index;
+            updateModalView();
+        };
+
+        window.closeModal = function() {
+            document.getElementById('galleryModal').classList.add('hidden');
+        };
+
+        document.getElementById('searchBar').addEventListener('input', applyFilters);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
         });
+
         load();
     </script>
 </body>
