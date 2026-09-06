@@ -1,6 +1,27 @@
 backend:
   name: github
-  repo: UniquebyLea/uniquebylea
+  repo: uniquebylea/uniquebylea
   branch: main
   base_url: https://github-os-auth.vercel.app
   auth_endpoint: /api/auth
+
+media_folder: "images"
+public_folder: "images"
+
+collections:
+  - name: "shop_data"
+    label: "Shop Verwaltung"
+    files:
+      - label: "Alle Produkte"
+        name: "products"
+        file: "content/products.json"
+        fields:
+          - label: "Produktliste"
+            name: "produkte"
+            widget: "list"
+            fields:
+              - {label: "Produktname", name: "name", widget: "string"}
+              - {label: "Kategorie", name: "cat", widget: "select", options: ["Baby", "Kinder", "Erwachsene", "Makramee", "Taschen", "Gutscheine", "Accessoires"]}
+              - {label: "Preis", name: "price", widget: "string"}
+              - {label: "Bild", name: "img", widget: "image"}
+              - {label: "Stripe Link (Optional)", name: "link", widget: "string", required: false}
