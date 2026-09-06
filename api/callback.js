@@ -1,7 +1,13 @@
 module.exports = async (req, res) => {
   const code = req.query.code;
-  const clientId = process.env.OAUTH_GITHUB_CLIENT_ID;
-  const clientSecret = process.env.OAUTH_GITHUB_CLIENT_SECRET;
+  const clientId =
+    process.env.OAUTH_GITHUB_CLIENT_ID ||
+    process.env.GITHUB_CLIENT_ID ||
+    process.env.CLIENT_ID;
+  const clientSecret =
+    process.env.OAUTH_GITHUB_CLIENT_SECRET ||
+    process.env.GITHUB_CLIENT_SECRET ||
+    process.env.CLIENT_SECRET;
 
   if (!code) {
     return res.status(400).send("Fehler: Kein Code von GitHub empfangen.");
@@ -52,6 +58,7 @@ function renderPostMessage(data, status) {
   <script>
     (function() {
       function receiveMessage(e) {
+        console.log("receiveMessage", e);
         window.opener.postMessage(
           'authorization:github:${status}:' + JSON.stringify(${JSON.stringify(data)}),
           e.origin
