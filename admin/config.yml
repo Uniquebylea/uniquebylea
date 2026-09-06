@@ -2,8 +2,8 @@ backend:
   name: github
   repo: Uniquebylea/uniquebylea
   branch: main
-  base_url: https://gatekeeper.decapcms.org
-  auth_endpoint: /auth
+  base_url: https://uniquebylea.vercel.app
+  auth_endpoint: api/auth
 
 media_folder: "images"
 public_folder: "/images"
