@@ -6,7 +6,7 @@
     <title>Shop | Unique by Lea</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -41,7 +41,7 @@
                 </svg>
             </a>
 
-            <!-- Warenkorb Button mit Live-Zähler -->
+            <!-- Warenkorb Button mit Zähler -->
             <button onclick="openCart()" 
                     class="text-darkbrown hover:text-terracotta transition flex items-center gap-1">
                 <span>Warenkorb</span>
@@ -102,4 +102,697 @@
                     <div>
                         <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-2">Versandart (Schweiz):</label>
                         <div class="space-y-1.5 text-xs">
-                            <label class="flex items-center justify-between p-2.5 rounded-xl border border-darkbrown
+                            <label class="flex items-center justify-between p-2.5 rounded-xl border border-darkbrown/10 bg-creme cursor-pointer hover:border-terracotta transition">
+                                <span class="flex items-center gap-2">
+                                    <input type="radio" name="shipping" value="bpost" checked onchange="updateCartTotals()" class="accent-terracotta">
+                                    <span>📦 Schweizer Post (B-Post)</span>
+                                </span>
+                                <span id="bpostCost" class="font-bold">7.00 CHF</span>
+                            </label>
+                            <label class="flex items-center justify-between p-2.5 rounded-xl border border-darkbrown/10 bg-creme cursor-pointer hover:border-terracotta transition">
+                                <span class="flex items-center gap-2">
+                                    <input type="radio" name="shipping" value="apost" onchange="updateCartTotals()" class="accent-terracotta">
+                                    <span>⚡ Schweizer Post (A-Post)</span>
+                                </span>
+                                <span class="font-bold">9.00 CHF</span>
+                            </label>
+                            <label class="flex items-center justify-between p-2.5 rounded-xl border border-darkbrown/10 bg-creme cursor-pointer hover:border-terracotta transition">
+                                <span class="flex items-center gap-2">
+                                    <input type="radio" name="shipping" value="pickup" onchange="updateCartTotals()" class="accent-terracotta">
+                                    <span>🏠 Abholung im Atelier (Interlaken)</span>
+                                </span>
+                                <span class="text-terracotta font-bold">Kostenlos</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Zwischensumme & Gesamtsumme -->
+                    <div class="space-y-1.5 pt-2 border-t border-darkbrown/10 text-xs">
+                        <div class="flex justify-between text-darkbrown/70">
+                            <span>Zwischensumme:</span>
+                            <span id="cartSubtotal" class="font-bold">0.00 CHF</span>
+                        </div>
+                        <div class="flex justify-between text-darkbrown/70">
+                            <span>Versand:</span>
+                            <span id="cartShippingCost" class="font-bold">7.00 CHF</span>
+                        </div>
+                        <div class="flex justify-between text-sm font-bold text-darkbrown pt-1.5 border-t border-darkbrown/5">
+                            <span>Gesamtsumme:</span>
+                            <span id="cartGrandTotal" class="text-terracotta font-serif text-base font-bold">0.00 CHF</span>
+                        </div>
+                    </div>
+
+                    <!-- Checkout Buttons -->
+                    <div class="space-y-2 pt-2">
+                        <button onclick="proceedToOnlineCheckout()" 
+                                class="w-full bg-darkbrown hover:bg-terracotta text-white py-3.5 rounded-xl text-xs uppercase tracking-widest font-bold shadow transition flex items-center justify-center gap-2">
+                            <span>Zur Kasse (TWINT, Karte, Apple Pay)</span>
+                        </button>
+                        <button onclick="proceedToPickupCheckout()" 
+                                class="w-full border border-darkbrown/20 hover:bg-darkbrown/5 text-darkbrown py-2.5 rounded-xl text-[10px] uppercase tracking-wider font-bold transition">
+                            Barzahlung bei Abholung
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- DETAIL- & GALERIE-MODAL (PRODUKTAUSWAHL MIT VARIANTEN) -->
+    <div id="galleryModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto" onclick="closeModal(event)">
+        <div class="relative bg-creme rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-white/40 my-8 flex flex-col" onclick="event.stopPropagation()">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-darkbrown/60 hover:text-darkbrown text-xl font-bold w-8 h-8 flex items-center justify-center rounded-full bg-sand/60 z-10">✕</button>
+            
+            <!-- Großes Bild im Modal -->
+            <div class="relative w-full aspect-[4/5] bg-white rounded-2xl overflow-hidden mb-3 flex items-center justify-center">
+                <img id="modalCurrentImg" src="" alt="Produktfoto" class="w-full h-full object-cover">
+                <button id="modalPrevBtn" onclick="changeModalImage(-1)" class="absolute left-2 bg-creme/80 hover:bg-creme text-darkbrown w-9 h-9 rounded-full shadow flex items-center justify-center text-sm font-bold">❮</button>
+                <button id="modalNextBtn" onclick="changeModalImage(1)" class="absolute right-2 bg-creme/80 hover:bg-creme text-darkbrown w-9 h-9 rounded-full shadow flex items-center justify-center text-sm font-bold">❯</button>
+                <div id="modalBadge" class="absolute top-3 left-3 bg-terracotta text-white text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider hidden"></div>
+            </div>
+
+            <!-- Miniatur-Vorschaubilder -->
+            <div id="modalThumbs" class="flex gap-2 overflow-x-auto max-w-full pb-2 mb-3 no-scrollbar"></div>
+
+            <!-- Titel, Preis & Verfügbarkeit -->
+            <div class="mb-3">
+                <div class="flex justify-between items-baseline gap-2">
+                    <h3 id="modalTitle" class="font-serif text-lg uppercase tracking-wider font-bold"></h3>
+                    <p id="modalPrice" class="text-terracotta font-bold text-base whitespace-nowrap"></p>
+                </div>
+                <div id="modalStockStatus" class="text-[10px] font-bold mt-0.5"></div>
+            </div>
+
+            <!-- Beschreibung & Material -->
+            <div id="modalDescSection" class="border-t border-darkbrown/10 pt-2.5 mb-3 text-xs text-darkbrown/80 space-y-1.5">
+                <p id="modalDescription" class="leading-relaxed whitespace-pre-line"></p>
+                <p id="modalMaterial" class="text-[11px] font-medium text-darkbrown/70 flex items-center gap-1.5 hidden">
+                    <span>🌿</span><span id="modalMaterialText"></span>
+                </p>
+            </div>
+
+            <!-- VARIANTEN AUSWAHL -->
+            <div id="modalOptionsSection" class="border-t border-darkbrown/10 pt-3 mb-4 space-y-3">
+                <!-- Farbauswahl -->
+                <div id="colorPickerContainer" class="hidden">
+                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1.5">Farbe:</label>
+                    <div id="colorOptions" class="flex flex-wrap gap-1.5"></div>
+                </div>
+
+                <!-- Größenauswahl -->
+                <div id="sizePickerContainer" class="hidden">
+                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1.5">Größe:</label>
+                    <div id="sizeOptions" class="flex flex-wrap gap-1.5"></div>
+                </div>
+
+                <!-- Gutschein-Werte -->
+                <div id="voucherPickerContainer" class="hidden">
+                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1.5">Gutscheinwert:</label>
+                    <div id="voucherOptions" class="flex flex-wrap gap-1.5"></div>
+                </div>
+
+                <!-- Personalisierung / Wunschname -->
+                <div id="customNameContainer" class="hidden">
+                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Wunschname (z. B. für Bestickung):</label>
+                    <input type="text" id="customNameInput" placeholder="Name oder Text eingeben..." 
+                           class="w-full bg-white border border-darkbrown/15 rounded-xl px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-terracotta">
+                </div>
+            </div>
+
+            <!-- Button: In den Warenkorb -->
+            <button id="modalActionBtn" onclick="addCurrentModalToCart()" 
+                    class="w-full block text-center bg-darkbrown text-white py-3.5 rounded-xl text-xs uppercase font-bold tracking-widest hover:bg-terracotta transition shadow-md flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                <span>In den Warenkorb</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript Logik -->
+    <script>
+        let allProducts = [];
+        let currentCategory = '';
+        let activeModalImages = [];
+        let currentModalIndex = 0;
+        let activeProductIndex = null;
+
+        // Ausgewählte Optionen im Modal
+        let selectedColor = '';
+        let selectedSize = '';
+        let selectedVoucherVal = '';
+        let activeModalPrice = '';
+
+        // Warenkorb im Browser (LocalStorage)
+        let cart = JSON.parse(localStorage.getItem('uniquebylea_cart')) || [];
+
+        function parsePrice(str) {
+            if (typeof str === 'number') return str;
+            if (!str) return 0;
+            const cleaned = str.toString().replace(/[^0-9.,]/g, '').replace(',', '.');
+            return parseFloat(cleaned) || 0;
+        }
+
+        function formatCHF(val) {
+            return val.toFixed(2) + " CHF";
+        }
+
+        function getProductImages(item) {
+            const list = [];
+            if (item.img) list.push(item.img);
+            if (Array.isArray(item.gallery)) {
+                item.gallery.forEach(g => {
+                    const src = typeof g === 'string' ? g : (g && g.image ? g.image : null);
+                    if (src && !list.includes(src)) list.push(src);
+                });
+            }
+            return list;
+        }
+
+        async function load() {
+            try {
+                const res = await fetch('content/products.json');
+                const data = await res.json();
+                allProducts = data.produkte || [];
+
+                const urlCat = new URLSearchParams(window.location.search).get('cat');
+                setCategory(urlCat || '');
+                updateCartBadge();
+            } catch (e) {
+                console.error("Fehler beim Laden der Produkte:", e);
+            }
+        }
+
+        function setCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.cat-pill').forEach(btn => {
+                if (btn.dataset.cat === cat) {
+                    btn.className = 'cat-pill px-4 py-1.5 rounded-full uppercase text-[10px] font-bold tracking-wider transition bg-terracotta text-white shadow-sm';
+                } else {
+                    btn.className = 'cat-pill px-4 py-1.5 rounded-full uppercase text-[10px] font-bold tracking-wider transition bg-creme border border-darkbrown/10 hover:border-terracotta text-darkbrown';
+                }
+            });
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const query = document.getElementById('searchBar').value.trim();
+            let filtered = allProducts;
+
+            if (currentCategory) {
+                filtered = filtered.filter(p => p.cat === currentCategory);
+            }
+
+            if (query) {
+                const fuse = new Fuse(filtered, { keys: ['name', 'cat', 'description'], threshold: 0.35 });
+                filtered = fuse.search(query).map(res => res.item);
+            }
+
+            render(filtered);
+        }
+
+        function render(list) {
+            const grid = document.getElementById('productGrid');
+            const noResults = document.getElementById('noResults');
+            grid.innerHTML = '';
+
+            if (!list || list.length === 0) {
+                noResults.classList.remove('hidden');
+                return;
+            }
+            noResults.classList.add('hidden');
+
+            list.forEach((item) => {
+                const globalIndex = allProducts.indexOf(item);
+                const images = getProductImages(item);
+                const imgSrc = images[0] || 'images/logo.png.jpeg';
+                const hasMultiple = images.length > 1;
+
+                // Lagerbestand / Status
+                const isOutOfStock = typeof item.stock !== 'undefined' && Number(item.stock) === 0;
+                let badgeText = item.badge || '';
+                if (isOutOfStock) badgeText = 'Ausverkauft';
+                else if (!badgeText && item.is_unique) badgeText = 'Unikat';
+
+                // Hat das Produkt Varianten zum Auswählen?
+                const hasVariants = (item.colors && item.colors.length) || 
+                                    (item.sizes && item.sizes.length) || 
+                                    (item.voucher_values && item.voucher_values.length) || 
+                                    item.allow_custom_name;
+
+                grid.innerHTML += `
+                <div class="bg-creme p-3.5 md:p-5 rounded-2xl shadow-sm border border-darkbrown/5 flex flex-col justify-between hover:shadow-md transition">
+                    <div class="relative cursor-pointer group mb-3 overflow-hidden rounded-xl bg-white aspect-[4/5]" onclick="openModal(${globalIndex})">
+                        <img src="${imgSrc}" alt="${item.name}" onerror="this.src='images/logo.png.jpeg'" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition duration-300 ${isOutOfStock ? 'opacity-50 grayscale' : ''}">
+                        
+                        ${badgeText ? `<span class="absolute top-2 left-2 ${isOutOfStock ? 'bg-darkbrown text-white' : 'bg-terracotta text-white'} text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider shadow-sm">${badgeText}</span>` : ''}
+                        ${hasMultiple ? `<span class="absolute top-2 right-2 bg-darkbrown/70 text-white text-[9px] px-2 py-0.5 rounded-full backdrop-blur-sm font-semibold">📷 ${images.length}</span>` : ''}
+                    </div>
+                    <div>
+                        <h3 class="font-serif text-[11px] md:text-sm uppercase tracking-wider mb-1 truncate">${item.name}</h3>
+                        <p class="text-terracotta font-bold text-xs mb-3">${item.price}</p>
+                        
+                        ${isOutOfStock ? `
+                            <button disabled class="w-full block text-center bg-darkbrown/10 text-darkbrown/40 py-2 rounded-lg text-[9px] uppercase font-bold cursor-not-allowed">
+                                Ausverkauft
+                            </button>
+                        ` : hasVariants ? `
+                            <button onclick="openModal(${globalIndex})" 
+                                    class="w-full block text-center border border-terracotta text-terracotta hover:bg-terracotta hover:text-white py-2 rounded-lg text-[9px] uppercase font-bold transition">
+                                Optionen wählen
+                            </button>
+                        ` : `
+                            <button onclick="quickAddToCart(${globalIndex})" 
+                                    class="w-full block text-center border border-darkbrown/20 py-2 rounded-lg text-[9px] uppercase font-bold hover:bg-darkbrown hover:text-white transition">
+                                In den Warenkorb
+                            </button>
+                        `}
+                    </div>
+                </div>`;
+            });
+        }
+
+        // ================= MODAL LOGIK MIT VARIANTEN =================
+
+        window.openModal = function(productIndex) {
+            activeProductIndex = productIndex;
+            const item = allProducts[productIndex];
+            if (!item) return;
+
+            activeModalImages = getProductImages(item);
+            currentModalIndex = 0;
+            activeModalPrice = item.price;
+            selectedColor = '';
+            selectedSize = '';
+            selectedVoucherVal = '';
+
+            document.getElementById('modalTitle').textContent = item.name;
+            document.getElementById('modalPrice').textContent = item.price;
+
+            // Badge & Status
+            const isOutOfStock = typeof item.stock !== 'undefined' && Number(item.stock) === 0;
+            const badgeElem = document.getElementById('modalBadge');
+            const stockStatus = document.getElementById('modalStockStatus');
+
+            if (isOutOfStock) {
+                badgeElem.textContent = 'Ausverkauft';
+                badgeElem.classList.remove('hidden');
+                stockStatus.innerHTML = '<span class="text-red-500">Momentan leider ausverkauft</span>';
+            } else if (item.is_unique || item.badge === 'Unikat') {
+                badgeElem.textContent = 'Unikat';
+                badgeElem.classList.remove('hidden');
+                stockStatus.innerHTML = '<span class="text-terracotta">✨ Einzelstück – Nur 1x verfügbar</span>';
+            } else if (item.badge) {
+                badgeElem.textContent = item.badge;
+                badgeElem.classList.remove('hidden');
+                stockStatus.innerHTML = '<span class="text-darkbrown/60">Auf Lager</span>';
+            } else {
+                badgeElem.classList.add('hidden');
+                stockStatus.innerHTML = '<span class="text-darkbrown/60">Auf Lager</span>';
+            }
+
+            // Beschreibung & Material
+            const descElem = document.getElementById('modalDescription');
+            descElem.textContent = item.description || 'Liebevoll handgefertigtes Einzelstück aus Interlaken.';
+
+            const matElem = document.getElementById('modalMaterial');
+            if (item.material) {
+                document.getElementById('modalMaterialText').textContent = item.material;
+                matElem.classList.remove('hidden');
+            } else {
+                matElem.classList.add('hidden');
+            }
+
+            // Varianten-Container einrichten
+            setupOptions(item);
+
+            // Button-Status
+            const actionBtn = document.getElementById('modalActionBtn');
+            if (isOutOfStock) {
+                actionBtn.disabled = true;
+                actionBtn.className = "w-full block text-center bg-darkbrown/10 text-darkbrown/40 py-3.5 rounded-xl text-xs uppercase font-bold tracking-widest cursor-not-allowed";
+                actionBtn.innerHTML = "<span>Ausverkauft</span>";
+            } else {
+                actionBtn.disabled = false;
+                actionBtn.className = "w-full block text-center bg-darkbrown text-white py-3.5 rounded-xl text-xs uppercase font-bold tracking-widest hover:bg-terracotta transition shadow-md flex items-center justify-center gap-2";
+                actionBtn.innerHTML = `
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <span>In den Warenkorb</span>
+                `;
+            }
+
+            updateModalView();
+            document.getElementById('galleryModal').classList.remove('hidden');
+        };
+
+        function setupOptions(item) {
+            // Farben
+            const colorBox = document.getElementById('colorPickerContainer');
+            const colorOptions = document.getElementById('colorOptions');
+            colorOptions.innerHTML = '';
+            if (Array.isArray(item.colors) && item.colors.length > 0) {
+                colorBox.classList.remove('hidden');
+                item.colors.forEach((c, i) => {
+                    const cName = typeof c === 'string' ? c : (c.color || '');
+                    if (i === 0) selectedColor = cName;
+                    colorOptions.innerHTML += `
+                    <button type="button" onclick="selectColor('${cName}', this)" 
+                            class="opt-btn-color px-3 py-1.5 rounded-lg border text-xs font-medium transition ${i === 0 ? 'border-terracotta bg-terracotta text-white' : 'border-darkbrown/15 bg-white text-darkbrown hover:border-terracotta'}">
+                        ${cName}
+                    </button>`;
+                });
+            } else {
+                colorBox.classList.add('hidden');
+            }
+
+            // Größen
+            const sizeBox = document.getElementById('sizePickerContainer');
+            const sizeOptions = document.getElementById('sizeOptions');
+            sizeOptions.innerHTML = '';
+            if (Array.isArray(item.sizes) && item.sizes.length > 0) {
+                sizeBox.classList.remove('hidden');
+                item.sizes.forEach((s, i) => {
+                    const sName = typeof s === 'string' ? s : (s.size || '');
+                    if (i === 0) selectedSize = sName;
+                    sizeOptions.innerHTML += `
+                    <button type="button" onclick="selectSize('${sName}', this)" 
+                            class="opt-btn-size px-3 py-1.5 rounded-lg border text-xs font-medium transition ${i === 0 ? 'border-terracotta bg-terracotta text-white' : 'border-darkbrown/15 bg-white text-darkbrown hover:border-terracotta'}">
+                        ${sName}
+                    </button>`;
+                });
+            } else {
+                sizeBox.classList.add('hidden');
+            }
+
+            // Gutscheinwerte
+            const voucherBox = document.getElementById('voucherPickerContainer');
+            const voucherOptions = document.getElementById('voucherOptions');
+            voucherOptions.innerHTML = '';
+            if (Array.isArray(item.voucher_values) && item.voucher_values.length > 0) {
+                voucherBox.classList.remove('hidden');
+                item.voucher_values.forEach((v, i) => {
+                    const valStr = typeof v === 'string' ? v : (v.val || '');
+                    if (i === 0) {
+                        selectedVoucherVal = valStr;
+                        activeModalPrice = valStr.includes('CHF') ? valStr : valStr + ' CHF';
+                        document.getElementById('modalPrice').textContent = activeModalPrice;
+                    }
+                    voucherOptions.innerHTML += `
+                    <button type="button" onclick="selectVoucherVal('${valStr}', this)" 
+                            class="opt-btn-voucher px-3 py-1.5 rounded-lg border text-xs font-medium transition ${i === 0 ? 'border-terracotta bg-terracotta text-white' : 'border-darkbrown/15 bg-white text-darkbrown hover:border-terracotta'}">
+                        ${valStr.includes('CHF') ? valStr : valStr + ' CHF'}
+                    </button>`;
+                });
+            } else {
+                voucherBox.classList.add('hidden');
+            }
+
+            // Personalisierung / Wunschname
+            const customNameBox = document.getElementById('customNameContainer');
+            const customNameInput = document.getElementById('customNameInput');
+            customNameInput.value = '';
+            if (item.allow_custom_name) {
+                customNameBox.classList.remove('hidden');
+            } else {
+                customNameBox.classList.add('hidden');
+            }
+        }
+
+        window.selectColor = function(color, btn) {
+            selectedColor = color;
+            document.querySelectorAll('.opt-btn-color').forEach(b => b.className = "opt-btn-color px-3 py-1.5 rounded-lg border text-xs font-medium transition border-darkbrown/15 bg-white text-darkbrown hover:border-terracotta");
+            btn.className = "opt-btn-color px-3 py-1.5 rounded-lg border text-xs font-medium transition border-terracotta bg-terracotta text-white";
+        };
+
+        window.selectSize = function(size, btn) {
+            selectedSize = size;
+            document.querySelectorAll('.opt-btn-size').forEach(b => b.className = "opt-btn-size px-3 py-1.5 rounded-lg border text-xs font-medium transition border-darkbrown/15 bg-white text-darkbrown hover:border-terracotta");
+            btn.className = "opt-btn-size px-3 py-1.5 rounded-lg border text-xs font-medium transition border-terracotta bg-terracotta text-white";
+        };
+
+        window.selectVoucherVal = function(val, btn) {
+            selectedVoucherVal = val;
+            activeModalPrice = val.includes('CHF') ? val : val + ' CHF';
+            document.getElementById('modalPrice').textContent = activeModalPrice;
+            document.querySelectorAll('.opt-btn-voucher').forEach(b => b.className = "opt-btn-voucher px-3 py-1.5 rounded-lg border text-xs font-medium transition border-darkbrown/15 bg-white text-darkbrown hover:border-terracotta");
+            btn.className = "opt-btn-voucher px-3 py-1.5 rounded-lg border text-xs font-medium transition border-terracotta bg-terracotta text-white";
+        };
+
+        window.quickAddToCart = function(idx) {
+            const prod = allProducts[idx];
+            if (!prod) return;
+            addCartItem(prod, '', '', '', '');
+        };
+
+        window.addCurrentModalToCart = function() {
+            if (activeProductIndex === null) return;
+            const prod = allProducts[activeProductIndex];
+            if (!prod) return;
+
+            const customName = document.getElementById('customNameInput').value.trim();
+            addCartItem(prod, selectedColor, selectedSize, selectedVoucherVal, customName);
+            closeModal();
+        };
+
+        function addCartItem(prod, color, size, voucherVal, customName) {
+            const priceStr = voucherVal ? (voucherVal.includes('CHF') ? voucherVal : voucherVal + ' CHF') : prod.price;
+            const priceNum = parsePrice(priceStr);
+            const images = getProductImages(prod);
+            const isUnique = prod.is_unique || prod.badge === 'Unikat';
+
+            // Einzigartiger Key für verschiedene Varianten desselben Produkts
+            const cartItemKey = `${prod.name}_${color}_${size}_${customName}_${voucherVal}`;
+            const existingIndex = cart.findIndex(c => c.key === cartItemKey);
+
+            if (existingIndex > -1) {
+                if (isUnique) {
+                    alert("Dieses Unikat befindet sich bereits in deinem Warenkorb!");
+                    openCart();
+                    return;
+                }
+                cart[existingIndex].quantity += 1;
+            } else {
+                cart.push({
+                    key: cartItemKey,
+                    name: prod.name,
+                    price: priceStr,
+                    priceNum: priceNum,
+                    img: images[0] || 'images/logo.png.jpeg',
+                    color: color,
+                    size: size,
+                    customName: customName,
+                    isUnique: isUnique,
+                    quantity: 1
+                });
+            }
+
+            saveCart();
+            openCart();
+        }
+
+        function updateModalView() {
+            document.getElementById('modalCurrentImg').src = activeModalImages[currentModalIndex] || '';
+
+            const prevBtn = document.getElementById('modalPrevBtn');
+            const nextBtn = document.getElementById('modalNextBtn');
+            if (activeModalImages.length > 1) {
+                prevBtn.classList.remove('hidden');
+                nextBtn.classList.remove('hidden');
+            } else {
+                prevBtn.classList.add('hidden');
+                nextBtn.classList.add('hidden');
+            }
+
+            const thumbsContainer = document.getElementById('modalThumbs');
+            thumbsContainer.innerHTML = '';
+            if (activeModalImages.length > 1) {
+                activeModalImages.forEach((imgSrc, i) => {
+                    thumbsContainer.innerHTML += `
+                    <img src="${imgSrc}" class="w-12 h-12 object-cover rounded-lg cursor-pointer border-2 ${i === currentModalIndex ? 'border-terracotta scale-105' : 'border-transparent opacity-60 hover:opacity-100'} transition"
+                         onclick="setModalImage(${i})">`;
+                });
+            }
+        }
+
+        window.changeModalImage = function(direction) {
+            currentModalIndex = (currentModalIndex + direction + activeModalImages.length) % activeModalImages.length;
+            updateModalView();
+        };
+
+        window.setModalImage = function(index) {
+            currentModalIndex = index;
+            updateModalView();
+        };
+
+        window.closeModal = function() {
+            document.getElementById('galleryModal').classList.add('hidden');
+        };
+
+        // ================= WARENKORB LOGIK =================
+
+        function saveCart() {
+            localStorage.setItem('uniquebylea_cart', JSON.stringify(cart));
+            updateCartBadge();
+        }
+
+        function updateCartBadge() {
+            const count = cart.reduce((acc, item) => acc + item.quantity, 0);
+            document.getElementById('cartCountBadge').textContent = count;
+        }
+
+        window.openCart = function() {
+            renderCartDrawer();
+            const modal = document.getElementById('cartModal');
+            const panel = document.getElementById('cartPanel');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                panel.classList.remove('translate-x-full');
+            }, 10);
+        };
+
+        window.closeCart = function() {
+            const panel = document.getElementById('cartPanel');
+            panel.classList.add('translate-x-full');
+            setTimeout(() => {
+                document.getElementById('cartModal').classList.add('hidden');
+            }, 300);
+        };
+
+        function renderCartDrawer() {
+            const container = document.getElementById('cartItemsList');
+            const footer = document.getElementById('cartFooter');
+            container.innerHTML = '';
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                <div class="h-full flex flex-col items-center justify-center text-center py-16 text-darkbrown/60">
+                    <p class="font-serif text-sm mb-2">Dein Warenkorb ist noch leer</p>
+                    <p class="text-xs max-w-xs mb-6">Entdecke handgefertigte Einzelstücke und füge deine Lieblingsartikel hinzu.</p>
+                    <button onclick="closeCart()" class="border border-darkbrown/20 hover:bg-darkbrown hover:text-white px-6 py-2.5 rounded-full text-xs uppercase font-bold tracking-wider transition">Jetzt stöbern</button>
+                </div>`;
+                footer.classList.add('hidden');
+                document.getElementById('freeShippingText').textContent = "Ab 100.00 CHF kostenloser Versand in der Schweiz!";
+                document.getElementById('freeShippingBar').style.width = '0%';
+                return;
+            }
+
+            footer.classList.remove('hidden');
+
+            cart.forEach((item, idx) => {
+                // Zusätzliche Optionen wie Farbe, Größe, Name anzeigen
+                const variantDetails = [];
+                if (item.color) variantDetails.push(`Farbe: ${item.color}`);
+                if (item.size) variantDetails.push(`Größe: ${item.size}`);
+                if (item.customName) variantDetails.push(`Name: "${item.customName}"`);
+
+                container.innerHTML += `
+                <div class="flex items-center gap-3 bg-white p-3 rounded-2xl border border-darkbrown/5 shadow-sm">
+                    <img src="${item.img}" alt="${item.name}" onerror="this.src='images/logo.png.jpeg'" class="w-14 h-16 object-cover rounded-xl bg-sand/30 flex-shrink-0">
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-serif text-xs font-bold uppercase tracking-wider truncate mb-0.5">${item.name}</h4>
+                        <p class="text-terracotta text-xs font-bold mb-1">${formatCHF(item.priceNum)}</p>
+                        
+                        ${variantDetails.length > 0 ? `
+                            <p class="text-[10px] text-darkbrown/60 mb-2 leading-tight">${variantDetails.join(' · ')}</p>
+                        ` : ''}
+
+                        <div class="flex items-center border border-darkbrown/15 rounded-lg bg-creme w-fit">
+                            <button onclick="changeQuantity(${idx}, -1)" class="w-6 h-6 flex items-center justify-center text-xs font-bold text-darkbrown hover:bg-darkbrown/10 rounded-l-lg">-</button>
+                            <span class="w-6 text-center text-xs font-bold">${item.quantity}</span>
+                            <button onclick="changeQuantity(${idx}, 1)" ${item.isUnique ? 'disabled title="Unikat – nur 1x verfügbar"' : ''} 
+                                    class="w-6 h-6 flex items-center justify-center text-xs font-bold text-darkbrown hover:bg-darkbrown/10 rounded-r-lg ${item.isUnique ? 'opacity-30 cursor-not-allowed' : ''}">+</button>
+                        </div>
+                    </div>
+                    <button onclick="removeFromCart(${idx})" class="text-darkbrown/40 hover:text-red-500 p-2 transition text-base">🗑️</button>
+                </div>`;
+            });
+
+            updateCartTotals();
+        }
+
+        window.changeQuantity = function(idx, delta) {
+            if (!cart[idx]) return;
+            if (cart[idx].isUnique && delta > 0) return;
+            cart[idx].quantity += delta;
+            if (cart[idx].quantity <= 0) {
+                cart.splice(idx, 1);
+            }
+            saveCart();
+            renderCartDrawer();
+        };
+
+        window.removeFromCart = function(idx) {
+            cart.splice(idx, 1);
+            saveCart();
+            renderCartDrawer();
+        };
+
+        window.updateCartTotals = function() {
+            const subtotal = cart.reduce((acc, item) => acc + (item.priceNum * item.quantity), 0);
+            const shippingType = document.querySelector('input[name="shipping"]:checked')?.value || 'bpost';
+
+            let shippingCost = 7.00;
+            const bpostCostElem = document.getElementById('bpostCost');
+
+            if (subtotal >= 100) {
+                if (bpostCostElem) bpostCostElem.textContent = "Kostenlos";
+                if (shippingType === 'bpost') shippingCost = 0.00;
+                else if (shippingType === 'apost') shippingCost = 9.00;
+                else shippingCost = 0.00;
+            } else {
+                if (bpostCostElem) bpostCostElem.textContent = "7.00 CHF";
+                if (shippingType === 'bpost') shippingCost = 7.00;
+                else if (shippingType === 'apost') shippingCost = 9.00;
+                else shippingCost = 0.00;
+            }
+
+            const grandTotal = subtotal + shippingCost;
+
+            document.getElementById('cartSubtotal').textContent = formatCHF(subtotal);
+            document.getElementById('cartShippingCost').textContent = shippingCost === 0 ? 'Kostenlos' : formatCHF(shippingCost);
+            document.getElementById('cartGrandTotal').textContent = formatCHF(grandTotal);
+
+            const progress = Math.min(100, (subtotal / 100) * 100);
+            const bar = document.getElementById('freeShippingBar');
+            const text = document.getElementById('freeShippingText');
+            bar.style.width = progress + '%';
+
+            if (subtotal >= 100) {
+                text.innerHTML = '🎉 <span class="font-bold text-terracotta">Gratulation!</span> Du hast kostenlosen Versand erreicht.';
+            } else {
+                const diff = (100 - subtotal).toFixed(2);
+                text.textContent = `Noch ${diff} CHF bis zum kostenlosen Versand!`;
+            }
+        };
+
+        window.proceedToOnlineCheckout = function() {
+            const total = document.getElementById('cartGrandTotal').textContent;
+            alert(`Warenkorb-Vorschau:\n\nEndbetrag: ${total}\n\n(Als Nächstes verbinden wir Stripe für die echte Bezahlung via TWINT, Apple Pay & Karten!)`);
+        };
+
+        window.proceedToPickupCheckout = function() {
+            const itemsSummary = cart.map(c => {
+                const vars = [c.color, c.size, c.customName ? `"${c.customName}"` : ''].filter(Boolean).join('/');
+                return `${c.quantity}x ${c.name} ${vars ? '(' + vars + ')' : ''}`;
+            }).join(', ');
+            window.location.href = `kontakt.html?abholung=${encodeURIComponent(itemsSummary)}`;
+        };
+
+        document.getElementById('searchBar').addEventListener('input', applyFilters);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                closeCart();
+            }
+        });
+
+        load();
+    </script>
+</body>
+</html>
