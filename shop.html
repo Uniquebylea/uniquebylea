@@ -159,14 +159,14 @@
         </div>
     </div>
 
-    <!-- DETAIL- & GALERIE-MODAL (PRODUKTAUSWAHL MIT VARIANTEN) -->
+    <!-- DETAIL- & GALERIE-MODAL (PRODUKTAUSWAHL MIT DROPDOWNS) -->
     <div id="galleryModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto" onclick="closeModal(event)">
         <div class="relative bg-creme rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-white/40 my-8 flex flex-col" onclick="event.stopPropagation()">
             <button onclick="closeModal()" class="absolute top-4 right-4 text-darkbrown/60 hover:text-darkbrown text-xl font-bold w-8 h-8 flex items-center justify-center rounded-full bg-sand/60 z-10">✕</button>
             
-            <!-- Großes Bild im Modal -->
+            <!-- Großes Bild im Modal (wechselt bei Farbwahl) -->
             <div class="relative w-full aspect-[4/5] bg-white rounded-2xl overflow-hidden mb-3 flex items-center justify-center">
-                <img id="modalCurrentImg" src="" alt="Produktfoto" class="w-full h-full object-cover">
+                <img id="modalCurrentImg" src="" alt="Produktfoto" class="w-full h-full object-cover transition duration-300">
                 <button id="modalPrevBtn" onclick="changeModalImage(-1)" class="absolute left-2 bg-creme/80 hover:bg-creme text-darkbrown w-9 h-9 rounded-full shadow flex items-center justify-center text-sm font-bold">❮</button>
                 <button id="modalNextBtn" onclick="changeModalImage(1)" class="absolute right-2 bg-creme/80 hover:bg-creme text-darkbrown w-9 h-9 rounded-full shadow flex items-center justify-center text-sm font-bold">❯</button>
                 <div id="modalBadge" class="absolute top-3 left-3 bg-terracotta text-white text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider hidden"></div>
@@ -192,31 +192,30 @@
                 </p>
             </div>
 
-            <!-- VARIANTEN AUSWAHL -->
+            <!-- PRODUKT-OPTIONEN ALS DROPDOWNS -->
             <div id="modalOptionsSection" class="border-t border-darkbrown/10 pt-3 mb-4 space-y-3">
-                <!-- Farbauswahl -->
-                <div id="colorPickerContainer" class="hidden">
-                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1.5">Farbe:</label>
-                    <div id="colorOptions" class="flex flex-wrap gap-1.5"></div>
+                
+                <!-- Farbe Dropdown -->
+                <div id="colorDropdownContainer" class="hidden">
+                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Farbe auswählen:</label>
+                    <select id="colorSelect" onchange="onColorChange()" 
+                            class="w-full bg-white border border-darkbrown/20 rounded-xl px-3.5 py-2.5 text-xs font-medium text-darkbrown outline-none focus:ring-1 focus:ring-terracotta cursor-pointer shadow-sm">
+                    </select>
                 </div>
 
-                <!-- Größenauswahl -->
-                <div id="sizePickerContainer" class="hidden">
-                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1.5">Größe:</label>
-                    <div id="sizeOptions" class="flex flex-wrap gap-1.5"></div>
-                </div>
-
-                <!-- Gutschein-Werte -->
-                <div id="voucherPickerContainer" class="hidden">
-                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1.5">Gutscheinwert:</label>
-                    <div id="voucherOptions" class="flex flex-wrap gap-1.5"></div>
+                <!-- Größe Dropdown (mit Aufpreis) -->
+                <div id="sizeDropdownContainer" class="hidden">
+                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Größe auswählen:</label>
+                    <select id="sizeSelect" onchange="onSizeChange()" 
+                            class="w-full bg-white border border-darkbrown/20 rounded-xl px-3.5 py-2.5 text-xs font-medium text-darkbrown outline-none focus:ring-1 focus:ring-terracotta cursor-pointer shadow-sm">
+                    </select>
                 </div>
 
                 <!-- Personalisierung / Wunschname -->
                 <div id="customNameContainer" class="hidden">
                     <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Wunschname (z. B. für Bestickung):</label>
-                    <input type="text" id="customNameInput" placeholder="Name oder Text eingeben..." 
-                           class="w-full bg-white border border-darkbrown/15 rounded-xl px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-terracotta">
+                    <input type="text" id="customNameInput" placeholder="Name eingeben..." 
+                           class="w-full bg-white border border-darkbrown/20 rounded-xl px-3.5 py-2 text-xs outline-none focus:ring-1 focus:ring-terracotta">
                 </div>
             </div>
 
@@ -239,11 +238,9 @@
         let currentModalIndex = 0;
         let activeProductIndex = null;
 
-        // Ausgewählte Optionen im Modal
-        let selectedColor = '';
-        let selectedSize = '';
-        let selectedVoucherVal = '';
-        let activeModalPrice = '';
+        // Aktuelle Auswahl im Modal
+        let activeBasePriceNum = 0;
+        let activeSizeSurcharge = 0;
 
         // Warenkorb im Browser (LocalStorage)
         let cart = JSON.parse(localStorage.getItem('uniquebylea_cart')) || [];
@@ -313,6 +310,14 @@
             render(filtered);
         }
 
+        // Berechnet den Gesamtbestand (über alle Farben oder Standardbestand)
+        function getProductTotalStock(item) {
+            if (Array.isArray(item.variants_color) && item.variants_color.length > 0) {
+                return item.variants_color.reduce((sum, c) => sum + (Number(c.stock) || 0), 0);
+            }
+            return typeof item.stock !== 'undefined' ? Number(item.stock) : 1;
+        }
+
         function render(list) {
             const grid = document.getElementById('productGrid');
             const noResults = document.getElementById('noResults');
@@ -330,16 +335,14 @@
                 const imgSrc = images[0] || 'images/logo.png.jpeg';
                 const hasMultiple = images.length > 1;
 
-                // Lagerbestand / Status
-                const isOutOfStock = typeof item.stock !== 'undefined' && Number(item.stock) === 0;
+                const totalStock = getProductTotalStock(item);
+                const isOutOfStock = totalStock <= 0;
+
                 let badgeText = item.badge || '';
                 if (isOutOfStock) badgeText = 'Ausverkauft';
-                else if (!badgeText && item.is_unique) badgeText = 'Unikat';
 
-                // Hat das Produkt Varianten zum Auswählen?
-                const hasVariants = (item.colors && item.colors.length) || 
-                                    (item.sizes && item.sizes.length) || 
-                                    (item.voucher_values && item.voucher_values.length) || 
+                const hasVariants = (item.variants_color && item.variants_color.length > 0) || 
+                                    (item.variants_size && item.variants_size.length > 0) || 
                                     item.allow_custom_name;
 
                 grid.innerHTML += `
@@ -375,7 +378,7 @@
             });
         }
 
-        // ================= MODAL LOGIK MIT VARIANTEN =================
+        // ================= MODAL LOGIK MIT DROPDOWNS =================
 
         window.openModal = function(productIndex) {
             activeProductIndex = productIndex;
@@ -384,40 +387,14 @@
 
             activeModalImages = getProductImages(item);
             currentModalIndex = 0;
-            activeModalPrice = item.price;
-            selectedColor = '';
-            selectedSize = '';
-            selectedVoucherVal = '';
+            activeBasePriceNum = parsePrice(item.price);
+            activeSizeSurcharge = 0;
 
             document.getElementById('modalTitle').textContent = item.name;
-            document.getElementById('modalPrice').textContent = item.price;
-
-            // Badge & Status
-            const isOutOfStock = typeof item.stock !== 'undefined' && Number(item.stock) === 0;
-            const badgeElem = document.getElementById('modalBadge');
-            const stockStatus = document.getElementById('modalStockStatus');
-
-            if (isOutOfStock) {
-                badgeElem.textContent = 'Ausverkauft';
-                badgeElem.classList.remove('hidden');
-                stockStatus.innerHTML = '<span class="text-red-500">Momentan leider ausverkauft</span>';
-            } else if (item.is_unique || item.badge === 'Unikat') {
-                badgeElem.textContent = 'Unikat';
-                badgeElem.classList.remove('hidden');
-                stockStatus.innerHTML = '<span class="text-terracotta">✨ Einzelstück – Nur 1x verfügbar</span>';
-            } else if (item.badge) {
-                badgeElem.textContent = item.badge;
-                badgeElem.classList.remove('hidden');
-                stockStatus.innerHTML = '<span class="text-darkbrown/60">Auf Lager</span>';
-            } else {
-                badgeElem.classList.add('hidden');
-                stockStatus.innerHTML = '<span class="text-darkbrown/60">Auf Lager</span>';
-            }
+            updateModalPriceDisplay();
 
             // Beschreibung & Material
-            const descElem = document.getElementById('modalDescription');
-            descElem.textContent = item.description || 'Liebevoll handgefertigtes Einzelstück aus Interlaken.';
-
+            document.getElementById('modalDescription').textContent = item.description || 'Liebevoll handgefertigtes Unikat aus Interlaken.';
             const matElem = document.getElementById('modalMaterial');
             if (item.material) {
                 document.getElementById('modalMaterialText').textContent = item.material;
@@ -426,127 +403,135 @@
                 matElem.classList.add('hidden');
             }
 
-            // Varianten-Container einrichten
-            setupOptions(item);
-
-            // Button-Status
-            const actionBtn = document.getElementById('modalActionBtn');
-            if (isOutOfStock) {
-                actionBtn.disabled = true;
-                actionBtn.className = "w-full block text-center bg-darkbrown/10 text-darkbrown/40 py-3.5 rounded-xl text-xs uppercase font-bold tracking-widest cursor-not-allowed";
-                actionBtn.innerHTML = "<span>Ausverkauft</span>";
-            } else {
-                actionBtn.disabled = false;
-                actionBtn.className = "w-full block text-center bg-darkbrown text-white py-3.5 rounded-xl text-xs uppercase font-bold tracking-widest hover:bg-terracotta transition shadow-md flex items-center justify-center gap-2";
-                actionBtn.innerHTML = `
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                    </svg>
-                    <span>In den Warenkorb</span>
-                `;
-            }
+            // Dropdowns für Farben & Größen füllen
+            setupDropdowns(item);
 
             updateModalView();
             document.getElementById('galleryModal').classList.remove('hidden');
         };
 
-        function setupOptions(item) {
-            // Farben
-            const colorBox = document.getElementById('colorPickerContainer');
-            const colorOptions = document.getElementById('colorOptions');
-            colorOptions.innerHTML = '';
-            if (Array.isArray(item.colors) && item.colors.length > 0) {
-                colorBox.classList.remove('hidden');
-                item.colors.forEach((c, i) => {
-                    const cName = typeof c === 'string' ? c : (c.color || '');
-                    if (i === 0) selectedColor = cName;
-                    colorOptions.innerHTML += `
-                    <button type="button" onclick="selectColor('${cName}', this)" 
-                            class="opt-btn-color px-3 py-1.5 rounded-lg border text-xs font-medium transition ${i === 0 ? 'border-terracotta bg-terracotta text-white' : 'border-darkbrown/15 bg-white text-darkbrown hover:border-terracotta'}">
-                        ${cName}
-                    </button>`;
+        function setupDropdowns(item) {
+            // Farben Dropdown
+            const colorContainer = document.getElementById('colorDropdownContainer');
+            const colorSelect = document.getElementById('colorSelect');
+            colorSelect.innerHTML = '';
+
+            if (Array.isArray(item.variants_color) && item.variants_color.length > 0) {
+                colorContainer.classList.remove('hidden');
+                item.variants_color.forEach(c => {
+                    const cStock = Number(c.stock) || 0;
+                    let stockNotice = '';
+                    if (cStock === 0) stockNotice = ' (Ausverkauft)';
+                    else if (cStock === 1) stockNotice = ' (Nur 1x verfügbar)';
+
+                    const opt = document.createElement('option');
+                    opt.value = c.name;
+                    opt.textContent = `${c.name}${stockNotice}`;
+                    opt.dataset.img = c.img || '';
+                    opt.dataset.stock = cStock;
+                    colorSelect.appendChild(opt);
                 });
+                onColorChange();
             } else {
-                colorBox.classList.add('hidden');
+                colorContainer.classList.add('hidden');
+                updateAvailabilityDisplay(Number(item.stock) || 1);
             }
 
-            // Größen
-            const sizeBox = document.getElementById('sizePickerContainer');
-            const sizeOptions = document.getElementById('sizeOptions');
-            sizeOptions.innerHTML = '';
-            if (Array.isArray(item.sizes) && item.sizes.length > 0) {
-                sizeBox.classList.remove('hidden');
-                item.sizes.forEach((s, i) => {
-                    const sName = typeof s === 'string' ? s : (s.size || '');
-                    if (i === 0) selectedSize = sName;
-                    sizeOptions.innerHTML += `
-                    <button type="button" onclick="selectSize('${sName}', this)" 
-                            class="opt-btn-size px-3 py-1.5 rounded-lg border text-xs font-medium transition ${i === 0 ? 'border-terracotta bg-terracotta text-white' : 'border-darkbrown/15 bg-white text-darkbrown hover:border-terracotta'}">
-                        ${sName}
-                    </button>`;
+            // Größen Dropdown
+            const sizeContainer = document.getElementById('sizeDropdownContainer');
+            const sizeSelect = document.getElementById('sizeSelect');
+            sizeSelect.innerHTML = '';
+
+            if (Array.isArray(item.variants_size) && item.variants_size.length > 0) {
+                sizeContainer.classList.remove('hidden');
+                item.variants_size.forEach(s => {
+                    const add = parseFloat(s.price_add) || 0;
+                    const addText = add > 0 ? ` (+${add.toFixed(2)} CHF)` : '';
+
+                    const opt = document.createElement('option');
+                    opt.value = s.name;
+                    opt.textContent = `${s.name}${addText}`;
+                    opt.dataset.priceAdd = add;
+                    sizeSelect.appendChild(opt);
                 });
+                onSizeChange();
             } else {
-                sizeBox.classList.add('hidden');
+                sizeContainer.classList.add('hidden');
+                activeSizeSurcharge = 0;
+                updateModalPriceDisplay();
             }
 
-            // Gutscheinwerte
-            const voucherBox = document.getElementById('voucherPickerContainer');
-            const voucherOptions = document.getElementById('voucherOptions');
-            voucherOptions.innerHTML = '';
-            if (Array.isArray(item.voucher_values) && item.voucher_values.length > 0) {
-                voucherBox.classList.remove('hidden');
-                item.voucher_values.forEach((v, i) => {
-                    const valStr = typeof v === 'string' ? v : (v.val || '');
-                    if (i === 0) {
-                        selectedVoucherVal = valStr;
-                        activeModalPrice = valStr.includes('CHF') ? valStr : valStr + ' CHF';
-                        document.getElementById('modalPrice').textContent = activeModalPrice;
-                    }
-                    voucherOptions.innerHTML += `
-                    <button type="button" onclick="selectVoucherVal('${valStr}', this)" 
-                            class="opt-btn-voucher px-3 py-1.5 rounded-lg border text-xs font-medium transition ${i === 0 ? 'border-terracotta bg-terracotta text-white' : 'border-darkbrown/15 bg-white text-darkbrown hover:border-terracotta'}">
-                        ${valStr.includes('CHF') ? valStr : valStr + ' CHF'}
-                    </button>`;
-                });
-            } else {
-                voucherBox.classList.add('hidden');
-            }
-
-            // Personalisierung / Wunschname
+            // Wunschname
             const customNameBox = document.getElementById('customNameContainer');
-            const customNameInput = document.getElementById('customNameInput');
-            customNameInput.value = '';
-            if (item.allow_custom_name) {
-                customNameBox.classList.remove('hidden');
-            } else {
-                customNameBox.classList.add('hidden');
-            }
+            document.getElementById('customNameInput').value = '';
+            if (item.allow_custom_name) customNameBox.classList.remove('hidden');
+            else customNameBox.classList.add('hidden');
         }
 
-        window.selectColor = function(color, btn) {
-            selectedColor = color;
-            document.querySelectorAll('.opt-btn-color').forEach(b => b.className = "opt-btn-color px-3 py-1.5 rounded-lg border text-xs font-medium transition border-darkbrown/15 bg-white text-darkbrown hover:border-terracotta");
-            btn.className = "opt-btn-color px-3 py-1.5 rounded-lg border text-xs font-medium transition border-terracotta bg-terracotta text-white";
+        // Wenn eine Farbe im Dropdown gewählt wird
+        window.onColorChange = function() {
+            const colorSelect = document.getElementById('colorSelect');
+            const opt = colorSelect.options[colorSelect.selectedIndex];
+            if (!opt) return;
+
+            // BILD-WECHSEL: Wenn die Farbe ein eigenes Foto hat, sofort anzeigen!
+            const colorImg = opt.dataset.img;
+            if (colorImg) {
+                document.getElementById('modalCurrentImg').src = colorImg;
+            } else if (activeModalImages.length > 0) {
+                document.getElementById('modalCurrentImg').src = activeModalImages[0];
+            }
+
+            // LAGERBESTAND DER GEWÄHLTEN FARBE PRÜFEN
+            const stock = Number(opt.dataset.stock);
+            updateAvailabilityDisplay(stock);
         };
 
-        window.selectSize = function(size, btn) {
-            selectedSize = size;
-            document.querySelectorAll('.opt-btn-size').forEach(b => b.className = "opt-btn-size px-3 py-1.5 rounded-lg border text-xs font-medium transition border-darkbrown/15 bg-white text-darkbrown hover:border-terracotta");
-            btn.className = "opt-btn-size px-3 py-1.5 rounded-lg border text-xs font-medium transition border-terracotta bg-terracotta text-white";
+        // Wenn eine Größe im Dropdown gewählt wird
+        window.onSizeChange = function() {
+            const sizeSelect = document.getElementById('sizeSelect');
+            const opt = sizeSelect.options[sizeSelect.selectedIndex];
+            activeSizeSurcharge = opt ? (parseFloat(opt.dataset.priceAdd) || 0) : 0;
+            updateModalPriceDisplay();
         };
 
-        window.selectVoucherVal = function(val, btn) {
-            selectedVoucherVal = val;
-            activeModalPrice = val.includes('CHF') ? val : val + ' CHF';
-            document.getElementById('modalPrice').textContent = activeModalPrice;
-            document.querySelectorAll('.opt-btn-voucher').forEach(b => b.className = "opt-btn-voucher px-3 py-1.5 rounded-lg border text-xs font-medium transition border-darkbrown/15 bg-white text-darkbrown hover:border-terracotta");
-            btn.className = "opt-btn-voucher px-3 py-1.5 rounded-lg border text-xs font-medium transition border-terracotta bg-terracotta text-white";
-        };
+        function updateModalPriceDisplay() {
+            const finalPrice = activeBasePriceNum + activeSizeSurcharge;
+            document.getElementById('modalPrice').textContent = formatCHF(finalPrice);
+        }
+
+        function updateAvailabilityDisplay(stock) {
+            const statusElem = document.getElementById('modalStockStatus');
+            const actionBtn = document.getElementById('modalActionBtn');
+
+            if (stock <= 0) {
+                statusElem.innerHTML = '<span class="text-red-500 font-bold">In dieser Farbe leider ausverkauft</span>';
+                actionBtn.disabled = true;
+                actionBtn.className = "w-full block text-center bg-darkbrown/15 text-darkbrown/40 py-3.5 rounded-xl text-xs uppercase font-bold tracking-widest cursor-not-allowed";
+                actionBtn.innerHTML = "<span>Ausverkauft</span>";
+            } else if (stock === 1) {
+                statusElem.innerHTML = '<span class="text-terracotta font-bold">✨ Nur 1x in dieser Variante verfügbar!</span>';
+                actionBtn.disabled = false;
+                actionBtn.className = "w-full block text-center bg-darkbrown text-white py-3.5 rounded-xl text-xs uppercase font-bold tracking-widest hover:bg-terracotta transition shadow-md flex items-center justify-center gap-2";
+                actionBtn.innerHTML = `
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                    <span>In den Warenkorb</span>
+                `;
+            } else {
+                statusElem.innerHTML = '<span class="text-emerald-700 font-bold">Verfügbar</span>';
+                actionBtn.disabled = false;
+                actionBtn.className = "w-full block text-center bg-darkbrown text-white py-3.5 rounded-xl text-xs uppercase font-bold tracking-widest hover:bg-terracotta transition shadow-md flex items-center justify-center gap-2";
+                actionBtn.innerHTML = `
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                    <span>In den Warenkorb</span>
+                `;
+            }
+        }
 
         window.quickAddToCart = function(idx) {
             const prod = allProducts[idx];
             if (!prod) return;
-            addCartItem(prod, '', '', '', '');
+            addCartItem(prod, '', '', 0, '', prod.img || 'images/logo.png.jpeg', Number(prod.stock) || 1);
         };
 
         window.addCurrentModalToCart = function() {
@@ -554,39 +539,62 @@
             const prod = allProducts[activeProductIndex];
             if (!prod) return;
 
+            // Ausgewählte Farbe
+            let chosenColor = '';
+            let chosenImg = prod.img || 'images/logo.png.jpeg';
+            let chosenStock = Number(prod.stock) || 1;
+
+            const colorSelect = document.getElementById('colorSelect');
+            if (colorSelect && colorSelect.options.length > 0) {
+                const opt = colorSelect.options[colorSelect.selectedIndex];
+                chosenColor = opt.value;
+                if (opt.dataset.img) chosenImg = opt.dataset.img;
+                chosenStock = Number(opt.dataset.stock);
+            }
+
+            if (chosenStock <= 0) {
+                alert("Diese Variante ist leider ausverkauft!");
+                return;
+            }
+
+            // Ausgewählte Größe
+            let chosenSize = '';
+            let sizeAdd = 0;
+            const sizeSelect = document.getElementById('sizeSelect');
+            if (sizeSelect && sizeSelect.options.length > 0) {
+                const opt = sizeSelect.options[sizeSelect.selectedIndex];
+                chosenSize = opt.value;
+                sizeAdd = parseFloat(opt.dataset.priceAdd) || 0;
+            }
+
             const customName = document.getElementById('customNameInput').value.trim();
-            addCartItem(prod, selectedColor, selectedSize, selectedVoucherVal, customName);
+
+            addCartItem(prod, chosenColor, chosenSize, sizeAdd, customName, chosenImg, chosenStock);
             closeModal();
         };
 
-        function addCartItem(prod, color, size, voucherVal, customName) {
-            const priceStr = voucherVal ? (voucherVal.includes('CHF') ? voucherVal : voucherVal + ' CHF') : prod.price;
-            const priceNum = parsePrice(priceStr);
-            const images = getProductImages(prod);
-            const isUnique = prod.is_unique || prod.badge === 'Unikat';
-
-            // Einzigartiger Key für verschiedene Varianten desselben Produkts
-            const cartItemKey = `${prod.name}_${color}_${size}_${customName}_${voucherVal}`;
-            const existingIndex = cart.findIndex(c => c.key === cartItemKey);
+        function addCartItem(prod, color, size, sizeAdd, customName, img, maxStock) {
+            const finalPrice = parsePrice(prod.price) + sizeAdd;
+            const cartKey = `${prod.name}_${color}_${size}_${customName}`;
+            const existingIndex = cart.findIndex(c => c.key === cartKey);
 
             if (existingIndex > -1) {
-                if (isUnique) {
-                    alert("Dieses Unikat befindet sich bereits in deinem Warenkorb!");
+                if (cart[existingIndex].quantity >= maxStock) {
+                    alert(`Dieser Artikel ist nur noch ${maxStock}x verfügbar!`);
                     openCart();
                     return;
                 }
                 cart[existingIndex].quantity += 1;
             } else {
                 cart.push({
-                    key: cartItemKey,
+                    key: cartKey,
                     name: prod.name,
-                    price: priceStr,
-                    priceNum: priceNum,
-                    img: images[0] || 'images/logo.png.jpeg',
+                    priceNum: finalPrice,
+                    img: img,
                     color: color,
                     size: size,
                     customName: customName,
-                    isUnique: isUnique,
+                    maxStock: maxStock,
                     quantity: 1
                 });
             }
@@ -596,8 +604,7 @@
         }
 
         function updateModalView() {
-            document.getElementById('modalCurrentImg').src = activeModalImages[currentModalIndex] || '';
-
+            // Bilder-Karussell
             const prevBtn = document.getElementById('modalPrevBtn');
             const nextBtn = document.getElementById('modalNextBtn');
             if (activeModalImages.length > 1) {
@@ -621,11 +628,13 @@
 
         window.changeModalImage = function(direction) {
             currentModalIndex = (currentModalIndex + direction + activeModalImages.length) % activeModalImages.length;
+            document.getElementById('modalCurrentImg').src = activeModalImages[currentModalIndex];
             updateModalView();
         };
 
         window.setModalImage = function(index) {
             currentModalIndex = index;
+            document.getElementById('modalCurrentImg').src = activeModalImages[currentModalIndex];
             updateModalView();
         };
 
@@ -684,11 +693,12 @@
             footer.classList.remove('hidden');
 
             cart.forEach((item, idx) => {
-                // Zusätzliche Optionen wie Farbe, Größe, Name anzeigen
                 const variantDetails = [];
                 if (item.color) variantDetails.push(`Farbe: ${item.color}`);
                 if (item.size) variantDetails.push(`Größe: ${item.size}`);
                 if (item.customName) variantDetails.push(`Name: "${item.customName}"`);
+
+                const isMaxedOut = item.quantity >= item.maxStock;
 
                 container.innerHTML += `
                 <div class="flex items-center gap-3 bg-white p-3 rounded-2xl border border-darkbrown/5 shadow-sm">
@@ -704,8 +714,8 @@
                         <div class="flex items-center border border-darkbrown/15 rounded-lg bg-creme w-fit">
                             <button onclick="changeQuantity(${idx}, -1)" class="w-6 h-6 flex items-center justify-center text-xs font-bold text-darkbrown hover:bg-darkbrown/10 rounded-l-lg">-</button>
                             <span class="w-6 text-center text-xs font-bold">${item.quantity}</span>
-                            <button onclick="changeQuantity(${idx}, 1)" ${item.isUnique ? 'disabled title="Unikat – nur 1x verfügbar"' : ''} 
-                                    class="w-6 h-6 flex items-center justify-center text-xs font-bold text-darkbrown hover:bg-darkbrown/10 rounded-r-lg ${item.isUnique ? 'opacity-30 cursor-not-allowed' : ''}">+</button>
+                            <button onclick="changeQuantity(${idx}, 1)" ${isMaxedOut ? 'disabled title="Maximaler Bestand erreicht"' : ''} 
+                                    class="w-6 h-6 flex items-center justify-center text-xs font-bold text-darkbrown hover:bg-darkbrown/10 rounded-r-lg ${isMaxedOut ? 'opacity-30 cursor-not-allowed' : ''}">+</button>
                         </div>
                     </div>
                     <button onclick="removeFromCart(${idx})" class="text-darkbrown/40 hover:text-red-500 p-2 transition text-base">🗑️</button>
@@ -717,7 +727,10 @@
 
         window.changeQuantity = function(idx, delta) {
             if (!cart[idx]) return;
-            if (cart[idx].isUnique && delta > 0) return;
+            if (delta > 0 && cart[idx].quantity >= cart[idx].maxStock) {
+                alert(`Dieser Artikel ist nur ${cart[idx].maxStock}x verfügbar!`);
+                return;
+            }
             cart[idx].quantity += delta;
             if (cart[idx].quantity <= 0) {
                 cart.splice(idx, 1);
