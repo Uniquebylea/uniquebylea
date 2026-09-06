@@ -28,70 +28,49 @@ collections:
                 name: "cat"
                 widget: "select"
                 options: ["Baby", "Kinder", "Erwachsene", "Makramee", "Taschen", "Gutscheine", "Accessoires"]
-              - {label: "Preis (z. B. 79.00 CHF)", name: "price", widget: "string"}
+              - {label: "Basispreis (z. B. 79.00 CHF)", name: "price", widget: "string"}
               
-              - label: "Badge / Kennzeichnung (Optional)"
+              - label: "Badge (Optional)"
                 name: "badge"
                 widget: "select"
                 required: false
                 options: ["", "Unikat", "Neu", "Bestseller", "Aktion"]
                 
-              - label: "Ist dies ein Unikat (Einzelstück)?"
-                name: "is_unique"
-                widget: "boolean"
-                default: false
-                required: false
-                
-              - label: "Lagerbestand (0 = Ausverkauft)"
-                name: "stock"
-                widget: "number"
-                default: 1
-                value_type: "int"
-                min: 0
-                required: false
+              - {label: "Standard-Bestand (falls keine Farben)", name: "stock", widget: "number", default: 1, value_type: "int", min: 0, required: false}
 
-              - label: "Beschreibung"
-                name: "description"
-                widget: "text"
-                required: false
-                
-              - label: "Material & Pflegehinweise (Optional)"
-                name: "material"
-                widget: "string"
-                required: false
+              - {label: "Beschreibung", name: "description", widget: "text", required: false}
+              - {label: "Material & Pflege (Optional)", name: "material", widget: "string", required: false}
 
-              - label: "Hauptbild (Titelbild)"
-                name: "img"
-                widget: "image"
-
-              - label: "Weitere Fotos (Detailansichten / Galerie)"
+              - {label: "Hauptbild", name: "img", widget: "image"}
+              
+              - label: "Weitere Fotos (Galerie)"
                 name: "gallery"
                 widget: "list"
                 required: false
+                collapsed: true
                 field: {label: "Foto", name: "image", widget: "image"}
 
-              - label: "Verfügbare Farben (Optional, z. B. Creme, Salbei, Terracotta)"
-                name: "colors"
+              # Farb-Varianten mit eigenem Foto & eigenem Lagerbestand:
+              - label: "Farben (mit eigenem Foto & Bestand)"
+                name: "variants_color"
                 widget: "list"
                 required: false
-                field: {label: "Farbe", name: "color", widget: "string"}
+                collapsed: true
+                summary: "{{fields.name}} (Bestand: {{fields.stock}})"
+                fields:
+                  - {label: "Farbe (z. B. Gelb, Grün)", name: "name", widget: "string"}
+                  - {label: "Foto dieser Farbe", name: "img", widget: "image", required: false}
+                  - {label: "Bestand dieser Farbe (0 = Ausverkauft)", name: "stock", widget: "number", default: 1, value_type: "int", min: 0}
 
-              - label: "Verfügbare Größen (Optional, z. B. 56, 62, 68 oder Klein, Groß)"
-                name: "sizes"
+              # Größen-Varianten mit Aufpreis in CHF:
+              - label: "Größen (mit Aufpreis in CHF)"
+                name: "variants_size"
                 widget: "list"
                 required: false
-                field: {label: "Größe", name: "size", widget: "string"}
+                collapsed: true
+                summary: "{{fields.name}} (+{{fields.price_add}} CHF)"
+                fields:
+                  - {label: "Größe (z. B. 6,5 cm oder 10 cm)", name: "name", widget: "string"}
+                  - {label: "Aufpreis in CHF (z. B. 0 oder 5.00)", name: "price_add", widget: "number", default: 0, value_type: "float", min: 0, required: false}
 
-              - label: "Gutschein-Werte (Nur für Gutscheine, z. B. 25, 50, 100, 150)"
-                name: "voucher_values"
-                widget: "list"
-                required: false
-                field: {label: "Wert (CHF)", name: "val", widget: "string"}
-
-              - label: "Personalisierung erlauben (Wunschname für Bestickung)?"
-                name: "allow_custom_name"
-                widget: "boolean"
-                default: false
-                required: false
-
-              - {label: "Stripe Direkt-Link (Optional)", name: "link", widget: "string", required: false}
+              - {label: "Wunschname für Bestickung erlauben?", name: "allow_custom_name", widget: "boolean", default: false, required: false}
