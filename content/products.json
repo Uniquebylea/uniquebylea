@@ -4,7 +4,21 @@
       "name": "Babynest Schafe",
       "cat": "Baby",
       "price": "79.00 CHF",
-      "img": "images/baby-babynest.jpeg"
+      "badge": "",
+      "is_unique": true,
+      "stock": 1,
+      "description": "",
+      "material": "",
+      "img": "images/baby-babynest.jpeg",
+      "gallery": [],
+      "colors": [
+        "blau",
+        "grün"
+      ],
+      "sizes": [],
+      "voucher_values": [],
+      "allow_custom_name": false,
+      "link": ""
     }
   ]
 }
