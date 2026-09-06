@@ -16,9 +16,7 @@
         <nav class="flex gap-6 uppercase text-[10px] font-bold mb-4">
             <a href="index.html">Startseite</a><a href="shop.html" class="text-terracotta">Shop</a><a href="ueber-mich.html">Über mich</a><a href="kontakt.html">Kontakt</a>
         </nav>
-        <div class="w-full max-w-md px-4">
-            <input type="text" id="searchBar" placeholder="Suchen..." class="w-full bg-creme border border-darkbrown/10 rounded-full py-2 px-6 text-xs outline-none focus:ring-1 focus:ring-terracotta">
-        </div>
+        <div class="w-full max-w-md px-4"><input type="text" id="searchBar" placeholder="Suchen..." class="w-full bg-creme border border-darkbrown/10 rounded-full py-2 px-6 text-xs outline-none focus:ring-1 focus:ring-terracotta"></div>
     </header>
     <main class="max-w-7xl mx-auto px-4 py-8">
         <div id="productGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8"></div>
@@ -33,22 +31,21 @@
                 allProducts = data.produkte || [];
                 const cat = new URLSearchParams(window.location.search).get('cat');
                 render(cat ? allProducts.filter(p => p.cat === cat) : allProducts);
-            } catch (e) { console.error("Noch keine Produkte vorhanden."); }
+            } catch (e) { console.error(e); }
         }
         function render(list) {
-            const grid = document.getElementById('productGrid');
-            grid.innerHTML = '';
+            const grid = document.getElementById('productGrid'); grid.innerHTML = '';
             if(list.length === 0) document.getElementById('noResults').classList.remove('hidden');
             else {
                 document.getElementById('noResults').classList.add('hidden');
                 list.forEach(prod => {
                     const item = prod.item || prod;
                     grid.innerHTML += `
-                    <div class="bg-creme p-3 md:p-5 rounded-2xl shadow-sm border border-darkbrown/5 group">
+                    <div class="bg-creme p-3 md:p-5 rounded-2xl shadow-sm border border-darkbrown/5">
                         <img src="${item.img}" class="w-full aspect-[4/5] object-cover rounded-xl mb-4 bg-white">
                         <h3 class="font-serif text-[11px] md:text-sm uppercase tracking-wider mb-1 truncate">${item.name}</h3>
                         <p class="text-terracotta font-bold text-xs mb-4">${item.price}</p>
-                        <a href="${item.link || 'kontakt.html?produkt=' + encodeURIComponent(item.name)}" class="block text-center border border-darkbrown/20 py-2 rounded-lg text-[9px] uppercase font-bold hover:bg-darkbrown hover:text-white transition">Anfragen</a>
+                        <a href="${item.link || 'kontakt.html?produkt=' + encodeURIComponent(item.name)}" class="block text-center border border-darkbrown/20 py-2 rounded-lg text-[9px] uppercase font-bold hover:bg-darkbrown hover:text-white transition">${item.link ? 'Kaufen' : 'Anfragen'}</a>
                     </div>`;
                 });
             }
