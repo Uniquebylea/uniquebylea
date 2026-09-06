@@ -1,6 +1,6 @@
 backend:
   name: github
-  repo: Uniquebylea/uniquebylea
+  repo: uniquebylea
   branch: main
   base_url: https://gatekeeper.decapcms.org
   auth_endpoint: /auth
