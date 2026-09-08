@@ -69,10 +69,23 @@
         
         <!-- Persönliche Vorstellung & Angebot -->
         <div class="grid md:grid-cols-12 gap-8 md:gap-12 items-start bg-creme/80 backdrop-blur-sm p-6 md:p-12 rounded-3xl shadow-sm border border-white/60">
-            <!-- Foto von Lea -->
-            <div class="md:col-span-5 overflow-hidden rounded-2xl shadow-lg border-4 border-white aspect-[4/5] bg-sand/40 md:sticky md:top-28">
-                <img src="images/uebermich.jpg" alt="Lea bei der Handarbeit in Schwarz-Weiss" 
-                     class="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-500">
+            <!-- Foto von Lea mit Vorschau-Umschalter -->
+            <div class="md:col-span-5 space-y-3 md:sticky md:top-28">
+                <div class="overflow-hidden rounded-2xl shadow-lg border-4 border-white aspect-[4/5] bg-sand/40 relative">
+                    <img id="aboutMainImg" src="images/uebermich.jpg" alt="Lea Limburg - Unique by Lea" 
+                         class="w-full h-full object-cover object-top transition duration-300">
+                </div>
+                <!-- Bild-Auswahl (Vorderansicht / Rückenausschnitt) -->
+                <div class="flex items-center gap-2.5 justify-center">
+                    <button type="button" onclick="setAboutImage('images/uebermich.jpg', this)" 
+                            class="about-thumb active w-14 h-14 rounded-xl overflow-hidden border-2 border-terracotta ring-2 ring-terracotta/30 transition">
+                        <img src="images/uebermich.jpg" alt="Lea Portrait" class="w-full h-full object-cover object-top">
+                    </button>
+                    <button type="button" onclick="setAboutImage('images/uebermich2.jpg', this)" 
+                            class="about-thumb w-14 h-14 rounded-xl overflow-hidden border-2 border-transparent hover:border-terracotta/60 transition">
+                        <img src="images/uebermich2.jpg" alt="Rückenausschnitt Unikat" class="w-full h-full object-cover object-top">
+                    </button>
+                </div>
             </div>
 
             <!-- Text & Leistungsbereiche -->
@@ -163,9 +176,9 @@
                     <span class="block not-italic font-sans text-[10px] uppercase tracking-widest text-darkbrown/50 mt-1">— Lea Limburg</span>
                 </div>
             </div>
-            <div class="overflow-hidden rounded-2xl shadow-md border-4 border-white aspect-[4/3] bg-sand/40">
-                <img src="images/uebermich2.jpg" alt="Atelier und Handarbeit in Interlaken" 
-                     class="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-500">
+            <div class="overflow-hidden rounded-2xl shadow-md border-4 border-white aspect-[4/5] bg-sand/40 max-w-sm mx-auto w-full">
+                <img src="images/uebermich2.jpg" alt="Handgefertigtes Unikat mit Rückenausschnitt" 
+                     class="w-full h-full object-cover object-top">
             </div>
         </div>
 
@@ -200,6 +213,18 @@
         document.getElementById('nav-toggle').onclick = function() {
             document.getElementById('nav-menu').classList.toggle('hidden');
         };
+
+        function setAboutImage(src, btn) {
+            const mainImg = document.getElementById('aboutMainImg');
+            if (!mainImg) return;
+            mainImg.src = src;
+            document.querySelectorAll('.about-thumb').forEach(t => {
+                t.classList.remove('border-terracotta', 'ring-2', 'ring-terracotta/30');
+                t.classList.add('border-transparent');
+            });
+            btn.classList.remove('border-transparent');
+            btn.classList.add('border-terracotta', 'ring-2', 'ring-terracotta/30');
+        }
     </script>
 </body>
 </html>
