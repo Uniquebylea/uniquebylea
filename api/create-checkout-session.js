@@ -1,5 +1,5 @@
-﻿// api/create-checkout-session.js
-// Erstellt eine Stripe Checkout-Session mit TWINT, Apple Pay, Google Pay und Karten (CHF)
+// api/create-checkout-session.js
+// Erstellt eine Stripe Checkout-Session
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -9,7 +9,7 @@ module.exports = async (req, res) => {
   const stripeKey = process.env.STRIPE_SECRET_KEY;
   if (!stripeKey) {
     return res.status(500).json({
-      error: 'STRIPE_SECRET_KEY ist noch nicht in Vercel hinterlegt. Bitte füge deinen Secret Key (sk_live_... oder sk_test_...) in den Vercel Environment Variables hinzu.'
+      error: 'STRIPE_SECRET_KEY ist noch nicht in Vercel hinterlegt.'
     });
   }
 
@@ -26,8 +26,6 @@ module.exports = async (req, res) => {
 
     const params = new URLSearchParams();
     params.append('mode', 'payment');
-    params.append('currency', 'chf');
-    params.append('automatic_payment_methods[enabled]', 'true');
     params.append('billing_address_collection', 'required');
     params.append('shipping_address_collection[allowed_countries][0]', 'CH');
     params.append('shipping_address_collection[allowed_countries][1]', 'LI');
@@ -48,10 +46,6 @@ module.exports = async (req, res) => {
 
       if (descParts.length > 0) {
         params.append(`line_items[${index}][price_data][product_data][description]`, descParts.join(' | '));
-      }
-
-      if (item.img && item.img.startsWith('http')) {
-        params.append(`line_items[${index}][price_data][product_data][images][0]`, item.img);
       }
 
       params.append(`line_items[${index}][quantity]`, (Number(item.quantity) || 1).toString());
