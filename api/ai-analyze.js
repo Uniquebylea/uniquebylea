@@ -1,48 +1,22 @@
-let cachedModel = null;
-
-async function getSupportedModel(apiKey) {
-  if (cachedModel) return cachedModel;
-
-  try {
-    const listRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-    if (listRes.ok) {
-      const data = await listRes.json();
-      const models = data.models || [];
-      const contentModels = models.filter(m => 
-        Array.isArray(m.supportedGenerationMethods) && 
-        m.supportedGenerationMethods.includes('generateContent')
-      );
-      
-      // Preference: Flash models (fast & multimodal)
-      const selected = 
-        contentModels.find(m => m.name.includes('gemini-2.5-flash')) ||
-        contentModels.find(m => m.name.includes('gemini-2.0-flash')) ||
-        contentModels.find(m => m.name.includes('flash') && !m.name.includes('lite') && !m.name.includes('8b')) ||
-        contentModels.find(m => m.name.includes('flash')) ||
-        contentModels.find(m => m.name.includes('gemini')) ||
-        contentModels[0];
-
-      if (selected && selected.name) {
-        cachedModel = selected.name.replace(/^models\//, '');
-        console.log(`Discovered active Gemini model: ${cachedModel}`);
-        return cachedModel;
-      }
-    }
-  } catch (err) {
-    console.error('ListModels error:', err);
-  }
-
-  return 'gemini-2.5-flash';
-}
-
 module.exports = async (req, res) => {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Nur POST erlaubt' });
-  }
-
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return res.status(500).json({ error: 'GEMINI_API_KEY ist in Vercel noch nicht eingetragen.' });
+  }
+
+  // Debug query to see exactly which models Google provides for this API key
+  if (req.method === 'GET' || req.query?.debug === 'models') {
+    try {
+      const listRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+      const data = await listRes.json();
+      return res.status(200).json(data);
+    } catch (e) {
+      return res.status(500).json({ error: e.message });
+    }
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Nur POST erlaubt' });
   }
 
   try {
@@ -66,15 +40,38 @@ Folgendes Format ist zwingend einzuhalten:
   "badge": "Unikat"
 }`;
 
-    // Candidate models to try in order
-    const dynamicModel = await getSupportedModel(apiKey);
-    const candidateModels = [dynamicModel, 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-pro'];
-    const uniqueCandidates = [...new Set(candidateModels)];
+    // Query ListModels to find which models are actually active and supported
+    let activeModel = null;
+    try {
+      const listRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+      if (listRes.ok) {
+        const listData = await listRes.json();
+        const available = listData.models || [];
+        const contentModels = available.filter(m => 
+          Array.isArray(m.supportedGenerationMethods) && 
+          m.supportedGenerationMethods.includes('generateContent')
+        );
+
+        // Find best match
+        const chosen = 
+          contentModels.find(m => m.name.includes('gemini') && m.name.includes('flash')) ||
+          contentModels.find(m => m.name.includes('gemini')) ||
+          contentModels[0];
+
+        if (chosen) {
+          activeModel = chosen.name.replace(/^models\//, '');
+        }
+      }
+    } catch (listErr) {
+      console.error('ListModels error:', listErr);
+    }
+
+    const modelsToTry = [activeModel, 'gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-1.5-pro'].filter(Boolean);
 
     let lastError = null;
     let successfulData = null;
 
-    for (const model of uniqueCandidates) {
+    for (const model of modelsToTry) {
       try {
         const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
@@ -105,21 +102,14 @@ Folgendes Format ist zwingend einzuhalten:
         const data = await response.json();
 
         if (response.ok && !data.error && data.candidates?.[0]?.content?.parts?.[0]?.text) {
-          cachedModel = model;
           successfulData = data;
           break;
         } else {
           lastError = data.error?.message || `HTTP ${response.status} from ${model}`;
           console.warn(`Model ${model} failed:`, lastError);
-          // If 404 or unsupported, continue to next candidate
-          if (response.status === 404 || (data.error && data.error.message && data.error.message.includes('not found'))) {
-            cachedModel = null; // invalidate cache
-            continue;
-          }
         }
       } catch (callErr) {
         lastError = callErr.message;
-        console.warn(`Call to ${model} threw error:`, callErr);
       }
     }
 
