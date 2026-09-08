@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
@@ -253,9 +253,19 @@
                 const data = await res.json();
                 allProducts = data.produkte || [];
 
-                const urlCat = new URLSearchParams(window.location.search).get('cat');
+                const urlParams = new URLSearchParams(window.location.search);
+                const urlCat = urlParams.get('cat');
                 setCategory(urlCat || '');
                 updateCartBadge();
+
+                if (urlParams.get('checkout') === 'success') {
+                    localStorage.removeItem('uniquebylea_cart');
+                    cart = [];
+                    updateCartBadge();
+                    showOrderSuccessModal();
+                } else if (urlParams.get('checkout') === 'canceled') {
+                    openCart();
+                }
             } catch (e) {
                 console.error("Fehler beim Laden der Produkte:", e);
             }
@@ -700,10 +710,75 @@
             }
         };
 
-        window.proceedToOnlineCheckout = function() {
-            const total = document.getElementById('cartGrandTotal').textContent;
-            alert(`Warenkorb-Vorschau:\n\nEndbetrag: ${total}\n\n(Als Nächstes verbinden wir Stripe für die echte Bezahlung via TWINT, Apple Pay & Karten!)`);
+        window.proceedToOnlineCheckout = async function() {
+            if (cart.length === 0) return;
+
+            const checkoutBtn = document.querySelector('button[onclick="proceedToOnlineCheckout()"]');
+            const originalText = checkoutBtn ? checkoutBtn.innerHTML : '';
+            if (checkoutBtn) {
+                checkoutBtn.disabled = true;
+                checkoutBtn.innerHTML = `
+                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                    </svg>
+                    <span>Zur Kasse wird geladen...</span>
+                `;
+            }
+
+            const shippingType = document.querySelector('input[name="shipping"]:checked')?.value || 'bpost';
+            const subtotal = cart.reduce((acc, item) => acc + (item.priceNum * item.quantity), 0);
+            let shippingCost = 7.00;
+            if (subtotal >= 100) {
+                shippingCost = (shippingType === 'apost') ? 9.00 : 0.00;
+            } else {
+                shippingCost = (shippingType === 'pickup') ? 0.00 : (shippingType === 'apost' ? 9.00 : 7.00);
+            }
+
+            try {
+                const res = await fetch('/api/create-checkout-session', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        items: cart,
+                        shippingType: shippingType,
+                        shippingCost: shippingCost
+                    })
+                });
+
+                const data = await res.json();
+                if (data.url) {
+                    window.location.href = data.url;
+                } else if (data.error) {
+                    alert("Hinweis zur Kasse:\n\n" + data.error);
+                }
+            } catch (err) {
+                console.error("Checkout Fehler:", err);
+                alert("Verbindungsfehler zur Kasse: " + err.message);
+            } finally {
+                if (checkoutBtn) {
+                    checkoutBtn.disabled = false;
+                    checkoutBtn.innerHTML = originalText;
+                }
+            }
         };
+
+        function showOrderSuccessModal() {
+            const overlay = document.createElement('div');
+            overlay.className = "fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4";
+            overlay.innerHTML = `
+                <div class="bg-creme rounded-3xl max-w-md w-full p-8 shadow-2xl text-center border border-white/60">
+                    <div class="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">✓</div>
+                    <h2 class="font-serif text-2xl font-bold text-darkbrown mb-2 italic">Herzlichen Dank!</h2>
+                    <p class="text-xs text-darkbrown/80 leading-relaxed mb-6">Deine Bestellung ist erfolgreich eingegangen. Wir bereiten dein handgefertigtes Unikat liebevoll in unserem Atelier in Interlaken vor.</p>
+                    <button onclick="this.closest('.fixed').remove(); window.history.replaceState({}, document.title, window.location.pathname);" 
+                            class="bg-darkbrown hover:bg-terracotta text-white px-8 py-3 rounded-xl text-xs uppercase font-bold tracking-widest transition">
+                        Weiter einkaufen
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
 
         window.proceedToPickupCheckout = function() {
             const itemsSummary = cart.map(c => {
