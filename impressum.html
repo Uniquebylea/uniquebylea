@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impressum & Datenschutz | Unique by Lea</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { sand: '#EAE3D9', creme: '#F9F6F2', terracotta: '#B08968', darkbrown: '#4A3728' },
+                    fontFamily: { serif: ['Playfair Display', 'serif'], sans: ['Montserrat', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-sand text-darkbrown font-sans min-h-screen flex flex-col selection:bg-terracotta selection:text-white">
+
+    <!-- Header & Navigation -->
+    <nav class="bg-sand/95 backdrop-blur-md sticky top-0 z-50 border-b border-darkbrown/5">
+        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center h-20 md:h-24">
+            <a href="index.html" class="flex items-center gap-3">
+                <img src="images/logo.jpg" alt="Unique by Lea Logo" class="h-12 md:h-16 rounded-full shadow-sm">
+                <span class="font-serif text-lg md:text-xl font-bold tracking-wider hidden sm:inline">Unique by Lea</span>
+            </a>
+            
+            <div class="hidden md:flex items-center gap-8 uppercase text-[10px] tracking-[0.2em] font-bold">
+                <a href="index.html" class="hover:text-terracotta transition">Startseite</a>
+                <a href="shop.html" class="hover:text-terracotta transition">Shop</a>
+                <a href="ueber-mich.html" class="hover:text-terracotta transition">Über mich</a>
+                <a href="kontakt.html" class="hover:text-terracotta transition">Kontakt</a>
+                
+                <a href="https://www.instagram.com/unique_by_lea" target="_blank" rel="noopener noreferrer" 
+                   title="Instagram: @unique_by_lea" 
+                   class="hover:text-terracotta transition pl-2 border-l border-darkbrown/15">
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                </a>
+            </div>
+
+            <!-- Mobile Menu Toggle -->
+            <button id="nav-toggle" class="md:hidden text-2xl p-2" aria-label="Menü öffnen">☰</button>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="nav-menu" class="hidden md:hidden flex flex-col items-center py-6 gap-5 uppercase text-[11px] tracking-widest font-bold bg-creme border-b border-darkbrown/10">
+            <a href="index.html" class="hover:text-terracotta">Startseite</a>
+            <a href="shop.html" class="hover:text-terracotta">Shop</a>
+            <a href="ueber-mich.html" class="hover:text-terracotta">Über mich</a>
+            <a href="kontakt.html" class="hover:text-terracotta">Kontakt</a>
+            <a href="https://www.instagram.com/unique_by_lea" target="_blank" rel="noopener noreferrer" class="text-terracotta pt-2">Instagram: @unique_by_lea</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 py-12 md:py-16 flex-1 w-full">
+        <div class="bg-creme/90 backdrop-blur-sm p-8 md:p-14 rounded-3xl shadow-sm border border-white/60 space-y-12">
+            
+            <!-- Titel -->
+            <div class="text-center pb-8 border-b border-darkbrown/10">
+                <span class="text-xs uppercase tracking-[0.25em] font-bold text-terracotta block mb-2">Rechtliche Hinweise</span>
+                <h1 class="font-serif text-3xl md:text-4xl italic font-bold text-darkbrown">Impressum & Datenschutz</h1>
+                <p class="text-xs text-darkbrown/60 mt-2 font-light">Gemäss Art. 3 Abs. 1 lit. s UWG und Schweizer Datenschutzgesetz (nDSG)</p>
+            </div>
+
+            <!-- TEIL 1: IMPRESSUM -->
+            <section class="space-y-4">
+                <h2 class="font-serif text-2xl italic font-bold text-darkbrown flex items-center gap-2">
+                    <span>🇨🇭</span>
+                    <span>Impressum</span>
+                </h2>
+
+                <div class="bg-white/70 p-6 rounded-2xl border border-darkbrown/10 text-xs md:text-sm leading-relaxed space-y-2">
+                    <p class="font-bold text-darkbrown text-base">Unique by Lea</p>
+                    <p>Inhaberin: Lea</p>
+                    <p>Dammweg 7</p>
+                    <p>3800 Interlaken</p>
+                    <p>Schweiz</p>
+                    <div class="pt-3 border-t border-darkbrown/10 space-y-1">
+                        <p><strong>E-Mail:</strong> <a href="mailto:uniquebylea@outlook.com" class="text-terracotta underline">uniquebylea@outlook.com</a></p>
+                        <p><strong>Instagram:</strong> <a href="https://www.instagram.com/unique_by_lea" target="_blank" rel="noopener noreferrer" class="text-terracotta underline">@unique_by_lea</a></p>
+                        <p><strong>Webseite:</strong> <a href="https://uniquebylea.vercel.app" class="text-terracotta underline">uniquebylea.vercel.app</a></p>
+                    </div>
+                </div>
+
+                <div class="text-xs md:text-sm text-darkbrown/80 space-y-3 pt-2 leading-relaxed">
+                    <p>
+                        <strong>Unternehmensform:</strong> Einzelunternehmen nach Schweizer Recht. Gemäss Art. 10 MWSTG von der Mehrwertsteuer befreit (Kleinunternehmen).
+                    </p>
+                    <p>
+                        <strong>Haftungsausschluss für Inhalte & Links:</strong> Die Inhalte dieser Website wurden mit grösstmöglicher Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte können wir jedoch keine Gewähr übernehmen. Verweise und Verknüpfungen auf Websites Dritter liegen ausserhalb unseres Verantwortungsbereichs.
+                    </p>
+                    <p>
+                        <strong>Urheberrecht:</strong> Die Urheber- und alle anderen Rechte an Inhalten, Bildern, Fotos oder anderen Dateien auf der Website gehören ausschliesslich Unique by Lea oder den speziell genannten Rechtsinhabern. Jede Vervielfältigung oder Weiterverwendung bedarf der vorgängigen schriftlichen Zustimmung.
+                    </p>
+                </div>
+            </section>
+
+            <!-- TEIL 2: DATENSCHUTZ (nDSG) -->
+            <section class="space-y-4 pt-8 border-t border-darkbrown/10">
+                <h2 class="font-serif text-2xl italic font-bold text-darkbrown flex items-center gap-2">
+                    <span>🔒</span>
+                    <span>Datenschutzerklärung (nDSG)</span>
+                </h2>
+
+                <div class="text-xs md:text-sm text-darkbrown/85 space-y-4 leading-relaxed font-light">
+                    <p>
+                        Der Schutz deiner persönlichen Daten ist uns ein grosses Anliegen. Wir bearbeiten Personendaten im Einklang mit dem Bundesgesetz über den Datenschutz (neues Datenschutzgesetz nDSG der Schweiz).
+                    </p>
+
+                    <div class="space-y-2">
+                        <h3 class="font-bold font-sans text-darkbrown uppercase text-xs tracking-wider">1. Erhebung und Bearbeitung von Personendaten</h3>
+                        <p>
+                            Wenn du in unserem Shop bestellst oder uns kontaktierst, erheben wir ausschliesslich diejenigen Daten, die für die Abwicklung erforderlich sind (z. B. Vorname, Nachname, Lieferadresse, E-Mail-Adresse und allfällige Personalisierungswünsche).
+                        </p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h3 class="font-bold font-sans text-darkbrown uppercase text-xs tracking-wider">2. Weitergabe an sorgfältig ausgewählte Partner</h3>
+                        <p>
+                            Wir geben deine Daten nur an Dritte weiter, soweit dies für die Erfüllung unserer vertraglichen Pflichten zwingend notwendig ist:
+                        </p>
+                        <ul class="list-disc pl-5 space-y-1.5">
+                            <li><strong>Schweizerische Post:</strong> Zur Zustellung deiner bestellten Pakete und Briefe an deine Schweizer Adresse.</li>
+                            <li><strong>Stripe Payments Europe, Ltd. (Zahlungsabwicklung):</strong> Bei Zahlungen über TWINT, Apple Pay, Google Pay oder Kreditkarte werden die Zahlungsdaten direkt über eine verschlüsselte SSL-Verbindung an Stripe übertragen. Unique by Lea speichert zu keinem Zeitpunkt deine sensiblen Kreditkarten- oder Bankdaten.</li>
+                            <li><strong>Vercel Inc.:</strong> Hosting-Plattform unserer Webseite. Server-Logdateien (IP-Adresse, Browsertyp, Zugriffszeit) werden ausschliesslich zur technischen Sicherstellung des Betriebs erfasst.</li>
+                        </ul>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h3 class="font-bold font-sans text-darkbrown uppercase text-xs tracking-wider">3. Cookies & lokaler Speicher (LocalStorage)</h3>
+                        <p>
+                            Unsere Webseite verwendet LocalStorage deines Browsers ausschliesslich, um deinen Warenkorb zwischenzuspeichern, damit deine gewählten Artikel beim Navigieren erhalten bleiben. Wir setzen keine Werbe- oder Marketing-Tracking-Cookies von Drittanbietern ein.
+                        </p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h3 class="font-bold font-sans text-darkbrown uppercase text-xs tracking-wider">4. Deine Rechte</h3>
+                        <p>
+                            Du hast nach Schweizer Datenschutzrecht jederzeit das Recht auf unentgeltliche Auskunft über deine gespeicherten personenbezogenen Daten, deren Herkunft und Empfänger sowie das Recht auf Berichtigung oder Löschung dieser Daten. Wende dich hierfür einfach formlos per E-Mail an: <a href="mailto:uniquebylea@outlook.com" class="text-terracotta underline">uniquebylea@outlook.com</a>.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto bg-darkbrown text-sand py-10 px-4 border-t border-darkbrown/10">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+            <div>
+                <h3 class="font-serif text-lg font-bold tracking-wider mb-1">Unique by Lea</h3>
+                <p class="text-xs text-sand/70">Dammweg 7 · 3800 Interlaken · Schweiz</p>
+                <p class="text-[11px] text-sand/60 mt-1">E-Mail: uniquebylea@outlook.com</p>
+            </div>
+            
+            <div class="flex flex-wrap justify-center items-center gap-5 uppercase text-[10px] tracking-widest font-bold">
+                <a href="index.html" class="hover:text-terracotta transition">Startseite</a>
+                <a href="shop.html" class="hover:text-terracotta transition">Shop</a>
+                <a href="ueber-mich.html" class="hover:text-terracotta transition">Über mich</a>
+                <a href="kontakt.html" class="hover:text-terracotta transition">Kontakt</a>
+                <a href="agb.html" class="hover:text-terracotta transition">AGB</a>
+                <a href="impressum.html" class="text-terracotta border-b border-terracotta">Impressum & Datenschutz</a>
+                <a href="https://www.instagram.com/unique_by_lea" target="_blank" rel="noopener noreferrer" 
+                   class="hover:text-terracotta transition flex items-center gap-1.5 text-terracotta">
+                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    <span>@unique_by_lea</span>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('nav-toggle').onclick = function() {
+            document.getElementById('nav-menu').classList.toggle('hidden');
+        };
+    </script>
+</body>
+</html>
