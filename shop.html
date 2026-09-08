@@ -266,6 +266,20 @@
                 updateCartBadge();
 
                 if (urlParams.get('checkout') === 'success') {
+                    const sessionId = urlParams.get('session_id') || '';
+                    try {
+                        fetch('https://api.web3forms.com/submit', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                access_key: '2b4e9f51-bdd3-4391-9732-39f55bb17727',
+                                from_name: 'Unique by Lea Onlineshop',
+                                subject: '🎉 Neue Bestellung im Shop bezahlt!',
+                                message: `Liebe Lea,\n\nEs wurde soeben eine neue Bestellung erfolgreich über Stripe bezahlt!\nAlle Versand- und Kundendetails findest du direkt in deinem Stripe-Dashboard.\n\nSession-ID: ${sessionId}`
+                            })
+                        });
+                    } catch (e) {}
+
                     localStorage.removeItem('uniquebylea_cart');
                     cart = [];
                     updateCartBadge();
