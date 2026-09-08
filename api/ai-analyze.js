@@ -4,17 +4,6 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: 'GEMINI_API_KEY ist in Vercel noch nicht eingetragen.' });
   }
 
-  // Debug query to see exactly which models Google provides for this API key
-  if (req.method === 'GET' || req.query?.debug === 'models') {
-    try {
-      const listRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-      const data = await listRes.json();
-      return res.status(200).json(data);
-    } catch (e) {
-      return res.status(500).json({ error: e.message });
-    }
-  }
-
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Nur POST erlaubt' });
   }
@@ -40,33 +29,13 @@ Folgendes Format ist zwingend einzuhalten:
   "badge": "Unikat"
 }`;
 
-    // Query ListModels to find which models are actually active and supported
-    let activeModel = null;
-    try {
-      const listRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-      if (listRes.ok) {
-        const listData = await listRes.json();
-        const available = listData.models || [];
-        const contentModels = available.filter(m => 
-          Array.isArray(m.supportedGenerationMethods) && 
-          m.supportedGenerationMethods.includes('generateContent')
-        );
-
-        // Find best match
-        const chosen = 
-          contentModels.find(m => m.name.includes('gemini') && m.name.includes('flash')) ||
-          contentModels.find(m => m.name.includes('gemini')) ||
-          contentModels[0];
-
-        if (chosen) {
-          activeModel = chosen.name.replace(/^models\//, '');
-        }
-      }
-    } catch (listErr) {
-      console.error('ListModels error:', listErr);
-    }
-
-    const modelsToTry = [activeModel, 'gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-1.5-pro'].filter(Boolean);
+    // Active models verified on API
+    const modelsToTry = [
+      'gemini-3.8-flash',
+      'gemini-3.7-flash',
+      'gemini-3.6-flash',
+      'gemini-2.5-flash'
+    ];
 
     let lastError = null;
     let successfulData = null;
@@ -103,6 +72,7 @@ Folgendes Format ist zwingend einzuhalten:
 
         if (response.ok && !data.error && data.candidates?.[0]?.content?.parts?.[0]?.text) {
           successfulData = data;
+          console.log(`Successfully generated content with ${model}`);
           break;
         } else {
           lastError = data.error?.message || `HTTP ${response.status} from ${model}`;
@@ -110,6 +80,7 @@ Folgendes Format ist zwingend einzuhalten:
         }
       } catch (callErr) {
         lastError = callErr.message;
+        console.warn(`Error connecting to ${model}:`, callErr);
       }
     }
 
@@ -123,7 +94,7 @@ Folgendes Format ist zwingend einzuhalten:
     return res.status(200).json(productData);
 
   } catch (err) {
-    console.error(err);
+    console.error('Server error in ai-analyze:', err);
     return res.status(500).json({ error: err.message || 'Serverfehler bei der Bildanalyse' });
   }
 };
