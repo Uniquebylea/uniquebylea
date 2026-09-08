@@ -1,12 +1,40 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Unique by Lea | Admin</title>
   <link rel="cms-config-url" type="text/yaml" href="/admin/config.yml" />
+  <style>
+    .ai-btn-float {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 999999;
+      background: linear-gradient(135deg, #B08968, #4A3728);
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: 9999px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .ai-btn-float:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    }
+  </style>
 </head>
 <body>
+  <a href="ai.html" class="ai-btn-float">
+    ✨ Neues Produkt mit KI anlegen
+  </a>
   <!-- Modernes Sveltia CMS Script -->
   <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
 </body>
