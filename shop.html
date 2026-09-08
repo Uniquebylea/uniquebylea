@@ -248,10 +248,17 @@
 
         async function load() {
             try {
-                let res = await fetch('api/products');
-                if (!res.ok) res = await fetch('content/products.json');
-                const data = await res.json();
-                allProducts = data.produkte || [];
+                let data = null;
+                try {
+                    const res = await fetch('api/products');
+                    if (res.ok) data = await res.json();
+                } catch (e) {}
+
+                if (!data || !data.produkte || data.produkte.length === 0) {
+                    const res = await fetch('content/products.json?t=' + Date.now());
+                    if (res.ok) data = await res.json();
+                }
+                allProducts = data?.produkte || [];
 
                 const urlParams = new URLSearchParams(window.location.search);
                 const urlCat = urlParams.get('cat');
