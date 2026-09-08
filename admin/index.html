@@ -1,28 +1,316 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Unique by Lea | Admin</title>
+  <title>Unique by Lea | Admin Shop</title>
+  <link rel="icon" type="image/png" href="/images/logo.png" />
   <link rel="cms-config-url" type="text/yaml" href="/admin/config.yml" />
+
+  <!-- Sveltia Environment Hook: Immer 2 Spalten (Bearbeiten + Vorschau) nebeneinander aktivieren -->
+  <script>
+    (function() {
+      // 1. matchMedia Hook fÃ¼r Sveltia CMS Screen-Detection
+      const origMatchMedia = window.matchMedia;
+      window.matchMedia = function(query) {
+        if (query.includes('768px <= width < 1024px')) {
+          // Niemals den "Medium Screen" Modus aktivieren (der die Vorschau ausblenden wÃ¼rde)
+          return {
+            matches: false,
+            media: query,
+            onchange: null,
+            addEventListener: function() {},
+            removeEventListener: function() {},
+            dispatchEvent: function() { return false; }
+          };
+        }
+        if (query.includes('1024px <= width')) {
+          // Bildschirme ab 640px als Desktop behandeln, damit beide Spalten immer nebeneinander stehen
+          const matches = window.innerWidth >= 640;
+          return {
+            matches: matches,
+            media: query,
+            onchange: null,
+            addEventListener: function(type, listener) {
+              window.addEventListener('resize', function() {
+                listener({ matches: window.innerWidth >= 640, media: query });
+              });
+            },
+            removeEventListener: function() {},
+            dispatchEvent: function() { return false; }
+          };
+        }
+        return origMatchMedia.call(window, query);
+      };
+
+      // 2. Gespeicherte UI-Einstellungen in IndexedDB auf 2 Spalten (showSecondPane = true) forcieren
+      try {
+        const req = indexedDB.databases();
+        if (req && req.then) {
+          req.then(dbs => {
+            dbs.forEach(dbInfo => {
+              if (dbInfo.name && dbInfo.name.includes('Uniquebylea')) {
+                const openReq = indexedDB.open(dbInfo.name);
+                openReq.onsuccess = function(e) {
+                  const db = e.target.result;
+                  if (db.objectStoreNames.contains('ui-settings')) {
+                    const tx = db.transaction('ui-settings', 'readwrite');
+                    const store = tx.objectStore('ui-settings');
+                    const getReq = store.get('entry-view');
+                    getReq.onsuccess = function() {
+                      const val = getReq.result || {};
+                      val.showSecondPane = true;
+                      val.showPreview = true;
+                      val.paneStates = {}; // Frischer Start mit beiden Spalten nebeneinander
+                      store.put(val, 'entry-view');
+                    };
+                  }
+                };
+              }
+            });
+          }).catch(function() {});
+        }
+      } catch(e) {}
+    })();
+  </script>
+
   <style>
+    /* ========================================================
+       KOMPAKTE & ÃœBERSICHTLICHE DARSTELLUNG:
+       PRODUKTE BEARBEITEN & VORSCHAU AUF EINER SEITE NEBENEINANDER
+       ======================================================== */
+
+    /* 1. Editor CSS-Variablen kompakt skalieren */
+    .content-editor {
+      --field-editor-padding: 6px 14px !important;
+      --sui-font-size-default: 12px !important;
+      --sui-font-size-small: 11px !important;
+      --sui-control-medium-height: 28px !important;
+      --sui-textbox-height: 28px !important;
+      --sui-button-medium-height: 28px !important;
+      --sui-button-small-height: 24px !important;
+    }
+
+    /* 2. Hauptlayout: 2 Spalten nebeneinander (Editor links, Vorschau rechts) */
+    .body {
+      display: flex !important;
+      flex-direction: row !important;
+      overflow: hidden !important;
+      height: calc(100vh - 48px) !important;
+    }
+
+    .content-area {
+      flex: 1 1 auto !important;
+      display: flex !important;
+      min-width: 0 !important;
+      height: 100% !important;
+    }
+
+    .sui.resizable-pane-group {
+      display: flex !important;
+      flex-direction: row !important;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    /* Beide Bereiche teilen sich den Bildschirm 50% / 50% */
+    .sui.resizable-pane {
+      flex: 1 1 50% !important;
+      min-width: 300px !important;
+      height: 100% !important;
+      overflow: hidden !important;
+    }
+
+    /* Pane Header schmal und dezent */
+    .pane > header,
+    #first-pane-header,
+    #second-pane-header {
+      height: 36px !important;
+      min-height: 36px !important;
+      padding: 2px 14px !important;
+      background: #EAE3D9 !important; /* Sand */
+      border-bottom: 1px solid rgba(74, 55, 40, 0.1) !important;
+    }
+
+    #first-pane-header h3,
+    #second-pane-header h3 {
+      font-size: 11px !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.05em !important;
+      text-transform: uppercase !important;
+      color: #4A3728 !important;
+    }
+
+    /* 3. Linke Seite: "Produkte bearbeiten" form-optimiert */
+    .pane[data-mode="edit"] .content {
+      padding: 6px 10px !important;
+      overflow-y: auto !important;
+      background: #FFFFFF !important;
+    }
+
+    .pane[data-mode="edit"] section.field {
+      padding: 6px 12px !important;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
+    }
+
+    .pane[data-mode="edit"] section.field > * {
+      max-width: 100% !important;
+    }
+
+    .pane[data-mode="edit"] section.field > header {
+      margin: 0 0 3px !important;
+      height: auto !important;
+    }
+
+    .pane[data-mode="edit"] section.field > header h4 {
+      font-size: 11px !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.04em !important;
+      color: #4A3728 !important;
+      margin-bottom: 2px !important;
+    }
+
+    /* Inputs, Dropdowns & Textareas kompakt */
+    .pane[data-mode="edit"] input:not([type="checkbox"]):not([type="radio"]),
+    .pane[data-mode="edit"] select,
+    .pane[data-mode="edit"] textarea {
+      font-size: 12px !important;
+      padding: 4px 8px !important;
+      min-height: 28px !important;
+      height: auto !important;
+      border-radius: 6px !important;
+      border: 1px solid rgba(74, 55, 40, 0.2) !important;
+      background-color: #FAFAFA !important;
+    }
+
+    .pane[data-mode="edit"] input:focus,
+    .pane[data-mode="edit"] select:focus,
+    .pane[data-mode="edit"] textarea:focus {
+      border-color: #B08968 !important;
+      background-color: #FFFFFF !important;
+      outline: none !important;
+    }
+
+    .pane[data-mode="edit"] textarea {
+      min-height: 48px !important;
+      max-height: 90px !important;
+    }
+
+    /* Bild-Upload Vorschau im Formular verkleinern */
+    .pane[data-mode="edit"] section[data-field-type="image"] img,
+    .pane[data-mode="edit"] section[data-field-type="file"] img {
+      max-height: 75px !important;
+      max-width: 110px !important;
+      object-fit: cover !important;
+      border-radius: 6px !important;
+      margin-top: 4px !important;
+      border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    }
+
+    /* Variantenlisten (Farben & GrÃ¶ÃŸen) kompakt und Ã¼bersichtlich */
+    .pane[data-mode="edit"] [data-field-type="list"] {
+      padding: 2px 0 !important;
+    }
+
+    .pane[data-mode="edit"] [data-field-type="list"] section.field {
+      padding: 4px 8px !important;
+      background: rgba(234, 227, 217, 0.25) !important;
+      border-radius: 6px !important;
+      margin-bottom: 4px !important;
+    }
+
+    .pane[data-mode="edit"] .hint,
+    .pane[data-mode="edit"] .comment {
+      font-size: 10px !important;
+      margin: 1px 0 !important;
+      color: rgba(74, 55, 40, 0.6) !important;
+    }
+
+    /* 4. Rechte Seite: "Vorschau" als kompakte Boutique-Produktkarte */
+    .pane[data-mode="preview"] .content {
+      padding: 12px !important;
+      overflow-y: auto !important;
+      background: #F4EFEA !important;
+    }
+
+    .pane[data-mode="preview"] [role="document"] {
+      padding: 16px 20px !important;
+      background: #FFFFFF !important;
+      border-radius: 16px !important;
+      border: 1px solid rgba(74, 55, 40, 0.12) !important;
+      box-shadow: 0 4px 16px rgba(74, 55, 40, 0.06) !important;
+      max-width: 420px !important;
+      margin: 0 auto !important;
+    }
+
+    /* Riesige 800px-Vorschaubilder bÃ¤ndigen */
+    .pane[data-mode="preview"] [role="document"] img {
+      max-height: 170px !important;
+      max-width: 100% !important;
+      width: auto !important;
+      object-fit: contain !important;
+      border-radius: 10px !important;
+      background: #F9F6F2 !important;
+      padding: 6px !important;
+      border: 1px solid rgba(74, 55, 40, 0.08) !important;
+      display: block !important;
+      margin: 4px auto 10px !important;
+    }
+
+    .pane[data-mode="preview"] [role="document"] section {
+      padding: 4px 0 !important;
+      border-bottom: 1px dashed rgba(74, 55, 40, 0.1) !important;
+    }
+
+    .pane[data-mode="preview"] [role="document"] section:last-child {
+      border-bottom: none !important;
+    }
+
+    .pane[data-mode="preview"] [role="document"] section > * {
+      max-width: 100% !important;
+    }
+
+    .pane[data-mode="preview"] [role="document"] h4 {
+      font-size: 9px !important;
+      font-weight: 700 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.06em !important;
+      color: #B08968 !important; /* Terracotta */
+      margin-bottom: 1px !important;
+    }
+
+    .pane[data-mode="preview"] [role="document"] p {
+      font-size: 12px !important;
+      line-height: 1.35 !important;
+      color: #4A3728 !important; /* Darkbrown */
+      margin: 1px 0 !important;
+    }
+
+    /* 5. Rechte Sidebar schmaler halten */
+    .sidebar .content {
+      width: 220px !important;
+      max-width: 20vw !important;
+    }
+
+    /* 6. Schwebender KI-Button dezent & modern */
     .ai-btn-float {
       position: fixed;
-      bottom: 24px;
-      right: 24px;
+      bottom: 16px;
+      right: 16px;
       z-index: 999999;
       background: linear-gradient(135deg, #B08968, #4A3728);
       color: #ffffff;
-      padding: 12px 20px;
+      padding: 8px 16px;
       border-radius: 9999px;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      font-size: 13px;
+      font-size: 11px;
       font-weight: 700;
       text-decoration: none;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       transition: transform 0.2s, box-shadow 0.2s;
     }
     .ai-btn-float:hover {
@@ -33,7 +321,7 @@
 </head>
 <body>
   <a href="ai.html" class="ai-btn-float">
-    ✨ Neues Produkt mit KI anlegen
+    âœ¨ Neues Produkt mit KI anlegen
   </a>
   <!-- Modernes Sveltia CMS Script -->
   <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
