@@ -1,0 +1,12 @@
+{
+  "name": "Geschenkgutschein 25 CHF",
+  "cat": "Gutscheine",
+  "price": "25 CHF",
+  "badge": "",
+  "stock": 1,
+  "description": "Schenke pure Freude mit dem liebevoll gestalteten Geschenkgutschein im Wert von 25 CHF. Das ideale Geschenk, um handgefertigte Lieblingsstücke und einzigartige Unikate ganz nach eigenem Wunsch auszuwählen. Einlösbar für das gesamte Sortiment im Onlineshop.",
+  "img": "images/geschenkgutschein-25-chf-gutschein-25.png",
+  "variants_color": [],
+  "variants_size": [],
+  "allow_custom_name": false
+}
