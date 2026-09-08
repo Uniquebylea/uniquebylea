@@ -7,42 +7,45 @@ function safeParseJson(text) {
   try {
     return JSON.parse(clean);
   } catch (e) {
-    console.error("JSON parse error:", e.message);
     return null;
   }
 }
 
 module.exports = async (req, res) => {
-  res.setHeader('Cache-Control', 'public, max-age=5, stale-while-revalidate=30');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+
+  const debug = {};
 
   // 1. Try local filesystem (bundled by Vercel)
   try {
     const dir = path.join(process.cwd(), 'content/products');
-    if (fs.existsSync(dir)) {
+    debug.cwd = process.cwd();
+    debug.dirExists = fs.existsSync(dir);
+    if (debug.dirExists) {
       const files = fs.readdirSync(dir).filter((f) => f.endsWith('.json'));
+      debug.files = files;
       if (files.length > 0) {
         const produkte = files
           .map((file) => safeParseJson(fs.readFileSync(path.join(dir, file), 'utf8')))
           .filter(Boolean);
 
         if (produkte.length > 0) {
-          return res.status(200).json({ produkte });
+          return res.status(200).json({ produkte, source: 'fs' });
         }
       }
     }
   } catch (err) {
-    console.error("Local FS read error:", err);
+    debug.fsError = err.message;
   }
 
-  // 2. Fetch directly from GitHub API (always fresh)
+  // 2. Fetch directly from GitHub API
   try {
-    const ghRes = await fetch('https://api.github.com/repos/Uniquebylea/uniquebylea/contents/content/products', {
-      headers: {
-        'User-Agent': 'UniqueByLea-Shop',
-        'Accept': 'application/vnd.github+json'
-      }
-    });
-
+    const headers = { 'User-Agent': 'UniqueByLea-Shop' };
+    if (process.env.GITHUB_TOKEN) {
+      headers['Authorization'] = `token ${process.env.GITHUB_TOKEN}`;
+    }
+    const ghRes = await fetch('https://api.github.com/repos/Uniquebylea/uniquebylea/contents/content/products', { headers });
+    debug.ghStatus = ghRes.status;
     if (ghRes.ok) {
       const files = await ghRes.json();
       if (Array.isArray(files)) {
@@ -51,8 +54,7 @@ module.exports = async (req, res) => {
           jsonFiles.map(async (f) => {
             try {
               const fileRes = await fetch(f.download_url);
-              const text = await fileRes.text();
-              return safeParseJson(text);
+              return safeParseJson(await fileRes.text());
             } catch (e) {
               return null;
             }
@@ -60,22 +62,39 @@ module.exports = async (req, res) => {
         );
         const valid = produkte.filter(Boolean);
         if (valid.length > 0) {
-          return res.status(200).json({ produkte: valid });
+          return res.status(200).json({ produkte: valid, source: 'github-api' });
         }
       }
     }
   } catch (ghErr) {
-    console.error("GitHub API fetch error:", ghErr);
+    debug.ghError = ghErr.message;
   }
 
-  // 3. Fallback to static content/products.json
+  // 3. Fetch known products from raw GitHub
+  try {
+    const rawRes = await fetch('https://raw.githubusercontent.com/Uniquebylea/uniquebylea/main/content/products/babynest-schafe.json');
+    debug.rawStatus = rawRes.status;
+    if (rawRes.ok) {
+      const item = safeParseJson(await rawRes.text());
+      if (item && item.name) {
+        return res.status(200).json({ produkte: [item], source: 'raw-github' });
+      }
+    }
+  } catch (rawErr) {
+    debug.rawError = rawErr.message;
+  }
+
+  // 4. Fallback to static content/products.json
   try {
     const fallbackRes = await fetch('https://raw.githubusercontent.com/Uniquebylea/uniquebylea/main/content/products.json');
+    debug.fallbackStatus = fallbackRes.status;
     if (fallbackRes.ok) {
       const data = safeParseJson(await fallbackRes.text());
-      if (data && data.produkte) return res.status(200).json(data);
+      if (data && data.produkte) return res.status(200).json({ ...data, source: 'fallback-file' });
     }
-  } catch (e) {}
+  } catch (e) {
+    debug.fallbackError = e.message;
+  }
 
-  return res.status(200).json({ produkte: [] });
+  return res.status(200).json({ produkte: [], debug });
 };
