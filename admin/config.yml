@@ -13,6 +13,8 @@ collections:
     label: "Produkte"
     folder: "content/products"
     create: true
+    editor:
+      preview: true
     slug: "{{slug}}"
     format: "json"
     extension: "json"
