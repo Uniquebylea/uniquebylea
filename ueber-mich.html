@@ -5,24 +5,164 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Über mich | Unique by Lea</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
-        tailwind.config = { theme: { extend: { colors: { sand: '#EAE3D9', creme: '#F9F6F2', terracotta: '#B08968', darkbrown: '#4A3728' } } } }
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { sand: '#EAE3D9', creme: '#F9F6F2', terracotta: '#B08968', darkbrown: '#4A3728' },
+                    fontFamily: { serif: ['Playfair Display', 'serif'], sans: ['Montserrat', 'sans-serif'] }
+                }
+            }
+        }
     </script>
 </head>
-<body class="bg-sand text-darkbrown font-sans">
-    <header class="pt-8 text-center bg-sand border-b border-darkbrown/5 pb-4">
-        <nav class="flex justify-center gap-6 md:gap-10 uppercase text-[10px] font-bold">
-            <a href="index.html">Startseite</a><a href="shop.html">Shop</a><a href="ueber-mich.html" class="text-terracotta">Über mich</a><a href="kontakt.html">Kontakt</a>
-        </nav>
-    </header>
-    <main class="max-w-4xl mx-auto px-6 py-12 text-center">
-        <h1 class="font-serif text-3xl md:text-4xl mb-12 italic text-terracotta">Meine Geschichte</h1>
-        <div class="grid md:grid-cols-2 gap-6 md:gap-12 mb-12">
-            <img src="images/uebermich.jpg" class="rounded-3xl grayscale shadow-lg w-full h-80 object-cover">
-            <img src="images/uebermich2.jpg" class="rounded-3xl grayscale shadow-lg w-full h-80 object-cover md:mt-12">
+<body class="bg-sand text-darkbrown font-sans min-h-screen flex flex-col selection:bg-terracotta selection:text-white">
+
+    <!-- Header & Navigation -->
+    <nav class="bg-sand/95 backdrop-blur-md sticky top-0 z-50 border-b border-darkbrown/5">
+        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center h-20 md:h-24">
+            <a href="index.html" class="flex items-center gap-3">
+                <img src="images/logo.jpg" alt="Unique by Lea Logo" class="h-12 md:h-16 rounded-full shadow-sm">
+                <span class="font-serif text-lg md:text-xl font-bold tracking-wider hidden sm:inline">Unique by Lea</span>
+            </a>
+            
+            <div class="hidden md:flex items-center gap-8 uppercase text-[10px] tracking-[0.2em] font-bold">
+                <a href="index.html" class="hover:text-terracotta transition">Startseite</a>
+                <a href="shop.html" class="hover:text-terracotta transition">Shop</a>
+                <a href="ueber-mich.html" class="text-terracotta border-b-2 border-terracotta pb-0.5">Über mich</a>
+                <a href="kontakt.html" class="hover:text-terracotta transition">Kontakt</a>
+                
+                <!-- Instagram -->
+                <a href="https://www.instagram.com/unique_by_lea" target="_blank" rel="noopener noreferrer" 
+                   title="Instagram: @unique_by_lea" 
+                   class="hover:text-terracotta transition pl-2 border-l border-darkbrown/15">
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                </a>
+            </div>
+
+            <!-- Mobile Menu Toggle -->
+            <button id="nav-toggle" class="md:hidden text-2xl p-2" aria-label="Menü öffnen">☰</button>
         </div>
-        <p class="text-sm md:text-base leading-relaxed opacity-90">Seit 2018 verwandle ich meine Leidenschaft für Stoffe in mein eigenes Label "Unique by Lea".</p>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="nav-menu" class="hidden md:hidden flex flex-col items-center py-6 gap-5 uppercase text-[11px] tracking-widest font-bold bg-creme border-b border-darkbrown/10">
+            <a href="index.html" class="hover:text-terracotta">Startseite</a>
+            <a href="shop.html" class="hover:text-terracotta">Shop</a>
+            <a href="ueber-mich.html" class="text-terracotta">Über mich</a>
+            <a href="kontakt.html" class="hover:text-terracotta">Kontakt</a>
+            <a href="https://www.instagram.com/unique_by_lea" target="_blank" rel="noopener noreferrer" class="text-terracotta pt-2">Instagram: @unique_by_lea</a>
+        </div>
+    </nav>
+
+    <!-- Header Section -->
+    <section class="py-10 md:py-16 text-center px-4 max-w-4xl mx-auto">
+        <span class="text-xs uppercase tracking-[0.25em] font-bold text-terracotta block mb-2">Die Geschichte hinter der Marke</span>
+        <h1 class="font-serif text-3xl md:text-5xl italic font-bold text-darkbrown mb-4">Über mich & meine Philosophie</h1>
+        <p class="text-xs md:text-sm text-darkbrown/70 max-w-xl mx-auto font-light leading-relaxed">
+            Mit Herz, Geduld und viel Liebe zum Detail – jedes Stück ein Schweizer Unikat aus Interlaken.
+        </p>
+    </section>
+
+    <!-- Main Content: Story & Photos -->
+    <main class="max-w-5xl mx-auto px-4 pb-20 space-y-16">
+        
+        <!-- Story-Block 1: Wie alles begann -->
+        <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center bg-creme/70 backdrop-blur-sm p-6 md:p-12 rounded-3xl shadow-sm border border-white/60">
+            <div class="overflow-hidden rounded-2xl shadow-lg border-4 border-white aspect-[4/5] bg-sand/40">
+                <img src="images/uebermich.jpg" alt="Lea bei der Handarbeit in Schwarz-Weiss" 
+                     class="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-500">
+            </div>
+            <div class="space-y-4">
+                <span class="text-2xl block">🧵</span>
+                <h2 class="font-serif text-2xl md:text-3xl italic font-bold text-darkbrown">Wie alles begann</h2>
+                <p class="text-sm md:text-base leading-relaxed text-darkbrown/85 font-light">
+                    Meine Faszination für schöne Stoffe, Haptik und das Schaffen mit den eigenen Händen begleitet mich schon seit vielen Jahren. Was <strong>2018</strong> aus purer Begeisterung für individuelle Handarbeit und persönliche Geschenke begann, wuchs Schritt für Schritt zu meinem eigenen Label <em>«Unique by Lea»</em> heran.
+                </p>
+                <p class="text-sm md:text-base leading-relaxed text-darkbrown/85 font-light">
+                    Mir war von Anfang an klar: Ich möchte Dinge erschaffen, die eine Seele haben. Keine Massenware von der Stange, sondern besondere Lieblingsstücke, die man gerne berührt und die Familien über viele Jahre hinweg begleiten.
+                </p>
+            </div>
+        </div>
+
+        <!-- Story-Block 2: Das Atelier in Interlaken -->
+        <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center bg-creme/70 backdrop-blur-sm p-6 md:p-12 rounded-3xl shadow-sm border border-white/60">
+            <div class="space-y-4 order-2 md:order-1">
+                <span class="text-2xl block">🏔️</span>
+                <h2 class="font-serif text-2xl md:text-3xl italic font-bold text-darkbrown">Echte Handarbeit aus Interlaken</h2>
+                <p class="text-sm md:text-base leading-relaxed text-darkbrown/85 font-light">
+                    Mitten im wunderschönen Berner Oberland in <strong>Interlaken</strong> befindet sich mein kleines Atelier. Umgeben von Seen und Bergen entstehen hier alle Unikate von Hand – vom ersten Zuschnitt der Stoffe bis zur letzten sorgfältigen Naht.
+                </p>
+                <p class="text-sm md:text-base leading-relaxed text-darkbrown/85 font-light">
+                    Ob kuschelige Babynester, wärmende Mützen für die Kleinsten oder stilvolle Alltagsbegleiter: Jedes einzelne Produkt wird mit ruhiger Hand gefertigt und vor dem Versand persönlich von mir geprüft.
+                </p>
+                <div class="pt-2">
+                    <span class="inline-block bg-sand px-3.5 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider text-darkbrown/80 border border-darkbrown/10">
+                        📍 100 % Handarbeit aus Interlaken, Schweiz
+                    </span>
+                </div>
+            </div>
+            <div class="overflow-hidden rounded-2xl shadow-lg border-4 border-white aspect-[4/5] bg-sand/40 order-1 md:order-2">
+                <img src="images/uebermich2.jpg" alt="Atelier und Handarbeit in Schwarz-Weiss" 
+                     class="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-500">
+            </div>
+        </div>
+
+        <!-- Vertrauens- & Personalisierungs-Highlight -->
+        <div class="bg-creme p-8 md:p-12 rounded-3xl border border-terracotta/20 text-center shadow-md max-w-3xl mx-auto space-y-6">
+            <h3 class="font-serif text-xl md:text-2xl italic font-bold text-darkbrown">Dein persönliches Wunschunikat</h3>
+            <p class="text-xs md:text-sm leading-relaxed text-darkbrown/80 max-w-xl mx-auto font-light">
+                Du suchst ein ganz bestimmtes Geschenk zur Geburt, möchtest einen Wunschnamen einsticken lassen oder hast eine eigene Farbkombination im Kopf? Ich passe jedes Stück gerne für dich an!
+            </p>
+            
+            <div class="flex flex-col sm:flex-row justify-center gap-4 pt-2">
+                <a href="shop.html" 
+                   class="bg-darkbrown hover:bg-terracotta text-white px-8 py-3.5 rounded-full uppercase text-xs tracking-widest font-bold shadow transition">
+                    Zum Shop ➔
+                </a>
+                <a href="kontakt.html" 
+                   class="border border-darkbrown/25 hover:border-terracotta hover:text-terracotta text-darkbrown px-8 py-3.5 rounded-full uppercase text-xs tracking-widest font-bold transition">
+                    Nachricht an Lea schreiben
+                </a>
+            </div>
+
+            <div class="pt-6 border-t border-darkbrown/10 italic font-serif text-sm text-terracotta">
+                «Handgemacht bedeutet für mich: Ein Stück Herz und Hingabe in jeder einzelnen Naht.»
+                <span class="block not-italic font-sans text-[10px] uppercase tracking-widest text-darkbrown/50 mt-1">— Lea</span>
+            </div>
+        </div>
+
     </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto bg-darkbrown text-sand py-10 px-4 border-t border-darkbrown/10">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+            <div>
+                <h3 class="font-serif text-lg font-bold tracking-wider mb-1">Unique by Lea</h3>
+                <p class="text-xs text-sand/70">Handgefertigte Unikate aus Interlaken, Schweiz</p>
+                <p class="text-[11px] text-sand/60 mt-1">E-Mail: uniquebylea@outlook.com</p>
+            </div>
+            
+            <div class="flex items-center gap-6 uppercase text-[10px] tracking-widest font-bold">
+                <a href="index.html" class="hover:text-terracotta transition">Startseite</a>
+                <a href="shop.html" class="hover:text-terracotta transition">Shop</a>
+                <a href="ueber-mich.html" class="hover:text-terracotta transition">Über mich</a>
+                <a href="kontakt.html" class="hover:text-terracotta transition">Kontakt</a>
+                <a href="https://www.instagram.com/unique_by_lea" target="_blank" rel="noopener noreferrer" 
+                   class="hover:text-terracotta transition flex items-center gap-1.5 text-terracotta">
+                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    <span>@unique_by_lea</span>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('nav-toggle').onclick = function() {
+            document.getElementById('nav-menu').classList.toggle('hidden');
+        };
+    </script>
 </body>
 </html>
