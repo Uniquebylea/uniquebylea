@@ -67,115 +67,81 @@
     <!-- Main Content -->
     <main class="max-w-5xl mx-auto px-4 pb-20 space-y-16">
         
-        <!-- Persönliche Vorstellung mit Foto -->
-        <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center bg-creme/80 backdrop-blur-sm p-6 md:p-12 rounded-3xl shadow-sm border border-white/60">
-            <div class="overflow-hidden rounded-2xl shadow-lg border-4 border-white aspect-[4/5] bg-sand/40">
+        <!-- Persönliche Vorstellung & Angebot -->
+        <div class="grid md:grid-cols-12 gap-8 md:gap-12 items-start bg-creme/80 backdrop-blur-sm p-6 md:p-12 rounded-3xl shadow-sm border border-white/60">
+            <!-- Foto von Lea -->
+            <div class="md:col-span-5 overflow-hidden rounded-2xl shadow-lg border-4 border-white aspect-[4/5] bg-sand/40 md:sticky md:top-28">
                 <img src="images/uebermich.jpg" alt="Lea bei der Handarbeit in Schwarz-Weiss" 
                      class="w-full h-full object-cover grayscale hover:grayscale-0 transition duration-500">
             </div>
-            <div class="space-y-5">
-                <span class="text-xs uppercase tracking-widest font-bold text-terracotta bg-terracotta/10 px-3 py-1 rounded-full inline-block">
-                    Herzensprojekt seit 2015
-                </span>
-                <h2 class="font-serif text-2xl md:text-3xl italic font-bold text-darkbrown">
-                    Hi, ich bin Lea!
-                </h2>
+
+            <!-- Text & Leistungsbereiche -->
+            <div class="md:col-span-7 space-y-6">
+                <div>
+                    <span class="text-xs uppercase tracking-widest font-bold text-terracotta bg-terracotta/10 px-3 py-1 rounded-full inline-block mb-3">
+                        Herzensprojekt seit 2015
+                    </span>
+                    <h2 class="font-serif text-2xl md:text-3xl italic font-bold text-darkbrown">
+                        Hi, ich bin Lea!
+                    </h2>
+                </div>
+
                 <p class="text-sm md:text-base leading-relaxed text-darkbrown/85 font-light">
                     Die Begeisterung für selbstgenähte Kleidung packte mich 2015 bei meiner Arbeit mit Kindern. Was mit einer alten Nähmaschine und viel Neugier begann, ist heute mein kreativer Ausgleich und Herzensprojekt: langlebige Lieblingsstücke mit Charakter statt anonymer Massenware.
                 </p>
-                <div class="pt-2 flex items-center gap-3 text-xs text-darkbrown/70 font-medium">
-                    <span class="w-2 h-2 rounded-full bg-terracotta"></span>
+
+                <!-- Der Punkt: 100% von Hand genäht in Interlaken, Schweiz -->
+                <div class="flex items-center gap-3 text-xs md:text-sm text-darkbrown font-medium">
+                    <span class="w-2 h-2 rounded-full bg-terracotta shrink-0"></span>
                     <span>100% von Hand genäht in Interlaken, Schweiz</span>
                 </div>
-            </div>
-        </div>
 
-        <!-- Zweiter Block: Was ich für dich tun kann -->
-        <div class="bg-creme/80 backdrop-blur-sm p-6 md:p-12 rounded-3xl shadow-sm border border-white/60 space-y-8">
-            <div class="text-center max-w-2xl mx-auto">
-                <span class="text-xs uppercase tracking-[0.2em] font-bold text-terracotta block mb-2">Mein Angebot</span>
-                <h2 class="font-serif text-2xl md:text-4xl italic font-bold text-darkbrown mb-3">
-                    Was ich für dich tun kann:
-                </h2>
-                <p class="text-xs md:text-sm text-darkbrown/70 font-light">
-                    Ob Neufertigung, Ausbesserung oder individuelle Anpassung – ich bin persönlich für dich da.
-                </p>
-            </div>
+                <!-- Was ich für dich tun kann (unter dem Punkt, ohne Felder) -->
+                <div class="pt-3 border-t border-darkbrown/10 space-y-3">
+                    <h3 class="font-serif text-base md:text-lg italic font-bold text-darkbrown">
+                        Was ich für dich tun kann:
+                    </h3>
 
-            <!-- Die 4 Leistungsbereiche als elegante Karten -->
-            <div class="grid sm:grid-cols-2 gap-5 md:gap-6">
-                
-                <!-- 1. Baby- & Kinderkleidung -->
-                <div class="bg-white p-6 rounded-2xl border border-darkbrown/5 shadow-sm hover:shadow-md transition flex flex-col justify-between">
-                    <div>
-                        <div class="w-10 h-10 rounded-xl bg-sand/60 text-darkbrown flex items-center justify-center text-xl mb-4">
-                            👶
-                        </div>
-                        <h3 class="font-serif text-lg font-bold text-darkbrown mb-2">
-                            Baby- & Kinderkleidung
-                        </h3>
-                        <p class="text-xs md:text-sm text-darkbrown/80 leading-relaxed font-light">
-                            Bequeme Unikate aus weichen, hochwertigen Stoffen, die jedes Abenteuer mitmachen.
-                        </p>
-                    </div>
+                    <ul class="space-y-3 text-xs md:text-sm text-darkbrown/85 font-light">
+                        <li class="flex items-start gap-2.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-terracotta mt-2 shrink-0"></span>
+                            <div>
+                                <strong class="font-semibold text-darkbrown font-serif">Baby- & Kinderkleidung:</strong>
+                                Bequeme Unikate aus weichen, hochwertigen Stoffen, die jedes Abenteuer mitmachen.
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-2.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-terracotta mt-2 shrink-0"></span>
+                            <div>
+                                <strong class="font-semibold text-darkbrown font-serif">Reparaturen & Upcycling:</strong>
+                                Das geliebte Kleidungsstück hat ein Loch oder eine offene Naht? Ich flicke es gerne, damit es weiter getragen werden kann.
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-2.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-terracotta mt-2 shrink-0"></span>
+                            <div>
+                                <strong class="font-semibold text-darkbrown font-serif">Änderungsservice:</strong>
+                                Ob Vorhänge kürzen oder Hosen anpassen – ich bringe deine Textilien auf das passende Mass.
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-2.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-terracotta mt-2 shrink-0"></span>
+                            <div>
+                                <strong class="font-semibold text-darkbrown font-serif">Individuelle Wünsche:</strong>
+                                Besondere Stoffe, Personalisierungen oder Massanfertigungen setze ich gerne für dich um.
+                            </div>
+                        </li>
+                    </ul>
                 </div>
 
-                <!-- 2. Reparaturen & Upcycling -->
-                <div class="bg-white p-6 rounded-2xl border border-darkbrown/5 shadow-sm hover:shadow-md transition flex flex-col justify-between">
-                    <div>
-                        <div class="w-10 h-10 rounded-xl bg-sand/60 text-darkbrown flex items-center justify-center text-xl mb-4">
-                            🪡
-                        </div>
-                        <h3 class="font-serif text-lg font-bold text-darkbrown mb-2">
-                            Reparaturen & Upcycling
-                        </h3>
-                        <p class="text-xs md:text-sm text-darkbrown/80 leading-relaxed font-light">
-                            Das geliebte Kleidungsstück hat ein Loch oder eine offene Naht? Ich flicke es gerne, damit es weiter getragen werden kann.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- 3. Änderungsservice -->
-                <div class="bg-white p-6 rounded-2xl border border-darkbrown/5 shadow-sm hover:shadow-md transition flex flex-col justify-between">
-                    <div>
-                        <div class="w-10 h-10 rounded-xl bg-sand/60 text-darkbrown flex items-center justify-center text-xl mb-4">
-                            ✂️
-                        </div>
-                        <h3 class="font-serif text-lg font-bold text-darkbrown mb-2">
-                            Änderungsservice
-                        </h3>
-                        <p class="text-xs md:text-sm text-darkbrown/80 leading-relaxed font-light">
-                            Ob Vorhänge kürzen oder Hosen anpassen – ich bringe deine Textilien auf das passende Mass.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- 4. Individuelle Wünsche -->
-                <div class="bg-white p-6 rounded-2xl border border-darkbrown/5 shadow-sm hover:shadow-md transition flex flex-col justify-between">
-                    <div>
-                        <div class="w-10 h-10 rounded-xl bg-sand/60 text-darkbrown flex items-center justify-center text-xl mb-4">
-                            ✨
-                        </div>
-                        <h3 class="font-serif text-lg font-bold text-darkbrown mb-2">
-                            Individuelle Wünsche
-                        </h3>
-                        <p class="text-xs md:text-sm text-darkbrown/80 leading-relaxed font-light">
-                            Besondere Stoffe, Personalisierungen oder Massanfertigungen setze ich gerne für dich um.
-                        </p>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Call-to-Action Buttons -->
-            <div class="pt-6 text-center">
-                <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                <!-- Call-to-Action Buttons -->
+                <div class="pt-3 flex flex-col sm:flex-row gap-3">
                     <a href="shop.html" 
-                       class="w-full sm:w-auto bg-darkbrown hover:bg-terracotta text-white px-8 py-4 rounded-full uppercase text-xs tracking-widest font-bold shadow-md hover:shadow-lg transition">
+                       class="inline-block text-center bg-darkbrown hover:bg-terracotta text-white px-7 py-3.5 rounded-full uppercase text-xs tracking-widest font-bold shadow-md hover:shadow-lg transition">
                         Zum Shop ➔
                     </a>
                     <a href="kontakt.html" 
-                       class="w-full sm:w-auto border-2 border-darkbrown hover:border-terracotta hover:bg-terracotta hover:text-white text-darkbrown px-8 py-4 rounded-full uppercase text-xs tracking-widest font-bold transition">
+                       class="inline-block text-center border-2 border-darkbrown hover:border-terracotta hover:bg-terracotta hover:text-white text-darkbrown px-7 py-3.5 rounded-full uppercase text-xs tracking-widest font-bold transition">
                         Projekt oder Änderung anfragen ➔
                     </a>
                 </div>
