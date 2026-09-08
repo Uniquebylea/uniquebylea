@@ -30,6 +30,13 @@ collections:
       - {label: "Standard-Bestand (falls keine Farben)", name: "stock", widget: "number", default: 1, value_type: "int", min: 0, required: false}
       - {label: "Beschreibung", name: "description", widget: "text", required: false}
       - {label: "Hauptbild", name: "img", widget: "image"}
+
+      # Weitere Fotos (Galerie / Detailansichten):
+      - label: "Weitere Fotos / Galerie (Mehrfachauswahl möglich)"
+        name: "gallery"
+        widget: "image"
+        multiple: true
+        required: false
       
       # Farben mit eigenem Foto & eigenem Lagerbestand:
       - label: "Farben (mit eigenem Foto & Bestand)"
