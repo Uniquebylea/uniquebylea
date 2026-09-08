@@ -77,8 +77,41 @@
         </div>
         
         <div class="order-1 md:order-2 flex flex-col justify-center items-center text-center">
-            <div class="relative w-full max-w-sm rounded-3xl overflow-hidden shadow-xl border-8 border-white/60 bg-sand/30 aspect-[4/5] mb-6">
-                <img src="images/uebermich3.jpg" alt="Lea im Atelier Interlaken" class="w-full h-full object-cover">
+            <!-- Automatischer Bilder-Slider (alle in Schwarz-Weiss) -->
+            <div class="relative w-full max-w-sm rounded-3xl overflow-hidden shadow-xl border-8 border-white/60 bg-sand/30 aspect-[4/5] mb-6 group select-none">
+                <!-- Slides Container -->
+                <div id="contactSliderTrack" class="flex w-full h-full transition-transform duration-700 ease-in-out">
+                    <div class="w-full h-full flex-shrink-0 relative">
+                        <img src="images/kontakt-slide-1.jpg" alt="Handgefertigtes Babykleid mit Musselin" class="w-full h-full object-cover grayscale">
+                    </div>
+                    <div class="w-full h-full flex-shrink-0 relative">
+                        <img src="images/kontakt-slide-2.jpg" alt="Handgefertigter Leo-Pullover" class="w-full h-full object-cover grayscale">
+                    </div>
+                    <div class="w-full h-full flex-shrink-0 relative">
+                        <img src="images/kontakt-slide-3.jpg" alt="Makramee Schlüsselanhänger Unikat" class="w-full h-full object-cover grayscale">
+                    </div>
+                    <div class="w-full h-full flex-shrink-0 relative">
+                        <img src="images/kontakt-slide-4.jpg" alt="Handgefertigtes Leo-Kleidchen" class="w-full h-full object-cover grayscale">
+                    </div>
+                </div>
+
+                <!-- Navigation Pfeile (erscheinen bei Hover) -->
+                <button type="button" onclick="prevSlide()" aria-label="Vorheriges Bild"
+                        class="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center backdrop-blur-sm opacity-0 group-hover:opacity-100 transition z-10 text-xs">
+                    ❮
+                </button>
+                <button type="button" onclick="nextSlide()" aria-label="Nächstes Bild"
+                        class="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center backdrop-blur-sm opacity-0 group-hover:opacity-100 transition z-10 text-xs">
+                    ❯
+                </button>
+
+                <!-- Elegante Punkte-Navigation -->
+                <div class="absolute bottom-3 left-0 right-0 flex justify-center items-center gap-1.5 z-10">
+                    <button type="button" onclick="goToSlide(0)" class="slider-dot w-4 h-1.5 rounded-full bg-white transition-all duration-300" aria-label="Bild 1"></button>
+                    <button type="button" onclick="goToSlide(1)" class="slider-dot w-1.5 h-1.5 rounded-full bg-white/50 hover:bg-white transition-all duration-300" aria-label="Bild 2"></button>
+                    <button type="button" onclick="goToSlide(2)" class="slider-dot w-1.5 h-1.5 rounded-full bg-white/50 hover:bg-white transition-all duration-300" aria-label="Bild 3"></button>
+                    <button type="button" onclick="goToSlide(3)" class="slider-dot w-1.5 h-1.5 rounded-full bg-white/50 hover:bg-white transition-all duration-300" aria-label="Bild 4"></button>
+                </div>
             </div>
             <div class="space-y-1 text-xs text-darkbrown/80 font-light">
                 <p class="font-bold font-serif text-sm text-darkbrown">Unique by Lea</p>
@@ -124,6 +157,84 @@
         const abholung = new URLSearchParams(window.location.search).get('abholung');
         if (abholung) {
             document.getElementById('msg').value = "Hallo Lea, ich möchte folgende Bestellung im Atelier in Interlaken abholen und bar bezahlen:\n\n" + decodeURIComponent(abholung) + "\n\nBitte teile mir mit, wann die Artikel abholbereit sind.";
+        }
+
+        // Automatischer Bilderslider (Schwarz-Weiss)
+        let currentSlide = 0;
+        const totalSlides = 4;
+        let slideInterval = null;
+
+        function updateSlider() {
+            const track = document.getElementById('contactSliderTrack');
+            if (!track) return;
+            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+            
+            const dots = document.querySelectorAll('.slider-dot');
+            dots.forEach((dot, idx) => {
+                if (idx === currentSlide) {
+                    dot.className = "slider-dot w-4 h-1.5 rounded-full bg-white transition-all duration-300";
+                } else {
+                    dot.className = "slider-dot w-1.5 h-1.5 rounded-full bg-white/50 hover:bg-white transition-all duration-300";
+                }
+            });
+        }
+
+        window.nextSlide = function() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateSlider();
+        };
+
+        window.prevSlide = function() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            updateSlider();
+        };
+
+        window.goToSlide = function(idx) {
+            currentSlide = idx;
+            updateSlider();
+            restartAutoSlide();
+        };
+
+        function startAutoSlide() {
+            if (!slideInterval) {
+                slideInterval = setInterval(nextSlide, 3500);
+            }
+        }
+
+        function stopAutoSlide() {
+            if (slideInterval) {
+                clearInterval(slideInterval);
+                slideInterval = null;
+            }
+        }
+
+        function restartAutoSlide() {
+            stopAutoSlide();
+            startAutoSlide();
+        }
+
+        startAutoSlide();
+
+        const sliderWrapper = document.getElementById('contactSliderTrack')?.parentElement;
+        if (sliderWrapper) {
+            sliderWrapper.addEventListener('mouseenter', stopAutoSlide);
+            sliderWrapper.addEventListener('mouseleave', startAutoSlide);
+
+            let touchStartX = 0;
+            let touchEndX = 0;
+            sliderWrapper.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+                stopAutoSlide();
+            }, { passive: true });
+            sliderWrapper.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                if (touchStartX - touchEndX > 40) {
+                    nextSlide();
+                } else if (touchEndX - touchStartX > 40) {
+                    prevSlide();
+                }
+                startAutoSlide();
+            }, { passive: true });
         }
     </script>
 </body>
