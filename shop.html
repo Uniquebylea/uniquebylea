@@ -172,6 +172,9 @@
                 <div id="modalBadge" class="absolute top-3 left-3 bg-terracotta text-white text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider hidden"></div>
             </div>
 
+            <!-- Galerie-Thumbnails -->
+            <div id="modalThumbnails" class="flex items-center gap-2 mb-3 overflow-x-auto no-scrollbar py-1 hidden"></div>
+
             <!-- Titel, Preis & Verfügbarkeit -->
             <div class="mb-3">
                 <div class="flex justify-between items-baseline gap-2">
@@ -426,9 +429,54 @@
 
             document.getElementById('modalDescription').textContent = item.description || 'Liebevoll handgefertigtes Unikat aus Interlaken.';
 
+            setupGallery(item);
             setupDropdowns(item);
             document.getElementById('galleryModal').classList.remove('hidden');
         };
+
+        
+        function setupGallery(item) {
+            const container = document.getElementById('modalThumbnails');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const images = [];
+            if (item.img) images.push(item.img);
+            if (Array.isArray(item.gallery)) {
+                item.gallery.forEach(g => {
+                    const src = typeof g === 'string' ? g : (g?.img || '');
+                    if (src && !images.includes(src)) images.push(src);
+                });
+            }
+            if (Array.isArray(item.variants_color)) {
+                item.variants_color.forEach(c => {
+                    if (c.img && !images.includes(c.img)) images.push(c.img);
+                });
+            }
+
+            if (images.length > 1) {
+                container.classList.remove('hidden');
+                images.forEach((src, idx) => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'gallery-thumb w-14 h-14 rounded-xl overflow-hidden border-2 flex-shrink-0 transition ' + 
+                                    (idx === 0 ? 'border-terracotta ring-2 ring-terracotta/30' : 'border-transparent hover:border-terracotta/60');
+                    btn.innerHTML = '<img src="' + src + '" alt="Vorschau" class="w-full h-full object-cover">';
+                    btn.onclick = function() {
+                        document.getElementById('modalCurrentImg').src = src;
+                        document.querySelectorAll('.gallery-thumb').forEach(t => {
+                            t.classList.remove('border-terracotta', 'ring-2', 'ring-terracotta/30');
+                            t.classList.add('border-transparent');
+                        });
+                        btn.classList.remove('border-transparent');
+                        btn.classList.add('border-terracotta', 'ring-2', 'ring-terracotta/30');
+                    };
+                    container.appendChild(btn);
+                });
+            } else {
+                container.classList.add('hidden');
+            }
+        }
 
         function setupDropdowns(item) {
             const colorContainer = document.getElementById('colorDropdownContainer');
@@ -492,6 +540,16 @@
 
             if (opt.dataset.img) {
                 document.getElementById('modalCurrentImg').src = opt.dataset.img;
+                document.querySelectorAll('.gallery-thumb').forEach(t => {
+                    const thumbImg = t.querySelector('img');
+                    if (thumbImg && thumbImg.src.includes(opt.dataset.img)) {
+                        t.classList.remove('border-transparent');
+                        t.classList.add('border-terracotta', 'ring-2', 'ring-terracotta/30');
+                    } else {
+                        t.classList.remove('border-terracotta', 'ring-2', 'ring-terracotta/30');
+                        t.classList.add('border-transparent');
+                    }
+                });
             } else if (activeProductIndex !== null && allProducts[activeProductIndex].img) {
                 document.getElementById('modalCurrentImg').src = allProducts[activeProductIndex].img;
             }
