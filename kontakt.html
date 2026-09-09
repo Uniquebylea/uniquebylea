@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kontakt | Unique by Lea</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <meta name="description" content="Kontaktiere Lea Limburg von Unique by Lea in Interlaken fÃ¼r Anfragen zu Unikaten, Reparaturen, Ã„nderungsservice oder Atelier-Abholung.">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Unique by Lea">
+    <meta property="og:url" content="https://uniquebylea.vercel.app/kontakt.html">
+    <meta property="og:title" content="Kontakt | Unique by Lea NÃ¤hatelier Interlaken">
+    <meta property="og:description" content="Projekt oder Ã„nderung anfragen? Schreib mir direkt auf Instagram, per E-Mail oder Ã¼ber das Kontaktformular.">
+    <meta property="og:image" content="https://uniquebylea.vercel.app/images/startseitegesicht.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
@@ -29,6 +40,20 @@
             <div class="hidden md:flex items-center gap-8 uppercase text-[10px] tracking-[0.2em] font-bold">
                 <a href="index.html" class="hover:text-terracotta transition">Startseite</a>
                 <a href="shop.html" class="hover:text-terracotta transition">Shop</a>
+                <a href="shop.html?openWishlist=true" class="hover:text-terracotta transition">Wunschkiste</a>
+                <a href="shop.html?openCart=true" class="hover:text-terracotta transition">N&auml;hk&ouml;rbchen</a>
+                <a href="shop.html?openWishlist=true" class="hover:text-terracotta transition flex items-center gap-1.5" title="Deine Wunschkiste">
+                    <svg class="w-3.5 h-3.5 text-terracotta fill-current" viewBox="0 0 24 24">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                    <span>Wunschkiste</span>
+                </a>
+                <a href="shop.html?openCart=true" class="hover:text-terracotta transition flex items-center gap-1.5" title="Dein NÃ¤hkÃ¶rbchen">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <span>N&auml;hk&ouml;rbchen</span>
+                </a>
                 <a href="ueber-mich.html" class="hover:text-terracotta transition">Über mich</a>
                 <a href="kontakt.html" class="text-terracotta border-b-2 border-terracotta pb-0.5">Kontakt</a>
                 
@@ -47,6 +72,18 @@
         <div id="nav-menu" class="hidden md:hidden flex flex-col items-center py-6 gap-5 uppercase text-[11px] tracking-widest font-bold bg-creme border-b border-darkbrown/10">
             <a href="index.html" class="hover:text-terracotta">Startseite</a>
             <a href="shop.html" class="hover:text-terracotta">Shop</a>
+            <a href="shop.html?openWishlist=true" class="hover:text-terracotta flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-terracotta fill-current" viewBox="0 0 24 24">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+                <span>Wunschkiste</span>
+            </a>
+            <a href="shop.html?openCart=true" class="hover:text-terracotta flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                <span>N&auml;hk&ouml;rbchen</span>
+            </a>
             <a href="ueber-mich.html" class="hover:text-terracotta">Über mich</a>
             <a href="kontakt.html" class="text-terracotta">Kontakt</a>
             <a href="https://www.instagram.com/unique_by_lea" target="_blank" rel="noopener noreferrer" class="text-terracotta pt-2">Instagram: @unique_by_lea</a>
@@ -74,6 +111,22 @@
                     Nachricht absenden ➔
                 </button>
             </form>
+            <!-- Schneller Direktkontakt -->
+            <div class="pt-4 border-t border-darkbrown/10 mt-6 space-y-2">
+                <span class="text-[10px] uppercase tracking-wider font-bold text-darkbrown/60 block">Oder direkt schreiben:</span>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <a href="https://www.instagram.com/unique_by_lea" target="_blank" rel="noopener noreferrer" 
+                       class="flex-1 flex items-center justify-center gap-2 bg-terracotta/15 hover:bg-terracotta text-terracotta hover:text-white py-2.5 px-3 rounded-xl text-[11px] font-bold uppercase tracking-wider transition">
+                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        <span>Instagram DM</span>
+                    </a>
+                    <a href="mailto:uniquebylea@outlook.com?subject=Anfrage%20f%C3%BCr%20ein%20Projekt%20oder%20%C3%84nderung" 
+                       class="flex-1 flex items-center justify-center gap-2 bg-darkbrown/10 hover:bg-darkbrown text-darkbrown hover:text-white py-2.5 px-3 rounded-xl text-[11px] font-bold uppercase tracking-wider transition">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        <span>E-Mail</span>
+                    </a>
+                </div>
+            </div>
         </div>
         
         <div class="order-1 md:order-2 flex flex-col justify-center items-center text-center">
@@ -133,6 +186,20 @@
             <div class="flex flex-wrap justify-center items-center gap-5 uppercase text-[10px] tracking-widest font-bold">
                 <a href="index.html" class="hover:text-terracotta transition">Startseite</a>
                 <a href="shop.html" class="hover:text-terracotta transition">Shop</a>
+                <a href="shop.html?openWishlist=true" class="hover:text-terracotta transition">Wunschkiste</a>
+                <a href="shop.html?openCart=true" class="hover:text-terracotta transition">N&auml;hk&ouml;rbchen</a>
+                <a href="shop.html?openWishlist=true" class="hover:text-terracotta transition flex items-center gap-1.5" title="Deine Wunschkiste">
+                    <svg class="w-3.5 h-3.5 text-terracotta fill-current" viewBox="0 0 24 24">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                    <span>Wunschkiste</span>
+                </a>
+                <a href="shop.html?openCart=true" class="hover:text-terracotta transition flex items-center gap-1.5" title="Dein NÃ¤hkÃ¶rbchen">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <span>N&auml;hk&ouml;rbchen</span>
+                </a>
                 <a href="ueber-mich.html" class="hover:text-terracotta transition">Über mich</a>
                 <a href="kontakt.html" class="text-terracotta border-b border-terracotta">Kontakt</a>
                 <a href="agb.html" class="hover:text-terracotta transition">AGB</a>
