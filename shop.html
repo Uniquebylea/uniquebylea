@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shop | Unique by Lea</title>
+        <meta name="description" content="Entdecke handgefertigte Unikate, Babykleidung, Accessoires und Geschenkgutscheine aus unserem NÃ¤hatelier in Interlaken, Schweiz.">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Unique by Lea">
+    <meta property="og:url" content="https://uniquebylea.vercel.app/shop.html">
+    <meta property="og:title" content="Unique by Lea | Handgefertigte Unikate & Boutique Shop">
+    <meta property="og:description" content="Entdecke handgefertigte Unikate, Babykleidung & Geschenke von Hand genÃ¤ht in Interlaken, Schweiz.">
+    <meta property="og:image" content="https://uniquebylea.vercel.app/images/startseitegesicht.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" type="image/png" href="images/logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
@@ -49,14 +59,14 @@
                 <svg class="w-3.5 h-3.5 text-terracotta fill-current" viewBox="0 0 24 24">
                     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                 </svg>
-                <span>Merkliste</span>
+                <span>Wunschkiste</span>
                 <span class="text-terracotta font-bold">(<span id="wishlistCountBadge">0</span>)</span>
             </button>
 
             <!-- Warenkorb Button mit Zähler -->
             <button onclick="openCart()" 
                     class="text-darkbrown hover:text-terracotta transition flex items-center gap-1">
-                <span>Warenkorb</span>
+                <span>N&auml;hk&ouml;rbchen</span>
                 <span class="text-terracotta font-bold">(<span id="cartCountBadge">0</span>)</span>
             </button>
 
@@ -103,7 +113,7 @@
                 
                 <!-- Kopfzeile -->
                 <div class="p-5 border-b border-darkbrown/10 flex justify-between items-center bg-sand/30">
-                    <h2 class="font-serif text-base uppercase tracking-wider font-bold">Dein Warenkorb</h2>
+                    <h2 class="font-serif text-base uppercase tracking-wider font-bold">Dein N&auml;hk&ouml;rbchen</h2>
                     <button onclick="closeCart()" class="w-7 h-7 rounded-full bg-darkbrown/5 hover:bg-darkbrown/10 flex items-center justify-center text-darkbrown/70 hover:text-darkbrown transition">✕</button>
                 </div>
 
@@ -192,7 +202,7 @@
                         <svg class="w-4 h-4 text-terracotta fill-current" viewBox="0 0 24 24">
                             <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                         </svg>
-                        <h2 class="font-serif text-base uppercase tracking-wider font-bold">Deine Merkliste</h2>
+                        <h2 class="font-serif text-base uppercase tracking-wider font-bold">Deine Wunschkiste</h2>
                         <span id="wishlistDrawerCount" class="text-xs text-terracotta font-bold"></span>
                     </div>
                     <button onclick="closeWishlist()" class="w-7 h-7 rounded-full bg-darkbrown/5 hover:bg-darkbrown/10 flex items-center justify-center text-darkbrown/70 hover:text-darkbrown transition">✕</button>
@@ -201,7 +211,7 @@
                 <!-- Statuszeile: Login-Hinweis oder "Angemeldet als ..." -->
                 <div id="wishlistAuthBanner" class="bg-sand/40 px-5 py-3 border-b border-darkbrown/10 text-xs flex justify-between items-center">
                     <div id="wishlistAuthText" class="text-[11px] text-darkbrown/80">
-                        <span>💡 Melde dich an, um deine Merkliste dauerhaft zu sichern.</span>
+                        <span>💡 Melde dich an, um deine Wunschkiste dauerhaft zu sichern.</span>
                     </div>
                     <button id="wishlistAuthActionBtn" onclick="openAuthModal()" class="text-[10px] uppercase font-bold text-terracotta hover:underline whitespace-nowrap ml-2">
                         Anmelden
@@ -364,10 +374,10 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                     </svg>
-                    <span>In den Warenkorb</span>
+                    <span>Ins N&auml;hk&ouml;rbchen</span>
                 </button>
                 <button id="modalWishlistBtn" type="button" onclick="toggleWishlistCurrentModal()" 
-                        title="Auf die Merkliste"
+                        title="In die Wunschkiste"
                         class="w-12 h-12 rounded-xl border border-darkbrown/20 bg-white hover:border-terracotta text-darkbrown/70 hover:text-terracotta flex items-center justify-center transition shadow-sm flex-shrink-0">
                     <svg class="w-5 h-5 transition" id="modalHeartSvg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
@@ -450,6 +460,8 @@
 
                 if (urlParams.get('openWishlist') === 'true') {
                     openWishlist();
+                } else if (urlParams.get('openCart') === 'true') {
+                    openCart();
                 }
 
                 if (urlParams.get('checkout') === 'success') {
@@ -548,7 +560,7 @@
 
                         <!-- Heart Button (Merkliste) -->
                         <button type="button" onclick="event.stopPropagation(); toggleWishlist(${globalIndex})" 
-                                title="Auf die Merkliste"
+                                title="In die Wunschkiste"
                                 class="wishlist-btn absolute top-2 right-2 w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/90 hover:bg-white shadow-sm flex items-center justify-center transition hover:scale-110 z-10 ${isInWishlist(item.name) ? 'text-terracotta' : 'text-darkbrown/60 hover:text-terracotta'}">
                             <svg class="w-3.5 h-3.5 md:w-4 md:h-4 ${isInWishlist(item.name) ? 'fill-terracotta text-terracotta' : 'fill-none stroke-current'}" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
@@ -752,7 +764,7 @@
                 actionBtn.className = "w-full block text-center bg-darkbrown text-white py-3.5 rounded-xl text-xs uppercase font-bold tracking-widest hover:bg-terracotta transition shadow-md flex items-center justify-center gap-2";
                 actionBtn.innerHTML = `
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-                    <span>In den Warenkorb</span>
+                    <span>Ins N&auml;hk&ouml;rbchen</span>
                 `;
             } else {
                 statusElem.innerHTML = '<span class="text-emerald-700 font-bold">Verfügbar</span>';
@@ -760,7 +772,7 @@
                 actionBtn.className = "w-full block text-center bg-darkbrown text-white py-3.5 rounded-xl text-xs uppercase font-bold tracking-widest hover:bg-terracotta transition shadow-md flex items-center justify-center gap-2";
                 actionBtn.innerHTML = `
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-                    <span>In den Warenkorb</span>
+                    <span>Ins N&auml;hk&ouml;rbchen</span>
                 `;
             }
         }
@@ -880,7 +892,7 @@
             if (cart.length === 0) {
                 container.innerHTML = `
                 <div class="h-full flex flex-col items-center justify-center text-center py-16 text-darkbrown/60">
-                    <p class="font-serif text-sm mb-2">Dein Warenkorb ist noch leer</p>
+                    <p class="font-serif text-sm mb-2">Dein N&auml;hk&ouml;rbchen ist noch leer</p>
                     <p class="text-xs max-w-xs mb-6">Entdecke handgefertigte Einzelstücke und füge deine Lieblingsartikel hinzu.</p>
                     <button onclick="closeCart()" class="border border-darkbrown/20 hover:bg-darkbrown hover:text-white px-6 py-2.5 rounded-full text-xs uppercase font-bold tracking-wider transition">Jetzt stöbern</button>
                 </div>`;
@@ -1115,7 +1127,7 @@
                 const textElem = document.getElementById('wishlistNoticeText');
                 if (noticeElem && textElem) {
                     noticeElem.classList.remove('hidden');
-                    textElem.textContent = `${removedNames.length} ausverkaufte(s) Unikat(e) (${removedNames.join(', ')}) wurde(n) automatisch von deiner Merkliste entfernt, da jedes StÃ¼ck ein echtes EinzelstÃ¼ck ist.`;
+                    textElem.textContent = `${removedNames.length} ausverkaufte(s) Unikat(e) (${removedNames.join(', ')}) wurde(n) automatisch aus deiner Wunschkiste entfernt, da jedes StÃ¼ck ein echtes EinzelstÃ¼ck ist.`;
                 }
                 showToast(`${removedNames.length} ausverkaufte(s) Unikat(e) entfernt`);
             }
@@ -1130,7 +1142,7 @@
 
             if (existsIdx >= 0) {
                 wishlist.splice(existsIdx, 1);
-                showToast(`Â«${name}Â» aus der Merkliste entfernt`);
+                showToast(`Â«${name}Â» aus der Wunschkiste entfernt`);
             } else {
                 wishlist.push({
                     name: item.name,
@@ -1138,7 +1150,7 @@
                     img: item.img || 'images/logo.png',
                     cat: item.cat || ''
                 });
-                showToast(`Â«${name}Â» zur Merkliste hinzugefÃ¼gt â¤ï¸`);
+                showToast(`Â«${name}Â» in deine Wunschkiste gelegt â¤ï¸`);
             }
 
             saveWishlist();
@@ -1212,7 +1224,7 @@
                 container.innerHTML = `
                     <div class="text-center py-12 text-darkbrown/60 italic space-y-3">
                         <div class="text-4xl text-darkbrown/30">â™¡</div>
-                        <p class="text-xs">Deine Merkliste ist noch leer.</p>
+                        <p class="text-xs">Deine Wunschkiste ist noch leer.</p>
                         <p class="text-[11px] text-darkbrown/40 font-light">Klicke beim StÃ¶bern auf das Herz bei beliebigen StÃ¼cken, um sie dir hier zu merken.</p>
                     </div>
                 `;
@@ -1310,7 +1322,7 @@
             closeWishlist();
             if (addedCount > 0) {
                 openCart();
-                showToast(`${addedCount} Artikel in den Warenkorb gelegt!`);
+                showToast(`${addedCount} Artikel ins N&auml;hk&ouml;rbchen gelegt!`);
             } else {
                 showToast('Bitte wÃ¤hle bei den Artikeln die gewÃ¼nschten Varianten/Farben.');
             }
@@ -1325,7 +1337,7 @@
                 authText.innerHTML = `<span>Angemeldet als: <strong>${currentUser.email}</strong></span>`;
                 authBtn.textContent = 'Konto';
             } else {
-                authText.innerHTML = `<span>ðŸ’¡ Melde dich an, um deine Merkliste dauerhaft zu sichern.</span>`;
+                authText.innerHTML = `<span>ðŸ’¡ Melde dich an, um deine Wunschkiste dauerhaft zu sichern.</span>`;
                 authBtn.textContent = 'Anmelden';
             }
         }
@@ -1384,7 +1396,7 @@
                 tabLogin.className = "flex-1 py-2 text-center border-b-2 border-terracotta text-terracotta transition";
                 tabRegister.className = "flex-1 py-2 text-center border-b-2 border-transparent text-darkbrown/50 hover:text-darkbrown transition";
                 submitText.textContent = "Anmelden";
-                subtitle.textContent = "Melde dich an, um deine Merkliste aufzurufen.";
+                subtitle.textContent = "Melde dich an, um deine Wunschkiste aufzurufen.";
             } else {
                 tabLogin.className = "flex-1 py-2 text-center border-b-2 border-transparent text-darkbrown/50 hover:text-darkbrown transition";
                 tabRegister.className = "flex-1 py-2 text-center border-b-2 border-terracotta text-terracotta transition";
