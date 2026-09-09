@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Über mich & Unique by Lea | Handgefertigt in Interlaken</title>
+        <meta name="description" content="Ãœber mich & Unique by Lea: Lea Limburg Ã¼ber handgefertigte LieblingsstÃ¼cke, nachhaltige Stoffe und echte Schweizer Handarbeit aus Interlaken.">
+    <meta property="og:type" content="profile">
+    <meta property="og:site_name" content="Unique by Lea">
+    <meta property="og:url" content="https://uniquebylea.vercel.app/ueber-mich.html">
+    <meta property="og:title" content="Ãœber mich & Unique by Lea | Handgefertigt in Interlaken">
+    <meta property="og:description" content="Hi, ich bin Lea! Langlebige LieblingsstÃ¼cke mit Charakter statt anonymer Massenware â€“ 100% von Hand genÃ¤ht in Interlaken, Schweiz.">
+    <meta property="og:image" content="https://uniquebylea.vercel.app/images/uebermich.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" type="image/png" href="images/logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -30,6 +40,20 @@
             <div class="hidden md:flex items-center gap-8 uppercase text-[10px] tracking-[0.2em] font-bold">
                 <a href="index.html" class="hover:text-terracotta transition">Startseite</a>
                 <a href="shop.html" class="hover:text-terracotta transition">Shop</a>
+                <a href="shop.html?openWishlist=true" class="hover:text-terracotta transition">Wunschkiste</a>
+                <a href="shop.html?openCart=true" class="hover:text-terracotta transition">N&auml;hk&ouml;rbchen</a>
+                <a href="shop.html?openWishlist=true" class="hover:text-terracotta transition flex items-center gap-1.5" title="Deine Wunschkiste">
+                    <svg class="w-3.5 h-3.5 text-terracotta fill-current" viewBox="0 0 24 24">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                    <span>Wunschkiste</span>
+                </a>
+                <a href="shop.html?openCart=true" class="hover:text-terracotta transition flex items-center gap-1.5" title="Dein NÃ¤hkÃ¶rbchen">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <span>N&auml;hk&ouml;rbchen</span>
+                </a>
                 <a href="ueber-mich.html" class="text-terracotta border-b-2 border-terracotta pb-0.5">Über mich</a>
                 <a href="kontakt.html" class="hover:text-terracotta transition">Kontakt</a>
                 
@@ -51,6 +75,18 @@
         <div id="nav-menu" class="hidden md:hidden flex flex-col items-center py-6 gap-5 uppercase text-[11px] tracking-widest font-bold bg-creme border-b border-darkbrown/10">
             <a href="index.html" class="hover:text-terracotta">Startseite</a>
             <a href="shop.html" class="hover:text-terracotta">Shop</a>
+            <a href="shop.html?openWishlist=true" class="hover:text-terracotta flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-terracotta fill-current" viewBox="0 0 24 24">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+                <span>Wunschkiste</span>
+            </a>
+            <a href="shop.html?openCart=true" class="hover:text-terracotta flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                <span>N&auml;hk&ouml;rbchen</span>
+            </a>
             <a href="ueber-mich.html" class="text-terracotta">Über mich</a>
             <a href="kontakt.html" class="hover:text-terracotta">Kontakt</a>
             <a href="https://www.instagram.com/unique_by_lea" target="_blank" rel="noopener noreferrer" class="text-terracotta pt-2">Instagram: @unique_by_lea</a>
@@ -196,6 +232,20 @@
             <div class="flex flex-wrap justify-center items-center gap-5 uppercase text-[10px] tracking-widest font-bold">
                 <a href="index.html" class="hover:text-terracotta transition">Startseite</a>
                 <a href="shop.html" class="hover:text-terracotta transition">Shop</a>
+                <a href="shop.html?openWishlist=true" class="hover:text-terracotta transition">Wunschkiste</a>
+                <a href="shop.html?openCart=true" class="hover:text-terracotta transition">N&auml;hk&ouml;rbchen</a>
+                <a href="shop.html?openWishlist=true" class="hover:text-terracotta transition flex items-center gap-1.5" title="Deine Wunschkiste">
+                    <svg class="w-3.5 h-3.5 text-terracotta fill-current" viewBox="0 0 24 24">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                    <span>Wunschkiste</span>
+                </a>
+                <a href="shop.html?openCart=true" class="hover:text-terracotta transition flex items-center gap-1.5" title="Dein NÃ¤hkÃ¶rbchen">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <span>N&auml;hk&ouml;rbchen</span>
+                </a>
                 <a href="ueber-mich.html" class="text-terracotta border-b border-terracotta">Über mich</a>
                 <a href="kontakt.html" class="hover:text-terracotta transition">Kontakt</a>
                 <a href="agb.html" class="hover:text-terracotta transition">AGB</a>
