@@ -1,5 +1,12 @@
 module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
 
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Nur POST erlaubt' });
@@ -11,7 +18,17 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { name, cat, price, description, badge, colorsList, imageBase64, fileName } = req.body;
+    let body = req.body;
+    if (typeof body === 'string') {
+      try {
+        body = JSON.parse(body);
+      } catch (e) {
+        body = {};
+      }
+    }
+    body = body || {};
+
+    const { name, cat, price, description, badge, colorsList, imageBase64, fileName } = body;
     if (!name || !imageBase64) {
       return res.status(400).json({ error: 'Name und Bild sind erforderlich.' });
     }
@@ -66,7 +83,7 @@ module.exports = async (req, res) => {
     const productData = {
       name: name,
       cat: cat || 'Unikate',
-      price: price.includes('CHF') ? price : `${price} CHF`,
+      price: (price || '49.00').includes('CHF') ? price : `${price} CHF`,
       badge: badge || 'Unikat',
       stock: 1,
       description: description || '',
