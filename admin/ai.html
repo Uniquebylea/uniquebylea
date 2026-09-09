@@ -194,9 +194,20 @@
 
             try {
                 // Direkt ueber unsere sichere Serverless API speichern (ohne Token-Eingabe!)
+                let token = '';
+                try {
+                    const sveltiaUser = JSON.parse(localStorage.getItem('sveltia-cms.user') || '{}');
+                    token = sveltiaUser.token || localStorage.getItem('uniquebylea_gh_token') || '';
+                } catch (e) {}
+
+                const reqHeaders = { 'Content-Type': 'application/json' };
+                if (token) {
+                    reqHeaders['Authorization'] = 'token ' + token;
+                }
+
                 const saveRes = await fetch('/api/save-product', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: reqHeaders,
                     body: JSON.stringify({
                         name: name,
                         cat: cat,
