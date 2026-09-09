@@ -192,72 +192,29 @@
 
             const colorsList = colorsStr ? colorsStr.split(',').map(c => ({ name: c.trim(), stock: 1 })) : [];
 
-            // Token aus Sveltia CMS Login oder localStorage holen
-            let token = '';
             try {
-                const sveltiaUser = JSON.parse(localStorage.getItem('sveltia-cms.user') || '{}');
-                token = sveltiaUser.token || localStorage.getItem('uniquebylea_gh_token');
-            } catch (err) {}
+                // Direkt ueber unsere sichere Serverless API speichern (ohne Token-Eingabe!)
+                const saveRes = await fetch('/api/save-product', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: name,
+                        cat: cat,
+                        price: price,
+                        description: description,
+                        badge: badge,
+                        colorsList: colorsList,
+                        imageBase64: currentBase64,
+                        fileName: currentFileName
+                    })
+                });
 
-            if (!token) {
-                token = prompt("Bitte gib dein GitHub Personal Access Token ein (wird sicher in deinem Browser gespeichert):");
-                if (token) {
-                    token = token.trim();
-                    localStorage.setItem('uniquebylea_gh_token', token);
-                } else {
-                    alert("Ohne Token kann das Produkt nicht gespeichert werden. Bitte logge dich im CMS ein (/admin/)!");
-                    btn.disabled = false;
-                    btn.textContent = '🚀 Produkt jetzt veröffentlichen';
-                    return;
+                const resData = await saveRes.json();
+                if (!saveRes.ok || resData.error) {
+                    throw new Error(resData.error || ('Fehler beim Speichern (' + saveRes.status + ')'));
                 }
-            }
 
-            try {
-                // 1. Bild hochladen
-                const imagePath = `images/${slug}-${currentFileName}`;
-                const rawBase64 = currentBase64.replace(/^data:image\/\w+;base64,/, '');
-
-                await fetch(`https://api.github.com/repos/Uniquebylea/uniquebylea/contents/${imagePath}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: `Upload image for ${name}`,
-                        content: rawBase64
-                    })
-                });
-
-                // 2. Produkt-JSON anlegen
-                const productData = {
-                    name: name,
-                    cat: cat,
-                    price: price.includes('CHF') ? price : `${price} CHF`,
-                    badge: badge,
-                    stock: 1,
-                    description: description,
-                    img: imagePath,
-                    variants_color: colorsList,
-                    variants_size: [],
-                    allow_custom_name: false
-                };
-
-                const productJsonBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(productData, null, 2))));
-
-                await fetch(`https://api.github.com/repos/Uniquebylea/uniquebylea/contents/content/products/${slug}.json`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: `Create product ${name}`,
-                        content: productJsonBase64
-                    })
-                });
-
-                alert(`🎉 Fantastisch! Das Produkt "${name}" wurde erfolgreich erstellt und ist in ca. 20 Sekunden in deinem Shop online!`);
+                alert('Fantastisch! Das Produkt "' + name + '" wurde erfolgreich erstellt und ist in wenigen Sekunden in deinem Shop online!');
                 window.location.href = '/shop.html';
             } catch (err) {
                 alert("Fehler beim Speichern: " + err.message);
