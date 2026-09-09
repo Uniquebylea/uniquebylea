@@ -12,9 +12,12 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Nur POST erlaubt' });
   }
 
-  const token = process.env.GITHUB_TOKEN;
+  const authHeader = req.headers['authorization'] || '';
+  const clientToken = authHeader.replace(/^bearer\s+/i, '').replace(/^token\s+/i, '').trim();
+  const token = process.env.GITHUB_TOKEN || clientToken;
+
   if (!token) {
-    return res.status(500).json({ error: 'GITHUB_TOKEN ist in Vercel nicht konfiguriert.' });
+    return res.status(401).json({ error: 'Bitte logge dich zuerst kurz im CMS ein (/admin/)!' });
   }
 
   try {
