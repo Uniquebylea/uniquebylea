@@ -4,6 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unique by Lea | Handgefertigte Unikate aus Interlaken</title>
+    <meta name="description" content="Liebevoll handgefertigte Unikate, Baby- & Kinderkleidung, Reparaturen, Upcycling und prÃ¤ziser Ã„nderungsservice aus Interlaken, Schweiz.">
+    
+    <!-- Open Graph / WhatsApp / Facebook Link Preview -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Unique by Lea">
+    <meta property="og:url" content="https://uniquebylea.vercel.app/">
+    <meta property="og:title" content="Unique by Lea | Handgefertigte Unikate aus Interlaken">
+    <meta property="og:description" content="Liebevoll handgefertigte Unikate, Babykleidung, Upcycling & Ã„nderungsservice von Hand genÃ¤ht in Interlaken, Schweiz.">
+    <meta property="og:image" content="https://uniquebylea.vercel.app/images/startseitegesicht.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Unique by Lea | Handgefertigte Unikate aus Interlaken">
+    <meta name="twitter:description" content="Liebevoll handgefertigte Unikate, Babykleidung, Upcycling & Ã„nderungsservice aus Interlaken, Schweiz.">
+    <meta name="twitter:image" content="https://uniquebylea.vercel.app/images/startseitegesicht.jpg">
+
     <link rel="icon" type="image/png" href="images/logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -27,16 +45,27 @@
                 <img src="images/logo.png" alt="Unique by Lea Logo" class="h-14 md:h-20 object-contain">
             </a>
             
-            <div class="hidden md:flex items-center gap-8 uppercase text-[10px] tracking-[0.2em] font-bold">
+            <div class="hidden md:flex items-center gap-7 uppercase text-[10px] tracking-[0.18em] font-bold">
                 <a href="index.html" class="text-terracotta border-b-2 border-terracotta pb-0.5">Startseite</a>
                 <a href="shop.html" class="hover:text-terracotta transition">Shop</a>
-                <a href="shop.html?openWishlist=true" class="hover:text-terracotta transition flex items-center gap-1" title="Merkliste">
+                
+                <!-- Wunschkiste (Merkliste) -->
+                <a href="shop.html?openWishlist=true" class="hover:text-terracotta transition flex items-center gap-1.5" title="Deine Wunschkiste">
                     <svg class="w-3.5 h-3.5 text-terracotta fill-current" viewBox="0 0 24 24">
                         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                     </svg>
-                    <span>Merkliste</span>
+                    <span>Wunschkiste</span>
                 </a>
-                <a href="ueber-mich.html" class="hover:text-terracotta transition">Über mich</a>
+
+                <!-- NÃ¤hkÃ¶rbchen (Warenkorb) -->
+                <a href="shop.html?openCart=true" class="hover:text-terracotta transition flex items-center gap-1.5" title="Dein NÃ¤hkÃ¶rbchen">
+                    <svg class="w-3.5 h-3.5 text-darkbrown/70 hover:text-terracotta transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <span>NÃ¤hkÃ¶rbchen</span>
+                </a>
+
+                <a href="ueber-mich.html" class="hover:text-terracotta transition">Ãœber mich</a>
                 <a href="kontakt.html" class="hover:text-terracotta transition">Kontakt</a>
                 
                 <!-- Instagram -->
@@ -50,7 +79,7 @@
             </div>
 
             <!-- Mobile Menu Toggle -->
-            <button id="nav-toggle" class="md:hidden text-2xl p-2" aria-label="Menü öffnen">☰</button>
+            <button id="nav-toggle" class="md:hidden text-2xl p-2" aria-label="MenÃ¼ Ã¶ffnen">â˜°</button>
         </div>
 
         <!-- Mobile Navigation Menu -->
@@ -61,74 +90,88 @@
                 <svg class="w-3.5 h-3.5 text-terracotta fill-current" viewBox="0 0 24 24">
                     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                 </svg>
-                <span>Merkliste</span>
+                <span>Wunschkiste</span>
             </a>
-            <a href="ueber-mich.html" class="hover:text-terracotta">Über mich</a>
+            <a href="shop.html?openCart=true" class="hover:text-terracotta flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                <span>NÃ¤hkÃ¶rbchen</span>
+            </a>
+            <a href="ueber-mich.html" class="hover:text-terracotta">Ãœber mich</a>
             <a href="kontakt.html" class="hover:text-terracotta">Kontakt</a>
             <a href="https://www.instagram.com/unique_by_lea" target="_blank" rel="noopener noreferrer" class="text-terracotta pt-2">Instagram: @unique_by_lea</a>
         </div>
     </nav>
 
-    <!-- 1. HERO SECTION (Elevator Pitch) -->
-    <section class="py-12 md:py-20 px-4 text-center">
-        <div class="max-w-4xl mx-auto bg-creme/90 backdrop-blur-sm p-8 md:p-16 rounded-3xl shadow-xl border border-white/60">
+    <!-- 1. HERO SECTION -->
+    <section class="py-10 md:py-16 px-4 text-center">
+        <div class="max-w-4xl mx-auto bg-creme/90 backdrop-blur-sm p-8 md:p-14 rounded-3xl shadow-xl border border-white/60">
             
             <!-- Gesicht hinter der Marke -->
-            <div class="relative w-32 h-32 md:w-40 md:h-40 mx-auto mb-6">
+            <div class="relative w-32 h-32 md:w-36 md:h-36 mx-auto mb-6">
                 <img src="images/startseitegesicht.jpg" alt="Lea - Unique by Lea" 
                      class="w-full h-full rounded-full border-4 border-white shadow-lg object-cover">
-                <span class="absolute bottom-1 right-1 bg-terracotta text-white text-[9px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full shadow">
+                <span class="absolute bottom-1 right-1 bg-terracotta text-white text-[9px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full shadow">
                     Interlaken
                 </span>
             </div>
 
-            <!-- Headline & Subline (Option B) -->
-            <h1 class="font-serif text-2xl md:text-5xl font-bold italic mb-5 leading-tight text-darkbrown">
-                Besondere Lieblingsstücke – von Hand genäht in Interlaken
+            <!-- Headline & Subline -->
+            <h1 class="font-serif text-2xl md:text-5xl font-bold italic mb-4 leading-tight text-darkbrown">
+                Besondere LieblingsstÃ¼cke â€“ von Hand genÃ¤ht in Interlaken
             </h1>
             <p class="text-sm md:text-base leading-relaxed text-darkbrown/85 max-w-2xl mx-auto mb-8 font-light">
-                Echte Schweizer Handarbeit, nachhaltige Stoffe und persönliche Einzelstücke, die ein Leben lang Freude machen.
+                Echte Schweizer Handarbeit, nachhaltige Stoffe und persÃ¶nliche EinzelstÃ¼cke, die ein Leben lang Freude machen.
             </p>
 
             <!-- Call to Actions -->
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3.5 mb-10">
                 <a href="shop.html" 
                    class="w-full sm:w-auto bg-darkbrown hover:bg-terracotta text-white px-8 py-3.5 rounded-full uppercase text-xs tracking-widest font-bold shadow-lg transition duration-200">
-                    Zum Shop ➔
+                    Zum Shop âž”
                 </a>
                 <a href="ueber-mich.html" 
                    class="w-full sm:w-auto border border-darkbrown/25 hover:border-terracotta hover:text-terracotta text-darkbrown px-7 py-3.5 rounded-full uppercase text-xs tracking-widest font-bold transition duration-200">
-                    Über mich
+                    Ãœber mich
                 </a>
                 <a href="kontakt.html" 
-                   class="w-full sm:w-auto text-darkbrown/70 hover:text-terracotta text-xs uppercase tracking-widest font-bold py-2 underline underline-offset-4 transition">
-                    Wunschstück anfragen
+                   class="w-full sm:w-auto text-darkbrown/75 hover:text-terracotta text-xs uppercase tracking-widest font-bold py-2 underline underline-offset-4 transition">
+                    WunschstÃ¼ck anfragen
                 </a>
             </div>
 
-            <!-- 1B. VERTRAUENS-BADGES (Trust Signals) -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-8 border-t border-darkbrown/10 text-left">
-                <div class="flex items-start gap-3 p-3 rounded-2xl bg-white/60 border border-darkbrown/5">
-                    <span class="text-2xl flex-shrink-0">🪡</span>
+            <!-- 1B. VERTRAUENS-BADGES -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-8 border-t border-darkbrown/10 text-left">
+                <div class="flex items-start gap-3 p-3.5 rounded-2xl bg-white/70 border border-darkbrown/5">
+                    <span class="text-2xl flex-shrink-0">ðŸª¡</span>
                     <div>
                         <h4 class="font-serif text-xs font-bold uppercase tracking-wider text-darkbrown">100 % Handarbeit</h4>
-                        <p class="text-[11px] text-darkbrown/70 leading-snug">Liebevoll & präzise in Interlaken genäht</p>
+                        <p class="text-[11px] text-darkbrown/70 leading-snug">PrÃ¤zise & mit Liebe genÃ¤ht in Interlaken</p>
                     </div>
                 </div>
 
-                <div class="flex items-start gap-3 p-3 rounded-2xl bg-white/60 border border-darkbrown/5">
-                    <span class="text-2xl flex-shrink-0">📦</span>
+                <div class="flex items-start gap-3 p-3.5 rounded-2xl bg-white/70 border border-darkbrown/5">
+                    <span class="text-2xl flex-shrink-0">ðŸ‡¨ðŸ‡­</span>
                     <div>
-                        <h4 class="font-serif text-xs font-bold uppercase tracking-wider text-darkbrown">Schweizer Versand</h4>
-                        <p class="text-[11px] text-darkbrown/70 leading-snug">Kostenlos ab 100 CHF · Abholung im Atelier</p>
+                        <h4 class="font-serif text-xs font-bold uppercase tracking-wider text-darkbrown">TWINT & Post</h4>
+                        <p class="text-[11px] text-darkbrown/70 leading-snug">Bequem zahlen Â· Gratis ab 100 CHF</p>
                     </div>
                 </div>
 
-                <div class="flex items-start gap-3 p-3 rounded-2xl bg-white/60 border border-darkbrown/5">
-                    <span class="text-2xl flex-shrink-0">✨</span>
+                <div class="flex items-start gap-3 p-3.5 rounded-2xl bg-white/70 border border-darkbrown/5">
+                    <span class="text-2xl flex-shrink-0">ðŸ“</span>
                     <div>
-                        <h4 class="font-serif text-xs font-bold uppercase tracking-wider text-darkbrown">Mit Liebe personalisiert</h4>
-                        <p class="text-[11px] text-darkbrown/70 leading-snug">Wunschname, Farbauswahl & Stickereien</p>
+                        <h4 class="font-serif text-xs font-bold uppercase tracking-wider text-darkbrown">Gratis Abholung</h4>
+                        <p class="text-[11px] text-darkbrown/70 leading-snug">Direkt im Atelier in Interlaken abholbar</p>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-3 p-3.5 rounded-2xl bg-white/70 border border-darkbrown/5">
+                    <span class="text-2xl flex-shrink-0">âœ¨</span>
+                    <div>
+                        <h4 class="font-serif text-xs font-bold uppercase tracking-wider text-darkbrown">Auf Mass & Flicken</h4>
+                        <p class="text-[11px] text-darkbrown/70 leading-snug">Reparaturen, Upcycling & Personalisierung</p>
                     </div>
                 </div>
             </div>
@@ -137,57 +180,320 @@
     </section>
 
     <!-- KATEGORIEN ENTDECKEN -->
-    <section class="py-12 md:py-16 px-4 text-center max-w-5xl mx-auto w-full">
-        <h2 class="font-serif text-xl md:text-3xl italic mb-3 text-darkbrown">Kategorien entdecken</h2>
-        <p class="text-xs uppercase tracking-widest text-darkbrown/60 mb-8">Finde dein nächstes handgefertigtes Lieblingsstück</p>
+    <section class="py-10 md:py-14 px-4 text-center max-w-5xl mx-auto w-full">
+        <h2 class="font-serif text-xl md:text-3xl italic mb-2 text-darkbrown">Kategorien entdecken</h2>
+        <p class="text-xs uppercase tracking-widest text-darkbrown/60 mb-8">Finde dein nÃ¤chstes handgefertigtes Unikat</p>
 
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
             <a href="shop.html?cat=Baby" class="bg-creme p-5 rounded-2xl border border-darkbrown/10 hover:border-terracotta hover:shadow-md transition group">
-                <span class="text-3xl block mb-2 group-hover:scale-110 transition">🍼</span>
+                <span class="text-3xl block mb-2 group-hover:scale-110 transition">ðŸ¼</span>
                 <span class="font-serif text-xs md:text-sm font-bold uppercase tracking-wider block">Baby</span>
                 <span class="text-[10px] text-darkbrown/60">Nestchen, Decken & mehr</span>
             </a>
 
             <a href="shop.html?cat=Kinder" class="bg-creme p-5 rounded-2xl border border-darkbrown/10 hover:border-terracotta hover:shadow-md transition group">
-                <span class="text-3xl block mb-2 group-hover:scale-110 transition">🧸</span>
+                <span class="text-3xl block mb-2 group-hover:scale-110 transition">ðŸ§¸</span>
                 <span class="font-serif text-xs md:text-sm font-bold uppercase tracking-wider block">Kinder</span>
-                <span class="text-[10px] text-darkbrown/60">Mützen, Schals & Accessoires</span>
+                <span class="text-[10px] text-darkbrown/60">MÃ¼tzen, Schals & Accessoires</span>
             </a>
 
             <a href="shop.html?cat=Erwachsene" class="bg-creme p-5 rounded-2xl border border-darkbrown/10 hover:border-terracotta hover:shadow-md transition group">
-                <span class="text-3xl block mb-2 group-hover:scale-110 transition">🌿</span>
+                <span class="text-3xl block mb-2 group-hover:scale-110 transition">ðŸŒ¿</span>
                 <span class="font-serif text-xs md:text-sm font-bold uppercase tracking-wider block">Erwachsene</span>
                 <span class="text-[10px] text-darkbrown/60">Stilvolle Alltagsbegleiter</span>
             </a>
 
             <a href="shop.html?cat=Taschen" class="bg-creme p-5 rounded-2xl border border-darkbrown/10 hover:border-terracotta hover:shadow-md transition group">
-                <span class="text-3xl block mb-2 group-hover:scale-110 transition">👜</span>
+                <span class="text-3xl block mb-2 group-hover:scale-110 transition">ðŸ‘œ</span>
                 <span class="font-serif text-xs md:text-sm font-bold uppercase tracking-wider block">Taschen</span>
                 <span class="text-[10px] text-darkbrown/60">Shopper, Beutel & Etuis</span>
             </a>
 
             <a href="shop.html?cat=Makramee" class="bg-creme p-5 rounded-2xl border border-darkbrown/10 hover:border-terracotta hover:shadow-md transition group">
-                <span class="text-3xl block mb-2 group-hover:scale-110 transition">🧶</span>
+                <span class="text-3xl block mb-2 group-hover:scale-110 transition">ðŸ§¶</span>
                 <span class="font-serif text-xs md:text-sm font-bold uppercase tracking-wider block">Makramee</span>
-                <span class="text-[10px] text-darkbrown/60">Boho-Wandbehänge & Deko</span>
+                <span class="text-[10px] text-darkbrown/60">Boho-WandbehÃ¤nge & Deko</span>
             </a>
 
             <a href="shop.html?cat=Accessoires" class="bg-creme p-5 rounded-2xl border border-darkbrown/10 hover:border-terracotta hover:shadow-md transition group">
-                <span class="text-3xl block mb-2 group-hover:scale-110 transition">🎀</span>
+                <span class="text-3xl block mb-2 group-hover:scale-110 transition">ðŸŽ€</span>
                 <span class="font-serif text-xs md:text-sm font-bold uppercase tracking-wider block">Accessoires</span>
-                <span class="text-[10px] text-darkbrown/60">Schlüsselanhänger & Geschenke</span>
+                <span class="text-[10px] text-darkbrown/60">SchlÃ¼sselanhÃ¤nger & Geschenke</span>
             </a>
 
             <a href="shop.html?cat=Gutscheine" class="bg-creme p-5 rounded-2xl border border-darkbrown/10 hover:border-terracotta hover:shadow-md transition group">
-                <span class="text-3xl block mb-2 group-hover:scale-110 transition">💌</span>
+                <span class="text-3xl block mb-2 group-hover:scale-110 transition">ðŸ’Œ</span>
                 <span class="font-serif text-xs md:text-sm font-bold uppercase tracking-wider block">Gutscheine</span>
                 <span class="text-[10px] text-darkbrown/60">Freude zum Verschenken</span>
             </a>
 
             <a href="shop.html" class="bg-terracotta/10 border border-terracotta/30 p-5 rounded-2xl hover:bg-terracotta hover:text-white transition group flex flex-col justify-center items-center">
-                <span class="text-2xl block mb-1">➔</span>
+                <span class="text-2xl block mb-1">âž”</span>
                 <span class="font-serif text-xs md:text-sm font-bold uppercase tracking-wider">Alle anzeigen</span>
             </a>
+        </div>
+    </section>
+
+    <!-- NEU IM ATELIER: AKTUELLE UNIKATE VORSCHAU -->
+    <section class="py-12 md:py-16 px-4 bg-creme/60 border-y border-darkbrown/5">
+        <div class="max-w-6xl mx-auto text-center">
+            <span class="text-[10px] uppercase tracking-[0.25em] font-bold text-terracotta block mb-2">Frisch von der NÃ¤hmaschine</span>
+            <h2 class="font-serif text-2xl md:text-4xl italic font-bold text-darkbrown mb-3">Neu im Atelier</h2>
+            <p class="text-xs md:text-sm text-darkbrown/70 max-w-xl mx-auto mb-10 font-light">
+                Jedes StÃ¼ck ist ein von Hand gefertigtes EinzelstÃ¼ck. Wenn weg, dann weg!
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
+                
+                <!-- Produkt 1: Babynest Schafe -->
+                <div class="bg-white rounded-3xl overflow-hidden border border-darkbrown/10 shadow-sm hover:shadow-md transition group flex flex-col">
+                    <div class="relative aspect-square overflow-hidden bg-sand/30">
+                        <img src="images/baby-babynest.jpeg" alt="Babynest Schafe" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <span class="absolute top-3 left-3 bg-terracotta text-white text-[9px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-full shadow">
+                            Bestseller
+                        </span>
+                    </div>
+                    <div class="p-6 flex flex-col flex-1">
+                        <span class="text-[10px] uppercase tracking-widest text-darkbrown/50 font-bold mb-1">Baby</span>
+                        <h3 class="font-serif text-lg font-bold text-darkbrown mb-2">Babynest Schafe</h3>
+                        <p class="text-xs text-darkbrown/70 font-light mb-4 line-clamp-2">
+                            Kuschelig weiches Babynest aus hochwertigen Stoffen. Perfekt fÃ¼r die ersten Monate und zum Schlafen.
+                        </p>
+                        <div class="mt-auto pt-4 border-t border-darkbrown/10 flex items-center justify-between">
+                            <span class="font-bold text-sm text-darkbrown">79.00 CHF</span>
+                            <a href="shop.html" class="bg-darkbrown hover:bg-terracotta text-white text-[11px] uppercase tracking-wider font-bold px-4 py-2 rounded-xl transition">
+                                Ansehen âž”
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Produkt 2: Geschenkgutschein -->
+                <div class="bg-white rounded-3xl overflow-hidden border border-darkbrown/10 shadow-sm hover:shadow-md transition group flex flex-col">
+                    <div class="relative aspect-square overflow-hidden bg-sand/30">
+                        <img src="images/geschenkgutschein-25-chf-gutschein-25.png" alt="Geschenkgutschein Unique by Lea" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <span class="absolute top-3 left-3 bg-darkbrown text-white text-[9px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-full shadow">
+                            Geschenkidee
+                        </span>
+                    </div>
+                    <div class="p-6 flex flex-col flex-1">
+                        <span class="text-[10px] uppercase tracking-widest text-darkbrown/50 font-bold mb-1">Gutscheine</span>
+                        <h3 class="font-serif text-lg font-bold text-darkbrown mb-2">Geschenkgutschein</h3>
+                        <p class="text-xs text-darkbrown/70 font-light mb-4 line-clamp-2">
+                            Das perfekte Geschenk fÃ¼r Mamas, Freundinnen oder Familienfeste. Frei wÃ¤hlbar fÃ¼r den gesamten Shop.
+                        </p>
+                        <div class="mt-auto pt-4 border-t border-darkbrown/10 flex items-center justify-between">
+                            <span class="font-bold text-sm text-darkbrown">ab 25.00 CHF</span>
+                            <a href="shop.html" class="bg-darkbrown hover:bg-terracotta text-white text-[11px] uppercase tracking-wider font-bold px-4 py-2 rounded-xl transition">
+                                Ansehen âž”
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 3: WunschstÃ¼ck / Massanfertigung KÃ¤rtchen -->
+                <div class="bg-gradient-to-br from-sand/40 to-white rounded-3xl p-7 border border-terracotta/30 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-2xl bg-terracotta/15 text-terracotta flex items-center justify-center text-2xl mb-5">
+                            ðŸ§µ
+                        </div>
+                        <span class="text-[10px] uppercase tracking-widest text-terracotta font-bold mb-1 block">Massanfertigung</span>
+                        <h3 class="font-serif text-xl font-bold text-darkbrown mb-3">Dein persÃ¶nliches Wunsch-Unikat</h3>
+                        <p class="text-xs text-darkbrown/75 leading-relaxed font-light mb-6">
+                            Hast du bestimmte Lieblingsfarben, Masstextilien oder eine ganz eigene Idee? Ich setze deine WÃ¼nsche gerne individuell und mit viel Liebe zum Detail fÃ¼r dich um.
+                        </p>
+                    </div>
+                    <div class="pt-5 border-t border-darkbrown/10">
+                        <a href="kontakt.html" class="w-full block text-center bg-terracotta hover:bg-darkbrown text-white text-[11px] uppercase tracking-widest font-bold py-3 rounded-xl transition shadow">
+                            Wunschprojekt anfragen
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Shop CTA Button -->
+            <div class="mt-10">
+                <a href="shop.html" class="inline-flex items-center gap-2 bg-darkbrown hover:bg-terracotta text-white px-8 py-3.5 rounded-full uppercase text-xs tracking-widest font-bold shadow-md transition">
+                    <span>Alle Unikate im Shop entdecken</span>
+                    <span>âž”</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- KUNDENSTIMMEN & VERTRAUEN (Testimonials) -->
+    <section class="py-14 md:py-20 px-4 text-center">
+        <div class="max-w-5xl mx-auto">
+            <span class="text-[10px] uppercase tracking-[0.25em] font-bold text-terracotta block mb-2">Echte Freude im Alltag</span>
+            <h2 class="font-serif text-2xl md:text-4xl italic font-bold text-darkbrown mb-3">Was meine Kundinnen sagen</h2>
+            <p class="text-xs md:text-sm text-darkbrown/70 max-w-lg mx-auto mb-12 font-light">
+                Das SchÃ¶nste an meiner Arbeit sind die lieben RÃ¼ckmeldungen und glÃ¼cklichen Gesichter.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+                
+                <!-- Review 1 -->
+                <div class="bg-creme/90 p-7 rounded-3xl border border-darkbrown/10 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex text-amber-500 text-sm mb-3">
+                            â˜…â˜…â˜…â˜…â˜…
+                        </div>
+                        <p class="font-serif italic text-sm text-darkbrown leading-relaxed mb-6">
+                            Â«Die Babydecke zur Geburt unserer Nichte war das schÃ¶nste Geschenk Ã¼berhaupt. WunderschÃ¶ne, weiche Stoffe und mit so viel Liebe verarbeitet!Â»
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-darkbrown/10 flex items-center justify-between">
+                        <div>
+                            <p class="font-bold text-xs text-darkbrown">Corinne B.</p>
+                            <p class="text-[10px] text-darkbrown/60">Interlaken</p>
+                        </div>
+                        <span class="text-[10px] bg-white text-terracotta px-2.5 py-1 rounded-full border border-terracotta/20 font-medium">Babydecke</span>
+                    </div>
+                </div>
+
+                <!-- Review 2 -->
+                <div class="bg-creme/90 p-7 rounded-3xl border border-darkbrown/10 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex text-amber-500 text-sm mb-3">
+                            â˜…â˜…â˜…â˜…â˜…
+                        </div>
+                        <p class="font-serif italic text-sm text-darkbrown leading-relaxed mb-6">
+                            Â«Lea hat die absolute Lieblingshose unseres Sohnes gerettet. Mit so viel FeingefÃ¼hl geflickt, dass sie jetzt noch cooler aussieht als vorher!Â»
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-darkbrown/10 flex items-center justify-between">
+                        <div>
+                            <p class="font-bold text-xs text-darkbrown">Sara M.</p>
+                            <p class="text-[10px] text-darkbrown/60">Thun</p>
+                        </div>
+                        <span class="text-[10px] bg-white text-terracotta px-2.5 py-1 rounded-full border border-terracotta/20 font-medium">Reparatur</span>
+                    </div>
+                </div>
+
+                <!-- Review 3 -->
+                <div class="bg-creme/90 p-7 rounded-3xl border border-darkbrown/10 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <div class="flex text-amber-500 text-sm mb-3">
+                            â˜…â˜…â˜…â˜…â˜…
+                        </div>
+                        <p class="font-serif italic text-sm text-darkbrown leading-relaxed mb-6">
+                            Â«Hosen und VorhÃ¤nge perfekt auf Mass gekÃ¼rzt. Schnell, unkompliziert und super herzlich. Eine echte Bereicherung fÃ¼rs Berner Oberland!Â»
+                        </p>
+                    </div>
+                    <div class="pt-4 border-t border-darkbrown/10 flex items-center justify-between">
+                        <div>
+                            <p class="font-bold text-xs text-darkbrown">Marc K.</p>
+                            <p class="text-[10px] text-darkbrown/60">Bern</p>
+                        </div>
+                        <span class="text-[10px] bg-white text-terracotta px-2.5 py-1 rounded-full border border-terracotta/20 font-medium">Ã„nderungsservice</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- SCHNELLER DIREKTKONTAKT (Instagram & E-Mail) -->
+    <section class="py-12 md:py-16 px-4 bg-white/70 border-y border-darkbrown/5">
+        <div class="max-w-4xl mx-auto text-center">
+            <span class="text-[10px] uppercase tracking-[0.25em] font-bold text-terracotta block mb-2">Unkompliziert & Direkt</span>
+            <h2 class="font-serif text-2xl md:text-3xl italic font-bold text-darkbrown mb-3">
+                KleidungsstÃ¼ck flicken oder Wunschprojekt im Kopf?
+            </h2>
+            <p class="text-xs md:text-sm text-darkbrown/75 max-w-xl mx-auto mb-8 font-light leading-relaxed">
+                Schick mir ganz einfach ein Foto von deiner offenen Naht, deinem Masswunsch oder deiner Idee. Ich melde mich umgehend mit einer unverbindlichen EinschÃ¤tzung bei dir!
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <!-- Instagram DM Button -->
+                <a href="https://www.instagram.com/unique_by_lea" target="_blank" rel="noopener noreferrer" 
+                   class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-terracotta hover:bg-darkbrown text-white px-7 py-3.5 rounded-2xl text-xs uppercase tracking-wider font-bold shadow-md transition">
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                    <span>Nachricht auf Instagram</span>
+                </a>
+
+                <!-- Email Button -->
+                <a href="mailto:uniquebylea@outlook.com?subject=Anfrage%20f%C3%BCr%20ein%20Projekt%20oder%20%C3%84nderung" 
+                   class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-darkbrown hover:bg-terracotta text-white px-7 py-3.5 rounded-2xl text-xs uppercase tracking-wider font-bold shadow-md transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                    <span>E-Mail schreiben</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- MINI-FAQ (HÃ¤ufige Fragen Akkordeon) -->
+    <section class="py-14 md:py-20 px-4">
+        <div class="max-w-3xl mx-auto">
+            <div class="text-center mb-10">
+                <span class="text-[10px] uppercase tracking-[0.25em] font-bold text-terracotta block mb-2">Gut zu wissen</span>
+                <h2 class="font-serif text-2xl md:text-3xl italic font-bold text-darkbrown mb-3">HÃ¤ufige Fragen</h2>
+                <p class="text-xs text-darkbrown/70 font-light">Alles Wichtige rund um Anfertigungen, Reparaturen und Bestellungen.</p>
+            </div>
+
+            <div class="space-y-3" id="faqAccordion">
+                
+                <!-- FAQ 1 -->
+                <div class="bg-creme rounded-2xl border border-darkbrown/10 overflow-hidden">
+                    <button type="button" onclick="toggleFaq(1)" class="w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-serif text-sm md:text-base font-bold text-darkbrown hover:text-terracotta transition">
+                        <span>Wie lÃ¤uft eine Reparatur oder ein Ã„nderungsservice bei dir ab?</span>
+                        <span id="faqIcon-1" class="text-xs text-terracotta transform transition-transform duration-200">â–¼</span>
+                    </button>
+                    <div id="faqAnswer-1" class="hidden px-6 pb-5 text-xs md:text-sm text-darkbrown/80 font-light leading-relaxed border-t border-darkbrown/5 pt-3">
+                        Ganz unkompliziert! Du kannst mir deine Textilien (z. B. Hosen zum KÃ¼rzen, VorhÃ¤nge oder Kleidung mit offenem Reissverschluss/Loch) entweder direkt nach Absprache in Interlaken vorbeibringen oder mir per Post zusenden. Schreib mir am besten vorab eine kurze Nachricht oder schick ein Foto, damit ich dir direkt Aufwand und Preis nennen kann.
+                    </div>
+                </div>
+
+                <!-- FAQ 2 -->
+                <div class="bg-creme rounded-2xl border border-darkbrown/10 overflow-hidden">
+                    <button type="button" onclick="toggleFaq(2)" class="w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-serif text-sm md:text-base font-bold text-darkbrown hover:text-terracotta transition">
+                        <span>Wie lange dauert eine Anfertigung oder Reparatur?</span>
+                        <span id="faqIcon-2" class="text-xs text-terracotta transform transition-transform duration-200">â–¼</span>
+                    </button>
+                    <div id="faqAnswer-2" class="hidden px-6 pb-5 text-xs md:text-sm text-darkbrown/80 font-light leading-relaxed border-t border-darkbrown/5 pt-3">
+                        Lagernde Unikate aus dem Shop versende ich innerhalb von 1â€“3 Werktagen. Individuelle Massanfertigungen oder Reparaturen dauern in der Regel 5â€“10 Werktage, je nach aktuellem Auftragsvolumen und StoffverfÃ¼gbarkeit. Wenn es fÃ¼r einen Geburtstag oder Anlass eilt, sag mir einfach Bescheid!
+                    </div>
+                </div>
+
+                <!-- FAQ 3 -->
+                <div class="bg-creme rounded-2xl border border-darkbrown/10 overflow-hidden">
+                    <button type="button" onclick="toggleFaq(3)" class="w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-serif text-sm md:text-base font-bold text-darkbrown hover:text-terracotta transition">
+                        <span>Kann ich eigene Lieblingsstoffe oder Kleider zum Upcycling mitbringen?</span>
+                        <span id="faqIcon-3" class="text-xs text-terracotta transform transition-transform duration-200">â–¼</span>
+                    </button>
+                    <div id="faqAnswer-3" class="hidden px-6 pb-5 text-xs md:text-sm text-darkbrown/80 font-light leading-relaxed border-t border-darkbrown/5 pt-3">
+                        Sehr gerne sogar! Upcycling liegt mir besonders am Herzen. Wenn du einen ganz besonderen Stoff hast oder aus einem liebgewonnenen KleidungsstÃ¼ck etwas Neues fÃ¼r dich oder dein Kind nÃ¤hen lassen mÃ¶chtest, melde dich einfach bei mir.
+                    </div>
+                </div>
+
+                <!-- FAQ 4 -->
+                <div class="bg-creme rounded-2xl border border-darkbrown/10 overflow-hidden">
+                    <button type="button" onclick="toggleFaq(4)" class="w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-serif text-sm md:text-base font-bold text-darkbrown hover:text-terracotta transition">
+                        <span>Welche Zahlungsmethoden gibt es?</span>
+                        <span id="faqIcon-4" class="text-xs text-terracotta transform transition-transform duration-200">â–¼</span>
+                    </button>
+                    <div id="faqAnswer-4" class="hidden px-6 pb-5 text-xs md:text-sm text-darkbrown/80 font-light leading-relaxed border-t border-darkbrown/5 pt-3">
+                        Im Onlineshop kannst du bequem per TWINT, Kreditkarte (Visa, Mastercard, American Express) oder Apple Pay bezahlen. Bei persÃ¶nlicher Ãœbergabe in Interlaken kannst du auch vor Ort bar oder direkt via TWINT bezahlen.
+                    </div>
+                </div>
+
+                <!-- FAQ 5 -->
+                <div class="bg-creme rounded-2xl border border-darkbrown/10 overflow-hidden">
+                    <button type="button" onclick="toggleFaq(5)" class="w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-serif text-sm md:text-base font-bold text-darkbrown hover:text-terracotta transition">
+                        <span>Wie hoch sind die Versandkosten und gibt es eine Abholung vor Ort?</span>
+                        <span id="faqIcon-5" class="text-xs text-terracotta transform transition-transform duration-200">â–¼</span>
+                    </button>
+                    <div id="faqAnswer-5" class="hidden px-6 pb-5 text-xs md:text-sm text-darkbrown/80 font-light leading-relaxed border-t border-darkbrown/5 pt-3">
+                        Ich versende sicher mit der Schweizerischen Post (B-Post 8.50 CHF). Ab einem Einkaufswert von 100 CHF ist der Versand innerhalb der ganzen Schweiz kostenlos. Die persÃ¶nliche Abholung bei mir im Atelier in Interlaken (Dammweg 7) ist selbstverstÃ¤ndlich immer kostenfrei!
+                    </div>
+                </div>
+
+            </div>
         </div>
     </section>
 
@@ -195,39 +501,83 @@
     <section class="py-10 px-4 text-center">
         <div class="max-w-2xl mx-auto italic font-serif text-sm md:text-base text-darkbrown/70 leading-relaxed border-y border-darkbrown/10 py-6">
             "Luxus muss bequem sein, sonst ist es kein Luxus."
-            <span class="block not-italic font-sans text-[10px] uppercase tracking-widest text-darkbrown/50 mt-2">— Coco Chanel</span>
+            <span class="block not-italic font-sans text-[10px] uppercase tracking-widest text-darkbrown/50 mt-2">â€” Coco Chanel</span>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="mt-auto bg-darkbrown text-sand py-10 px-4 border-t border-darkbrown/10">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
-            <div>
-                <h3 class="font-serif text-lg font-bold tracking-wider mb-1">Unique by Lea</h3>
-                <p class="text-xs text-sand/70">Dammweg 7 · 3800 Interlaken · Schweiz</p>
-                <p class="text-[11px] text-sand/60 mt-1">E-Mail: uniquebylea@outlook.com</p>
-            </div>
+    <footer class="mt-auto bg-darkbrown text-sand py-12 px-4 border-t border-darkbrown/10">
+        <div class="max-w-7xl mx-auto space-y-8">
             
-            <div class="flex flex-wrap justify-center items-center gap-5 uppercase text-[10px] tracking-widest font-bold">
-                <a href="index.html" class="hover:text-terracotta transition">Startseite</a>
-                <a href="shop.html" class="hover:text-terracotta transition">Shop</a>
-                <a href="ueber-mich.html" class="hover:text-terracotta transition">Über mich</a>
-                <a href="kontakt.html" class="hover:text-terracotta transition">Kontakt</a>
-                <a href="agb.html" class="hover:text-terracotta transition">AGB</a>
-                <a href="impressum.html" class="hover:text-terracotta transition">Impressum & Datenschutz</a>
-                <a href="https://www.instagram.com/unique_by_lea" target="_blank" rel="noopener noreferrer" 
-                   class="hover:text-terracotta transition flex items-center gap-1.5 text-terracotta">
-                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-                    <span>@unique_by_lea</span>
-                </a>
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+                <div>
+                    <h3 class="font-serif text-lg font-bold tracking-wider mb-1">Unique by Lea</h3>
+                    <p class="text-xs text-sand/70">Dammweg 7 Â· 3800 Interlaken Â· Schweiz</p>
+                    <p class="text-[11px] text-sand/60 mt-1">E-Mail: uniquebylea@outlook.com</p>
+                </div>
+                
+                <div class="flex flex-wrap justify-center items-center gap-5 uppercase text-[10px] tracking-widest font-bold">
+                    <a href="index.html" class="hover:text-terracotta transition">Startseite</a>
+                    <a href="shop.html" class="hover:text-terracotta transition">Shop</a>
+                    <a href="shop.html?openWishlist=true" class="hover:text-terracotta transition">Wunschkiste</a>
+                    <a href="shop.html?openCart=true" class="hover:text-terracotta transition">NÃ¤hkÃ¶rbchen</a>
+                    <a href="ueber-mich.html" class="hover:text-terracotta transition">Ãœber mich</a>
+                    <a href="kontakt.html" class="hover:text-terracotta transition">Kontakt</a>
+                    <a href="agb.html" class="hover:text-terracotta transition">AGB</a>
+                    <a href="impressum.html" class="hover:text-terracotta transition">Impressum & Datenschutz</a>
+                    <a href="https://www.instagram.com/unique_by_lea" target="_blank" rel="noopener noreferrer" 
+                       class="hover:text-terracotta transition flex items-center gap-1.5 text-terracotta">
+                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        <span>@unique_by_lea</span>
+                    </a>
+                </div>
             </div>
+
+            <!-- Swiss Trust Bar in Footer -->
+            <div class="pt-6 border-t border-sand/10 flex flex-wrap items-center justify-between gap-4 text-[11px] text-sand/60">
+                <div class="flex items-center gap-2">
+                    <span>ðŸ‡¨ðŸ‡­ Handgefertigt in Interlaken</span>
+                    <span>Â·</span>
+                    <span>Versand mit Schweizerischer Post</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="bg-white/10 px-2 py-0.5 rounded text-white text-[10px] font-bold tracking-wider">TWINT</span>
+                    <span class="bg-white/10 px-2 py-0.5 rounded text-white text-[10px] font-bold tracking-wider">VISA</span>
+                    <span class="bg-white/10 px-2 py-0.5 rounded text-white text-[10px] font-bold tracking-wider">MASTERCARD</span>
+                    <span class="bg-white/10 px-2 py-0.5 rounded text-white text-[10px] font-bold tracking-wider">APPLE PAY</span>
+                </div>
+            </div>
+
         </div>
     </footer>
 
     <script>
+        // Mobile Navigation Toggle
         document.getElementById('nav-toggle').onclick = function() {
             document.getElementById('nav-menu').classList.toggle('hidden');
         };
+
+        // Accordion Toggle
+        function toggleFaq(index) {
+            const answer = document.getElementById('faqAnswer-' + index);
+            const icon = document.getElementById('faqIcon-' + index);
+            if (!answer || !icon) return;
+
+            const isHidden = answer.classList.contains('hidden');
+            
+            // Close all
+            for (let i = 1; i <= 5; i++) {
+                const a = document.getElementById('faqAnswer-' + i);
+                const ic = document.getElementById('faqIcon-' + i);
+                if (a) a.classList.add('hidden');
+                if (ic) ic.classList.remove('rotate-180');
+            }
+
+            if (isHidden) {
+                answer.classList.remove('hidden');
+                icon.classList.add('rotate-180');
+            }
+        }
     </script>
 </body>
 </html>
