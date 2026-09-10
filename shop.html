@@ -355,10 +355,22 @@
         <div class="relative bg-creme rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-white/40 my-8 flex flex-col" onclick="event.stopPropagation()">
             <button onclick="closeModal()" class="absolute top-4 right-4 text-darkbrown/60 hover:text-darkbrown text-xl font-bold w-8 h-8 flex items-center justify-center rounded-full bg-sand/60 z-10">✕</button>
             
-            <!-- Großes Bild im Modal (wechselt bei Farbwahl) -->
-            <div class="relative w-full aspect-[4/5] bg-white rounded-2xl overflow-hidden mb-3 flex items-center justify-center">
-                <img id="modalCurrentImg" src="" alt="Produktfoto" class="w-full h-full object-cover transition duration-300">
+            <!-- GroÃŸes Bild im Modal (wechselt bei Optionswahl & Galerie-Klick) -->
+            <div class="relative w-full aspect-[4/5] bg-white rounded-2xl overflow-hidden mb-3 flex items-center justify-center group">
+                <img id="modalCurrentImg" src="" alt="Produktfoto" class="w-full h-full object-cover transition duration-300 cursor-pointer" onclick="if (currentGalleryImages && currentGalleryImages.length > 1) navigateModalGallery(1)">
                 <div id="modalBadge" class="absolute top-3 left-3 bg-terracotta text-white text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider hidden"></div>
+
+                <!-- Galerie Pfeile zum Weiterklicken -->
+                <button id="modalPrevImgBtn" type="button" onclick="navigateModalGallery(-1)" 
+                        class="hidden absolute left-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-darkbrown shadow-md flex items-center justify-center transition md:opacity-0 md:group-hover:opacity-100 hover:scale-105 z-10" 
+                        title="Vorheriges Foto">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                <button id="modalNextImgBtn" type="button" onclick="navigateModalGallery(1)" 
+                        class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-darkbrown shadow-md flex items-center justify-center transition md:opacity-0 md:group-hover:opacity-100 hover:scale-105 z-10" 
+                        title="NÃ¤chstes Foto">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </button>
             </div>
 
             <!-- Galerie-Thumbnails -->
@@ -726,59 +738,161 @@
             document.getElementById('galleryModal').classList.remove('hidden');
         };
 
+let currentGalleryImages = [];
+        let currentGalleryIndex = 0;
+
+        function getCleanImgPath(s) {
+            if (!s) return '';
+            return s.toString().split('?')[0].split('#')[0].replace(/^https?:\/\/[^/]+/i, '').replace(/^[/\\]+/, '').toLowerCase().trim();
+        }
+
         function setupGallery(item) {
             const container = document.getElementById('modalThumbnails');
+            const prevBtn = document.getElementById('modalPrevImgBtn');
+            const nextBtn = document.getElementById('modalNextImgBtn');
             if (!container) return;
             container.innerHTML = '';
 
-            const images = [];
-            if (item.img) images.push(item.img);
+            currentGalleryImages = [];
+            currentGalleryIndex = 0;
+
+            const addImg = (src) => {
+                if (!src) return;
+                const clean = getCleanImgPath(src);
+                if (clean && !currentGalleryImages.some(img => getCleanImgPath(img) === clean)) {
+                    currentGalleryImages.push(src);
+                }
+            };
+
+            if (item.img) addImg(item.img);
             if (Array.isArray(item.gallery)) {
                 item.gallery.forEach(g => {
                     const src = typeof g === 'string' ? g : (g?.img || '');
-                    if (src && !images.includes(src)) images.push(src);
+                    addImg(src);
                 });
             }
             if (Array.isArray(item.options)) {
                 item.options.forEach(opt => {
                     if (Array.isArray(opt.values)) {
                         opt.values.forEach(v => {
-                            if (v.img && !images.includes(v.img)) images.push(v.img);
+                            addImg(v.img);
                         });
                     }
                 });
             }
             if (Array.isArray(item.variants_color)) {
                 item.variants_color.forEach(c => {
-                    if (c.img && !images.includes(c.img)) images.push(c.img);
+                    addImg(c.img);
                 });
             }
 
-            if (images.length > 1) {
+            if (currentGalleryImages.length > 1) {
                 container.classList.remove('hidden');
-                images.forEach((src, idx) => {
+                if (prevBtn) prevBtn.classList.remove('hidden');
+                if (nextBtn) nextBtn.classList.remove('hidden');
+
+                currentGalleryImages.forEach((src, idx) => {
                     const btn = document.createElement('button');
                     btn.type = 'button';
                     btn.className = 'gallery-thumb w-14 h-14 rounded-xl overflow-hidden border-2 flex-shrink-0 transition ' + 
                                     (idx === 0 ? 'border-terracotta ring-2 ring-terracotta/30' : 'border-transparent hover:border-terracotta/60');
                     btn.innerHTML = '<img src="' + src + '" alt="Vorschau" class="w-full h-full object-cover">';
                     btn.onclick = function() {
-                        document.getElementById('modalCurrentImg').src = src;
-                        document.querySelectorAll('.gallery-thumb').forEach(t => {
-                            t.classList.remove('border-terracotta', 'ring-2', 'ring-terracotta/30');
-                            t.classList.add('border-transparent');
-                        });
-                        btn.classList.remove('border-transparent');
-                        btn.classList.add('border-terracotta', 'ring-2', 'ring-terracotta/30');
+                        switchModalImage(src, idx);
                     };
                     container.appendChild(btn);
                 });
             } else {
                 container.classList.add('hidden');
+                if (prevBtn) prevBtn.classList.add('hidden');
+                if (nextBtn) nextBtn.classList.add('hidden');
             }
         }
 
-        function setupOptions(item) {
+        window.navigateModalGallery = function(direction) {
+            if (!currentGalleryImages || currentGalleryImages.length <= 1) return;
+            currentGalleryIndex = (currentGalleryIndex + direction + currentGalleryImages.length) % currentGalleryImages.length;
+            const newSrc = currentGalleryImages[currentGalleryIndex];
+            switchModalImage(newSrc, currentGalleryIndex);
+        };
+
+        window.switchModalImage = function(src, index) {
+            if (!src) return;
+            if (typeof index === 'number') currentGalleryIndex = index;
+            document.getElementById('modalCurrentImg').src = src;
+
+            // Highlight thumbnail
+            document.querySelectorAll('.gallery-thumb').forEach((t, idx) => {
+                if (idx === currentGalleryIndex) {
+                    t.classList.remove('border-transparent', 'hover:border-terracotta/60');
+                    t.classList.add('border-terracotta', 'ring-2', 'ring-terracotta/30');
+                    t.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                } else {
+                    t.classList.remove('border-terracotta', 'ring-2', 'ring-terracotta/30');
+                    t.classList.add('border-transparent', 'hover:border-terracotta/60');
+                }
+            });
+
+            // Automatisch die passende Option im Dropdown / Radio vorwÃ¤hlen
+            selectOptionByImage(src);
+        };
+
+        function selectOptionByImage(src) {
+            if (!src || activeProductIndex === null) return;
+            const item = allProducts[activeProductIndex];
+            if (!item || !Array.isArray(item.options)) return;
+
+            const targetClean = getCleanImgPath(src);
+            if (!targetClean) return;
+
+            for (let optIdx = 0; optIdx < item.options.length; optIdx++) {
+                const opt = item.options[optIdx];
+                if (Array.isArray(opt.values)) {
+                    const matchedVal = opt.values.find(v => v.img && getCleanImgPath(v.img) === targetClean);
+                    if (matchedVal) {
+                        const row = document.querySelector(`.option-row[data-opt-index="${optIdx}"]`);
+                        if (row) {
+                            const type = row.dataset.optType;
+                            let valueChanged = false;
+
+                            if (type === 'radio') {
+                                const radios = row.querySelectorAll('input[type="radio"]');
+                                radios.forEach(r => {
+                                    if (r.value === matchedVal.title) {
+                                        if (!r.checked) {
+                                            r.checked = true;
+                                            valueChanged = true;
+                                        }
+                                    } else {
+                                        r.checked = false;
+                                    }
+                                });
+                            } else {
+                                const select = row.querySelector('select');
+                                if (select) {
+                                    for (let i = 0; i < select.options.length; i++) {
+                                        if (select.options[i].value === matchedVal.title) {
+                                            if (select.selectedIndex !== i) {
+                                                select.selectedIndex = i;
+                                                valueChanged = true;
+                                            }
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (valueChanged) {
+                                onOptionsUpdated(true);
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+                function setupOptions(item) {
             const container = document.getElementById('dynamicOptionsContainer');
             if (!container) return;
             container.innerHTML = '';
@@ -899,7 +1013,7 @@
             }
         }
 
-        window.onOptionsUpdated = function() {
+        window.onOptionsUpdated = function(fromImageClick) {
             if (activeProductIndex === null) return;
             const item = allProducts[activeProductIndex];
             if (!item) return;
@@ -944,16 +1058,20 @@
                 }
             });
 
-            if (chosenImg) {
+            if (!fromImageClick && chosenImg) {
                 document.getElementById('modalCurrentImg').src = chosenImg;
-                document.querySelectorAll('.gallery-thumb').forEach(t => {
-                    const thumbImg = t.querySelector('img');
-                    if (thumbImg && thumbImg.src.includes(chosenImg)) {
-                        t.classList.remove('border-transparent');
+                const cleanChosen = getCleanImgPath(chosenImg);
+                const foundIdx = currentGalleryImages.findIndex(imgSrc => getCleanImgPath(imgSrc) === cleanChosen);
+                if (foundIdx >= 0) currentGalleryIndex = foundIdx;
+
+                document.querySelectorAll('.gallery-thumb').forEach((t, idx) => {
+                    if (idx === currentGalleryIndex) {
+                        t.classList.remove('border-transparent', 'hover:border-terracotta/60');
                         t.classList.add('border-terracotta', 'ring-2', 'ring-terracotta/30');
+                        t.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
                     } else {
                         t.classList.remove('border-terracotta', 'ring-2', 'ring-terracotta/30');
-                        t.classList.add('border-transparent');
+                        t.classList.add('border-transparent', 'hover:border-terracotta/60');
                     }
                 });
             }
