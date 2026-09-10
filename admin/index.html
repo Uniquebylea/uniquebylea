@@ -10,11 +10,11 @@
   <!-- Sveltia Environment Hook: Immer 2 Spalten (Bearbeiten + Vorschau) nebeneinander aktivieren -->
   <script>
     (function() {
-      // 1. matchMedia Hook fÃ¼r Sveltia CMS Screen-Detection
+      // 1. matchMedia Hook für Sveltia CMS Screen-Detection
       const origMatchMedia = window.matchMedia;
       window.matchMedia = function(query) {
         if (query.includes('768px <= width < 1024px')) {
-          // Niemals den "Medium Screen" Modus aktivieren (der die Vorschau ausblenden wÃ¼rde)
+          // Niemals den "Medium Screen" Modus aktivieren (der die Vorschau ausblenden würde)
           return {
             matches: false,
             media: query,
@@ -76,7 +76,7 @@
 
   <style>
     /* ========================================================
-       KOMPAKTE & ÃœBERSICHTLICHE DARSTELLUNG:
+       KOMPAKTE & ÜBERSICHTLICHE DARSTELLUNG:
        PRODUKTE BEARBEITEN & VORSCHAU AUF EINER SEITE NEBENEINANDER
        ======================================================== */
 
@@ -208,7 +208,7 @@
       border: 1px solid rgba(0, 0, 0, 0.1) !important;
     }
 
-    /* Variantenlisten (Farben & GrÃ¶ÃŸen) kompakt und Ã¼bersichtlich */
+    /* Variantenlisten (Farben & Grössen) kompakt und übersichtlich */
     .pane[data-mode="edit"] [data-field-type="list"] {
       padding: 2px 0 !important;
     }
@@ -244,7 +244,7 @@
       margin: 0 auto !important;
     }
 
-    /* Riesige 800px-Vorschaubilder bÃ¤ndigen */
+    /* Riesige 800px-Vorschaubilder bändigen */
     .pane[data-mode="preview"] [role="document"] img {
       max-height: 170px !important;
       max-width: 100% !important;
