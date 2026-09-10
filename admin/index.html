@@ -320,9 +320,14 @@
   </style>
 </head>
 <body>
-  <a href="/admin/ai.html" class="ai-btn-float">
-    ✨ Neues Produkt mit KI anlegen
-  </a>
+  <div style="position: fixed; bottom: 16px; right: 16px; z-index: 999999; display: flex; flex-direction: column; gap: 8px;">
+    <a href="/admin/stoffe.html" class="ai-btn-float" style="position: static; background: linear-gradient(135deg, #B08968, #4A3728);">
+      🧵 Stoffe mit KI erfassen
+    </a>
+    <a href="/admin/ai.html" class="ai-btn-float" style="position: static; background: linear-gradient(135deg, #4A3728, #2E2218);">
+      ✨ Neues Produkt mit KI
+    </a>
+  </div>
   <!-- Modernes Sveltia CMS Script -->
   <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
 </body>
