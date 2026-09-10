@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KI Stoff-Scanner & Foto-Upload | Unique by Lea</title>
+    <link rel="icon" type="image/png" href="../images/logo.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { sand: '#EAE3D9', creme: '#F9F6F2', terracotta: '#B08968', darkbrown: '#4A3728' },
+                    fontFamily: { serif: ['Playfair Display', 'serif'], sans: ['Montserrat', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-sand text-darkbrown font-sans min-h-screen flex flex-col p-3 md:p-8">
+
+    <div class="max-w-4xl mx-auto w-full space-y-6">
+        
+        <!-- Header & Nav Bar -->
+        <header class="bg-creme/90 backdrop-blur-md rounded-3xl p-5 md:p-6 shadow-md border border-white/60 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3.5">
+                <a href="../index.html">
+                    <img src="../images/logo.png" alt="Unique by Lea Logo" class="h-12 md:h-14 object-contain">
+                </a>
+                <div>
+                    <span class="text-[10px] uppercase tracking-[0.2em] font-bold text-terracotta block">Atelier Interlaken · Admin</span>
+                    <h1 class="font-serif text-xl md:text-2xl font-bold italic text-darkbrown">🧵 KI Stoff-Scanner & Foto-Upload</h1>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <a href="../stoffe.html" target="_blank" 
+                   class="bg-sand/60 hover:bg-terracotta hover:text-white text-darkbrown text-[11px] font-bold uppercase tracking-wider py-2 px-3.5 rounded-xl border border-darkbrown/15 transition flex items-center gap-1.5 shadow-xs">
+                    <span>Zum Stofffächer</span>
+                    <span>↗</span>
+                </a>
+                <a href="/admin/" 
+                   class="bg-darkbrown hover:bg-terracotta text-white text-[11px] font-bold uppercase tracking-wider py-2 px-3.5 rounded-xl transition shadow-xs">
+                    ← CMS Dashboard
+                </a>
+            </div>
+        </header>
+
+        <!-- 1. UPLOAD-BEREICH (Kamera & Galerie) -->
+        <section class="bg-creme rounded-3xl p-6 md:p-8 shadow-lg border border-white/80 text-center relative overflow-hidden">
+            <div class="max-w-xl mx-auto space-y-4">
+                <span class="text-3xl md:text-4xl block">📸</span>
+                <h2 class="font-serif text-2xl font-bold italic text-darkbrown">Stoffe fotografieren & hochladen</h2>
+                <p class="text-xs text-darkbrown/75 leading-relaxed font-light">
+                    Mache im Atelier Fotos deiner neuen Stoffe oder wähle mehrere Bilder aus deiner Galerie. Die Gemini KI erkennt automatisch <strong>Stoffart</strong>, <strong>Farbe</strong>, <strong>Muster</strong> und formuliert den passenden Text für deinen Shop.
+                </p>
+
+                <!-- Versteckte Inputs für Kamera & Galerie -->
+                <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="handleFiles(this.files)">
+                <input type="file" id="galleryInput" accept="image/*" multiple class="hidden" onchange="handleFiles(this.files)">
+
+                <!-- Upload Drag & Drop Box -->
+                <div id="dropZone" 
+                     class="border-2 border-dashed border-terracotta/40 hover:border-terracotta rounded-2xl p-6 bg-sand/30 transition-all duration-200 cursor-pointer flex flex-col items-center justify-center gap-3 mt-4"
+                     onclick="document.getElementById('galleryInput').click()">
+                    <svg class="w-10 h-10 text-terracotta/70" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                    </svg>
+                    <div>
+                        <span class="text-xs font-bold text-darkbrown block">Fotos hier ablegen oder antippen</span>
+                        <span class="text-[10px] text-darkbrown/60 block mt-0.5">Mehrere Fotos gleichzeitig möglich (JPG, PNG, HEIC)</span>
+                    </div>
+                </div>
+
+                <!-- Buttons für Smartphone -->
+                <div class="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+                    <button type="button" onclick="document.getElementById('cameraInput').click()"
+                            class="bg-terracotta hover:bg-darkbrown text-white text-xs uppercase tracking-wider font-bold py-3 px-5 rounded-xl shadow-md transition flex items-center justify-center gap-2">
+                        <span>📷 Mit Handykamera fotografieren</span>
+                    </button>
+                    <button type="button" onclick="document.getElementById('galleryInput').click()"
+                            class="bg-darkbrown hover:bg-terracotta text-white text-xs uppercase tracking-wider font-bold py-3 px-5 rounded-xl shadow-md transition flex items-center justify-center gap-2">
+                        <span>🖼️ Aus Galerie / Ordner wählen</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Fortschritts-Anzeige während der KI-Analyse -->
+            <div id="progressBox" class="hidden mt-8 max-w-lg mx-auto bg-white/90 p-5 rounded-2xl border border-terracotta/30 shadow-sm space-y-3">
+                <div class="flex items-center justify-between text-xs font-bold">
+                    <span id="progressText" class="text-terracotta animate-pulse">✨ KI analysiert Foto 1 von 3...</span>
+                    <span id="progressPercent" class="text-darkbrown">33%</span>
+                </div>
+                <div class="w-full bg-sand rounded-full h-2.5 overflow-hidden">
+                    <div id="progressBar" class="bg-terracotta h-2.5 rounded-full transition-all duration-300" style="width: 33%"></div>
+                </div>
+                <p id="progressDetail" class="text-[11px] text-darkbrown/70 italic">Webstruktur, Farbharmonie und Muster werden bestimmt...</p>
+            </div>
+        </section>
+
+        <!-- 2. REVIEW & FREIGABE DER ERKANNTEN STOFFE -->
+        <section id="reviewSection" class="hidden space-y-4">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-creme/90 p-4 md:p-5 rounded-2xl border border-darkbrown/10 shadow-xs">
+                <div>
+                    <h2 class="font-serif text-lg md:text-xl font-bold italic text-darkbrown">Erkannte Atelier-Stoffe überprüfen</h2>
+                    <p class="text-xs text-darkbrown/70">Passe bei Bedarf Name, Farbfeld oder Beschreibung kurz an.</p>
+                </div>
+                <button type="button" onclick="saveAllFabrics()" id="saveAllTopBtn"
+                        class="w-full sm:w-auto bg-emerald-700 hover:bg-emerald-800 text-white text-xs uppercase tracking-wider font-bold py-3 px-6 rounded-xl shadow-md transition flex items-center justify-center gap-2">
+                    <span>🚀 Alle Stoffe veröffentlichen</span>
+                </button>
+            </div>
+
+            <!-- Liste der Stoff-Karten -->
+            <div id="fabricsList" class="space-y-4">
+                <!-- Dynamisch generierte Karten -->
+            </div>
+
+            <!-- Unten stehender Button -->
+            <div class="pt-2 text-center">
+                <button type="button" onclick="saveAllFabrics()" id="saveAllBottomBtn"
+                        class="w-full max-w-md mx-auto bg-emerald-700 hover:bg-emerald-800 text-white text-sm uppercase tracking-wider font-bold py-4 px-8 rounded-2xl shadow-lg transition flex items-center justify-center gap-2">
+                    <span>🚀 Alle Stoffe in den Stofffächer übernehmen</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 3. BEREITS EINGEPFLEFTE STOFFE / VERWALTUNG -->
+        <section class="bg-creme/70 rounded-3xl p-6 border border-darkbrown/10 space-y-4">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="font-serif font-bold text-base text-darkbrown">Im Stofffächer aktive Stoffe</h3>
+                    <p class="text-[11px] text-darkbrown/60">Übersicht aller online verfügbaren Atelier-Stoffe</p>
+                </div>
+                <a href="../stoffe.html" target="_blank" class="text-xs text-terracotta hover:underline font-bold">
+                    Vorschau öffnen ➔
+                </a>
+            </div>
+            <div id="activeFabricsPreview" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2.5 pt-2">
+                <!-- Wird per JS befüllt -->
+            </div>
+        </section>
+
+    </div>
+
+    <!-- ERFOLGS-POPUP -->
+    <div id="successModal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-creme rounded-3xl p-6 md:p-8 max-w-md w-full border border-white/80 shadow-2xl text-center space-y-4">
+            <div class="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center text-3xl mx-auto shadow-inner">
+                ✓
+            </div>
+            <h3 class="font-serif text-2xl font-bold italic text-darkbrown">Wunderbar!</h3>
+            <p class="text-xs text-darkbrown/80 leading-relaxed font-light">
+                Deine neuen Stoffe wurden erfolgreich analysiert und in deinen <strong>Stoff- & Farbfächer</strong> übernommen. Kundinnen können sie ab sofort kombinieren und für Massanfertigungen auswählen!
+            </p>
+            <div class="pt-2 flex flex-col gap-2">
+                <a href="../stoffe.html" target="_blank" 
+                   class="w-full bg-terracotta hover:bg-darkbrown text-white text-xs uppercase tracking-wider font-bold py-3.5 rounded-xl shadow-md transition">
+                    🧵 Zum Stofffächer öffnen ➔
+                </a>
+                <button type="button" onclick="closeSuccessModal()"
+                        class="w-full bg-sand/60 hover:bg-sand text-darkbrown text-xs uppercase tracking-wider font-bold py-2.5 rounded-xl transition">
+                    Weitere Stoffe scannen
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIK -->
+    <script>
+        let recognizedFabrics = [];
+        let isProcessing = false;
+
+        // Initialisierung: Bestehende Stoffe laden
+        loadActiveFabrics();
+
+        // Drag & Drop Handling
+        const dropZone = document.getElementById('dropZone');
+        ['dragenter', 'dragover'].forEach(name => {
+            dropZone.addEventListener(name, (e) => {
+                e.preventDefault();
+                dropZone.classList.add('border-terracotta', 'bg-sand/60');
+            });
+        });
+        ['dragleave', 'drop'].forEach(name => {
+            dropZone.addEventListener(name, (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('border-terracotta', 'bg-sand/60');
+            });
+        });
+        dropZone.addEventListener('drop', (e) => {
+            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                handleFiles(e.dataTransfer.files);
+            }
+        });
+
+        // Dateien verarbeiten & Batch-Analyse starten
+        async function handleFiles(fileList) {
+            if (!fileList || fileList.length === 0 || isProcessing) return;
+
+            const files = Array.from(fileList).filter(f => f.type.startsWith('image/'));
+            if (files.length === 0) {
+                alert("Bitte wähle Bilddateien aus (JPG, PNG oder HEIC).");
+                return;
+            }
+
+            isProcessing = true;
+            const progressBox = document.getElementById('progressBox');
+            const progressText = document.getElementById('progressText');
+            const progressPercent = document.getElementById('progressPercent');
+            const progressBar = document.getElementById('progressBar');
+            const progressDetail = document.getElementById('progressDetail');
+
+            progressBox.classList.remove('hidden');
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const currentNum = i + 1;
+                const total = files.length;
+                const pct = Math.round(((i) / total) * 100);
+
+                progressText.textContent = `✨ Analysiere Stoff ${currentNum} von ${total} mit KI...`;
+                progressPercent.textContent = `${pct}%`;
+                progressBar.style.width = `${pct}%`;
+                progressDetail.textContent = `Bild: ${file.name} · Stoffart, Farbharmonie und Muster werden erkannt`;
+
+                try {
+                    // Bild als Base64 einlesen
+                    const base64 = await readFileAsBase64(file);
+                    
+                    // KI Analyse aufrufen
+                    const res = await fetch('/api/fabric-analyze', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            imageBase64: base64,
+                            mimeType: file.type || 'image/jpeg'
+                        })
+                    });
+
+                    const data = await res.json();
+                    if (!res.ok || data.error) {
+                        throw new Error(data.error || `HTTP ${res.status}`);
+                    }
+
+                    // Stoff-Objekt anlegen
+                    const fabricObj = {
+                        id: 'fab_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+                        code: generateFabricCode(data.category),
+                        name: data.name || 'Neuer Atelier-Stoff',
+                        cat: data.category || 'musselin',
+                        color: data.colorHex || '#97A594',
+                        textColor: '#FFFFFF',
+                        textureClass: getTextureClass(data.category),
+                        material: data.cert || '100 % Bio-Baumwolle (GOTS)',
+                        badge: data.badge || 'Neu im Atelier',
+                        pattern: data.pattern || 'Unifarben',
+                        desc: data.description || '',
+                        imageBase64: base64,
+                        fileName: file.name
+                    };
+
+                    recognizedFabrics.push(fabricObj);
+                    renderReviewList();
+
+                } catch (err) {
+                    console.error("Fehler bei Analyse von " + file.name, err);
+                    // Fallback Stoff anlegen, damit kein Foto verloren geht
+                    const fallbackObj = {
+                        id: 'fab_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+                        code: generateFabricCode('musselin'),
+                        name: file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, ' '),
+                        cat: 'musselin',
+                        color: '#97A594',
+                        textColor: '#FFFFFF',
+                        textureClass: 'texture-musselin',
+                        material: '100 % Bio-Baumwolle (GOTS)',
+                        badge: 'Neu',
+                        pattern: 'Unifarben',
+                        desc: 'Wunderschöner, handverlesener Stoff für individuelle Kundenwünsche.',
+                        imageBase64: await readFileAsBase64(file),
+                        fileName: file.name
+                    };
+                    recognizedFabrics.push(fallbackObj);
+                    renderReviewList();
+                }
+            }
+
+            progressBar.style.width = '100%';
+            progressPercent.textContent = '100%';
+            progressText.textContent = `🎉 Alle ${files.length} Stoffe erfolgreich analysiert!`;
+            progressDetail.textContent = 'Überprüfe kurz die Kärtchen unten und klicke auf "Alle Stoffe veröffentlichen".';
+
+            setTimeout(() => {
+                progressBox.classList.add('hidden');
+                isProcessing = false;
+            }, 3500);
+
+            // Zur Review-Sektion scrollen
+            document.getElementById('reviewSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function readFileAsBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function generateFabricCode(cat) {
+            const prefix = cat === 'waffel' ? 'W' : (cat === 'jersey' ? 'J' : (cat === 'makramee' ? 'K' : 'M'));
+            const num = Math.floor(Math.random() * 89) + 10;
+            return `${prefix}-${num}`;
+        }
+
+        function getTextureClass(cat) {
+            if (cat === 'waffel') return 'texture-waffle';
+            if (cat === 'jersey') return 'texture-jersey';
+            if (cat === 'makramee') return 'texture-cord';
+            return 'texture-musselin';
+        }
+
+        // Review-Liste zeichnen
+        function renderReviewList() {
+            const container = document.getElementById('fabricsList');
+            const section = document.getElementById('reviewSection');
+
+            if (recognizedFabrics.length === 0) {
+                section.classList.add('hidden');
+                container.innerHTML = '';
+                return;
+            }
+
+            section.classList.remove('hidden');
+            container.innerHTML = '';
+
+            recognizedFabrics.forEach((f, idx) => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl p-5 md:p-6 border border-darkbrown/15 shadow-sm space-y-4 relative transition hover:shadow-md";
+                card.innerHTML = `
+                    <div class="flex flex-col sm:flex-row gap-5 items-start">
+                        <!-- Foto-Thumbnail & Farbfeld -->
+                        <div class="flex-shrink-0 flex sm:flex-col gap-3 items-center">
+                            <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden border border-darkbrown/15 shadow-inner bg-sand/30 flex items-center justify-center">
+                                <img src="${f.imageBase64}" alt="${f.name}" class="w-full h-full object-cover">
+                            </div>
+                            
+                            <!-- Farbfeld mit Pipette -->
+                            <div class="flex items-center gap-2 bg-sand/40 p-1.5 rounded-xl border border-darkbrown/10">
+                                <input type="color" value="${f.color}" onchange="updateFabricColor('${f.id}', this.value)" 
+                                       class="w-7 h-7 rounded-lg border-0 cursor-pointer p-0 bg-transparent" title="Farbe anpassen">
+                                <span class="text-[10px] font-mono font-bold text-darkbrown/80 uppercase">${f.color}</span>
+                            </div>
+                        </div>
+
+                        <!-- Eingabefelder -->
+                        <div class="flex-1 w-full space-y-3">
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <div class="w-28 flex-shrink-0">
+                                    <label class="block text-[10px] uppercase font-bold tracking-wider text-terracotta mb-1">Code:</label>
+                                    <input type="text" value="${f.code}" onchange="updateFabricField('${f.id}', 'code', this.value)"
+                                           class="w-full bg-creme border border-darkbrown/15 rounded-xl px-3 py-1.5 text-xs font-bold text-darkbrown outline-none focus:ring-1 focus:ring-terracotta">
+                                </div>
+                                
+                                <div class="flex-1">
+                                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Stoffname:</label>
+                                    <input type="text" value="${f.name}" onchange="updateFabricField('${f.id}', 'name', this.value)"
+                                           class="w-full bg-creme border border-darkbrown/15 rounded-xl px-3 py-1.5 text-xs font-bold text-darkbrown outline-none focus:ring-1 focus:ring-terracotta">
+                                </div>
+
+                                <div class="w-40 flex-shrink-0">
+                                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Kategorie:</label>
+                                    <select onchange="updateFabricField('${f.id}', 'cat', this.value)"
+                                            class="w-full bg-creme border border-darkbrown/15 rounded-xl px-3 py-1.5 text-xs font-medium text-darkbrown outline-none focus:ring-1 focus:ring-terracotta">
+                                        <option value="musselin" ${f.cat === 'musselin' ? 'selected' : ''}>Bio-Musselin</option>
+                                        <option value="waffel" ${f.cat === 'waffel' ? 'selected' : ''}>Waffelpiqué</option>
+                                        <option value="jersey" ${f.cat === 'jersey' ? 'selected' : ''}>Bio-Jersey</option>
+                                        <option value="makramee" ${f.cat === 'makramee' ? 'selected' : ''}>Makramee & Garn</option>
+                                        <option value="weitere" ${f.cat === 'weitere' ? 'selected' : ''}>Weitere Stoffe</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <div>
+                                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Material / Siegel:</label>
+                                    <input type="text" value="${f.material}" onchange="updateFabricField('${f.id}', 'material', this.value)"
+                                           class="w-full bg-creme border border-darkbrown/15 rounded-xl px-3 py-1.5 text-xs text-darkbrown outline-none focus:ring-1 focus:ring-terracotta">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Muster / Struktur:</label>
+                                    <input type="text" value="${f.pattern}" onchange="updateFabricField('${f.id}', 'pattern', this.value)"
+                                           class="w-full bg-creme border border-darkbrown/15 rounded-xl px-3 py-1.5 text-xs text-darkbrown outline-none focus:ring-1 focus:ring-terracotta">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Badge:</label>
+                                    <input type="text" value="${f.badge}" onchange="updateFabricField('${f.id}', 'badge', this.value)"
+                                           class="w-full bg-creme border border-darkbrown/15 rounded-xl px-3 py-1.5 text-xs text-darkbrown outline-none focus:ring-1 focus:ring-terracotta">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Liebevolle Beschreibung:</label>
+                                <textarea rows="2" onchange="updateFabricField('${f.id}', 'desc', this.value)"
+                                          class="w-full bg-creme border border-darkbrown/15 rounded-xl px-3 py-2 text-xs text-darkbrown/85 outline-none focus:ring-1 focus:ring-terracotta leading-relaxed">${f.desc}</textarea>
+                            </div>
+                        </div>
+
+                        <!-- Löschen Button -->
+                        <button type="button" onclick="removeFabric('${f.id}')" title="Diesen Stoff entfernen"
+                                class="text-darkbrown/40 hover:text-red-600 transition p-1 text-sm absolute top-4 right-4 sm:static">
+                            ✕
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function updateFabricField(id, field, value) {
+            const item = recognizedFabrics.find(f => f.id === id);
+            if (item) {
+                item[field] = value;
+                if (field === 'cat') {
+                    item.textureClass = getTextureClass(value);
+                }
+            }
+        }
+
+        function updateFabricColor(id, hex) {
+            const item = recognizedFabrics.find(f => f.id === id);
+            if (item) {
+                item.color = hex;
+                renderReviewList();
+            }
+        }
+
+        function removeFabric(id) {
+            recognizedFabrics = recognizedFabrics.filter(f => f.id !== id);
+            renderReviewList();
+        }
+
+        // Alle erkannten Stoffe speichern & veröffentlichen
+        async function saveAllFabrics() {
+            if (recognizedFabrics.length === 0) return;
+
+            const btnTop = document.getElementById('saveAllTopBtn');
+            const btnBottom = document.getElementById('saveAllBottomBtn');
+            [btnTop, btnBottom].forEach(b => {
+                if (b) {
+                    b.disabled = true;
+                    b.innerHTML = '<span>⏳ Wird gespeichert & veröffentlicht...</span>';
+                }
+            });
+
+            try {
+                // 1. Sofort im Browser (localStorage) sichern, damit es ohne jede Verzögerung aktiv ist!
+                let localFabrics = [];
+                try {
+                    localFabrics = JSON.parse(localStorage.getItem('uniquebylea_custom_fabrics') || '[]');
+                } catch (e) {}
+
+                // Neue Stoffe voranstellen
+                const merged = [...recognizedFabrics, ...localFabrics];
+                localStorage.setItem('uniquebylea_custom_fabrics', JSON.stringify(merged));
+
+                // 2. An Serverless API senden (GitHub Sync)
+                let token = '';
+                try {
+                    const sveltiaUser = JSON.parse(localStorage.getItem('sveltia-cms.user') || '{}');
+                    token = sveltiaUser.token || localStorage.getItem('uniquebylea_gh_token') || '';
+                } catch (e) {}
+
+                const headers = { 'Content-Type': 'application/json' };
+                if (token) headers['Authorization'] = 'token ' + token;
+
+                await fetch('/api/save-fabric', {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify({
+                        fabrics: recognizedFabrics
+                    })
+                });
+
+                // Erfolg anzeigen!
+                document.getElementById('successModal').classList.remove('hidden');
+                recognizedFabrics = [];
+                renderReviewList();
+                loadActiveFabrics();
+
+            } catch (err) {
+                console.error("Save error:", err);
+                alert("Deine Stoffe wurden in deinem Browser gespeichert! Details: " + err.message);
+                document.getElementById('successModal').classList.remove('hidden');
+            } finally {
+                [btnTop, btnBottom].forEach(b => {
+                    if (b) {
+                        b.disabled = false;
+                        b.innerHTML = '<span>🚀 Alle Stoffe veröffentlichen</span>';
+                    }
+                });
+            }
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('successModal').classList.add('hidden');
+        }
+
+        // Aktive Stoffe zur Übersicht laden
+        async function loadActiveFabrics() {
+            const previewContainer = document.getElementById('activeFabricsPreview');
+            if (!previewContainer) return;
+
+            let fabrics = [];
+            
+            // Lokale Custom Stoffe
+            try {
+                const local = JSON.parse(localStorage.getItem('uniquebylea_custom_fabrics') || '[]');
+                fabrics.push(...local);
+            } catch (e) {}
+
+            // Aus zentraler JSON laden
+            try {
+                const res = await fetch('../content/fabrics.json');
+                if (res.ok) {
+                    const onlineFabrics = await res.json();
+                    const existingCodes = new Set(fabrics.map(f => f.code));
+                    onlineFabrics.forEach(f => {
+                        if (!existingCodes.has(f.code)) fabrics.push(f);
+                    });
+                }
+            } catch (e) {}
+
+            if (fabrics.length === 0) {
+                previewContainer.innerHTML = '<span class="text-xs text-darkbrown/60 col-span-full">Keine Stoffe geladen</span>';
+                return;
+            }
+
+            previewContainer.innerHTML = '';
+            fabrics.slice(0, 12).forEach(f => {
+                const item = document.createElement('div');
+                item.className = "bg-white p-2 rounded-xl border border-darkbrown/10 text-center space-y-1 shadow-2xs";
+                
+                let previewImg = '';
+                if (f.image || f.imageBase64) {
+                    const imgSrc = f.image || f.imageBase64;
+                    previewImg = `<img src="${imgSrc}" class="w-full h-14 object-cover rounded-lg">`;
+                } else {
+                    previewImg = `<div class="w-full h-14 rounded-lg shadow-inner flex items-center justify-center text-[9px] font-bold" style="background-color: ${f.color}; color: ${f.textColor || '#4A3728'}">${f.code}</div>`;
+                }
+
+                item.innerHTML = `
+                    ${previewImg}
+                    <span class="text-[10px] font-bold text-darkbrown block truncate" title="${f.name}">${f.name}</span>
+                `;
+                previewContainer.appendChild(item);
+            });
+        }
+    </script>
+</body>
+</html>
