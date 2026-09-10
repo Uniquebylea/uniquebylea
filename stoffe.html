@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stoffe & Farben | Unique by Lea Atelier Interlaken</title>
+    <meta name="description" content="Interaktiver Stoff- & Farbfächer von Unique by Lea: Entdecke Bio-Musselin, Waffelpiqué und Bio-Jersey für dein massgeschneidertes Lieblingsstück. Kombiniere Stoffe direkt online!">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Unique by Lea">
+    <meta property="og:url" content="https://uniquebylea.vercel.app/stoffe.html">
+    <meta property="og:title" content="Stoffe & Farben | Unique by Lea Nähatelier Interlaken">
+    <meta property="og:description" content="Kombiniere Atelier-Stoffe interaktiv: Bio-Musselin, Waffelpiqué & Jersey für dein persönliches Unikat. 100% Schweizer Handarbeit.">
+    <meta property="og:image" content="https://uniquebylea.vercel.app/images/uebermich.jpg">
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { sand: '#EAE3D9', creme: '#F9F6F2', terracotta: '#B08968', darkbrown: '#4A3728' },
+                    fontFamily: { serif: ['Playfair Display', 'serif'], sans: ['Montserrat', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Subtile Stoff-Texturen */
+        .texture-musselin {
+            background-image: radial-gradient(rgba(0,0,0,0.04) 1px, transparent 0), radial-gradient(rgba(255,255,255,0.15) 1px, transparent 0);
+            background-size: 6px 6px, 12px 12px;
+            background-position: 0 0, 3px 3px;
+        }
+        .texture-waffle {
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,0.06) 1px, transparent 1px);
+            background-size: 10px 10px;
+        }
+        .texture-jersey {
+            background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.08) 0px, rgba(255,255,255,0.08) 2px, transparent 2px, transparent 5px);
+        }
+        .texture-cord {
+            background-image: repeating-linear-gradient(90deg, rgba(0,0,0,0.05) 0, rgba(0,0,0,0.05) 4px, transparent 4px, transparent 8px);
+        }
+    </style>
+</head>
+<body class="bg-sand text-darkbrown font-sans min-h-screen flex flex-col selection:bg-terracotta selection:text-white">
+
+    <!-- Header & Navigation (Identisch mit allen Seiten) -->
+    <nav class="bg-sand/95 backdrop-blur-md sticky top-0 z-50 border-b border-darkbrown/5">
+        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center h-20 md:h-24">
+            <a href="index.html" class="flex items-center py-1">
+                <img src="images/logo.png" alt="Unique by Lea Logo" class="h-14 md:h-20 object-contain">
+            </a>
+            
+            <div class="hidden md:flex items-center gap-7 lg:gap-8 uppercase text-[10px] tracking-[0.2em] font-bold">
+                <a href="index.html" class="hover:text-terracotta transition">Startseite</a>
+                <a href="shop.html" class="hover:text-terracotta transition">Shop</a>
+                <a href="stoffe.html" class="text-terracotta border-b-2 border-terracotta pb-0.5">Stoffe</a>
+                <a href="shop.html?openWishlist=true" class="hover:text-terracotta transition flex items-center gap-1.5" title="Deine Wunschkiste">
+                    <svg class="w-3.5 h-3.5 text-terracotta fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    <span>Wunschkiste</span>
+                </a>
+                <a href="shop.html?openCart=true" class="hover:text-terracotta transition flex items-center gap-1.5" title="Dein Nähkörbchen">
+                    <svg class="w-3.5 h-3.5 text-darkbrown/70 hover:text-terracotta transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                    <span>Nähkörbchen</span>
+                </a>
+                <a href="ueber-mich.html" class="hover:text-terracotta transition">Über mich</a>
+                <a href="kontakt.html" class="hover:text-terracotta transition">Kontakt</a>
+                
+                <!-- Instagram -->
+                <a href="https://www.instagram.com/unique_by_lea" target="_blank" rel="noopener noreferrer" 
+                   title="Instagram: @unique_by_lea" 
+                   class="hover:text-terracotta transition pl-2 border-l border-darkbrown/15">
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                </a>
+            </div>
+
+            <!-- Mobile Menu Toggle -->
+            <button id="nav-toggle" class="md:hidden text-2xl p-2" aria-label="Menü öffnen">☰</button>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="nav-menu" class="hidden md:hidden flex flex-col items-center py-6 gap-5 uppercase text-[11px] tracking-widest font-bold bg-creme border-b border-darkbrown/10">
+            <a href="index.html" class="hover:text-terracotta">Startseite</a>
+            <a href="shop.html" class="hover:text-terracotta">Shop</a>
+            <a href="stoffe.html" class="text-terracotta">Stoffe</a>
+            <a href="shop.html?openWishlist=true" class="hover:text-terracotta flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-terracotta fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                <span>Wunschkiste</span>
+            </a>
+            <a href="shop.html?openCart=true" class="hover:text-terracotta flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                <span>Nähkörbchen</span>
+            </a>
+            <a href="ueber-mich.html" class="hover:text-terracotta">Über mich</a>
+            <a href="kontakt.html" class="hover:text-terracotta">Kontakt</a>
+            <a href="https://www.instagram.com/unique_by_lea" target="_blank" rel="noopener noreferrer" class="text-terracotta pt-2">Instagram: @unique_by_lea</a>
+        </div>
+    </nav>
+
+    <!-- Header Section (Identisch wie Über mich) -->
+    <section class="pt-12 pb-8 md:pt-16 md:pb-12 text-center px-4 max-w-4xl mx-auto">
+        <span class="text-xs uppercase tracking-[0.25em] font-bold text-terracotta block mb-3">Atelier Interlaken · Massanfertigungen</span>
+        <h1 class="font-serif text-3xl md:text-5xl italic font-bold text-darkbrown mb-4">Interaktiver Stoff- & Farbfächer</h1>
+        <div class="w-16 h-0.5 bg-terracotta/40 mx-auto mt-2 mb-4"></div>
+        <p class="text-xs md:text-sm text-darkbrown/80 font-light max-w-2xl mx-auto leading-relaxed">
+            Wähle deine Lieblingsstoffe für dein persönliches Unikat. Klicke auf zwei Stoffe, um sie virtuell nebeneinander zu legen und das harmonische Zusammenspiel direkt zu sehen!
+        </p>
+    </section>
+
+    <!-- MAIN CONTENT -->
+    <main class="max-w-6xl mx-auto px-4 pb-20 w-full space-y-10">
+
+        <!-- 1. INTERAKTIVER KOMBINIERER / FARBFÄCHER (Sticky / Live Box) -->
+        <div id="combinerBox" class="bg-creme rounded-3xl p-6 md:p-8 border border-darkbrown/15 shadow-lg relative overflow-hidden transition-all duration-300">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                
+                <!-- Kombi-Vorschau Links -->
+                <div class="flex items-center gap-4 sm:gap-6 flex-shrink-0">
+                    <!-- Stoff 1: Hauptstoff -->
+                    <div class="flex flex-col items-center text-center">
+                        <span class="text-[10px] uppercase font-bold tracking-wider text-darkbrown/60 mb-2">1. Hauptstoff</span>
+                        <div id="slot1Preview" class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border-2 border-dashed border-darkbrown/25 flex items-center justify-center bg-sand/30 shadow-inner overflow-hidden transition-all">
+                            <span class="text-[10px] text-darkbrown/50 italic px-2">Klick Stoff</span>
+                        </div>
+                        <span id="slot1Label" class="text-xs font-bold mt-2 text-darkbrown truncate max-w-[110px] sm:max-w-[130px]">Noch leer</span>
+                    </div>
+
+                    <!-- Verbindungs-Symbol -->
+                    <div class="flex flex-col items-center justify-center pt-5">
+                        <div class="w-8 h-8 rounded-full bg-sand flex items-center justify-center text-terracotta font-bold text-sm shadow-sm border border-darkbrown/10">
+                            +
+                        </div>
+                    </div>
+
+                    <!-- Stoff 2: Kombistoff -->
+                    <div class="flex flex-col items-center text-center">
+                        <span class="text-[10px] uppercase font-bold tracking-wider text-darkbrown/60 mb-2">2. Kombistoff</span>
+                        <div id="slot2Preview" class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border-2 border-dashed border-darkbrown/25 flex items-center justify-center bg-sand/30 shadow-inner overflow-hidden transition-all">
+                            <span class="text-[10px] text-darkbrown/50 italic px-2">Klick Stoff</span>
+                        </div>
+                        <span id="slot2Label" class="text-xs font-bold mt-2 text-darkbrown truncate max-w-[110px] sm:max-w-[130px]">Noch leer</span>
+                    </div>
+                </div>
+
+                <!-- Kombi-Details & Aktionen Rechts -->
+                <div class="flex-1 w-full text-center md:text-left border-t md:border-t-0 md:border-l border-darkbrown/10 pt-4 md:pt-0 md:pl-6 space-y-3">
+                    <span class="text-[10px] uppercase tracking-widest font-bold text-terracotta block">Deine gewählte Kombination</span>
+                    <h3 id="comboTitle" class="font-serif text-base sm:text-lg font-bold text-darkbrown italic">
+                        Wähle unten zwei Stoffe aus
+                    </h3>
+                    <p id="comboHint" class="text-xs text-darkbrown/70 font-light leading-relaxed">
+                        Tipp: Kombiniere z. B. gemusterten Bio-Jersey für aussen mit kuscheligem Waffelpiqué für innen!
+                    </p>
+
+                    <!-- Aktionsbuttons -->
+                    <div class="flex flex-wrap items-center justify-center md:justify-start gap-2.5 pt-2">
+                        <button id="inquireComboBtn" onclick="inquireCombo()" disabled
+                                class="bg-darkbrown hover:bg-terracotta disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs uppercase tracking-widest font-bold px-6 py-3 rounded-full transition shadow-md flex items-center gap-2">
+                            <span>✨ Diese Kombination anfragen ➔</span>
+                        </button>
+                        <button onclick="resetCombo()" class="text-[10px] uppercase tracking-wider text-darkbrown/60 hover:text-red-500 font-bold px-3 py-2 transition">
+                            Zurücksetzen
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 2. FILTERLEISTE NACH STOFFART & FARBWELT -->
+        <div class="space-y-3">
+            <!-- Material-Filter -->
+            <div class="flex flex-wrap items-center justify-center gap-2 text-xs">
+                <button onclick="filterFabrics('all')" class="fabric-cat-btn active px-4 py-2 rounded-full uppercase text-[10px] font-bold tracking-wider transition bg-terracotta text-white shadow-sm" data-cat="all">Alle Stoffe</button>
+                <button onclick="filterFabrics('musselin')" class="fabric-cat-btn px-4 py-2 rounded-full uppercase text-[10px] font-bold tracking-wider transition bg-creme border border-darkbrown/10 hover:border-terracotta text-darkbrown" data-cat="musselin">Bio-Musselin</button>
+                <button onclick="filterFabrics('waffel')" class="fabric-cat-btn px-4 py-2 rounded-full uppercase text-[10px] font-bold tracking-wider transition bg-creme border border-darkbrown/10 hover:border-terracotta text-darkbrown" data-cat="waffel">Waffelpiqué</button>
+                <button onclick="filterFabrics('jersey')" class="fabric-cat-btn px-4 py-2 rounded-full uppercase text-[10px] font-bold tracking-wider transition bg-creme border border-darkbrown/10 hover:border-terracotta text-darkbrown" data-cat="jersey">Bio-Jersey</button>
+                <button onclick="filterFabrics('makramee')" class="fabric-cat-btn px-4 py-2 rounded-full uppercase text-[10px] font-bold tracking-wider transition bg-creme border border-darkbrown/10 hover:border-terracotta text-darkbrown" data-cat="makramee">Makramee-Garne</button>
+            </div>
+            
+            <p class="text-[11px] text-center text-darkbrown/60 font-light">
+                Klicke bei einem Stoff auf <strong>«Als Hauptstoff»</strong> oder <strong>«Als Kombistoff»</strong>, um ihn oben in deinen Farbfächer zu legen.
+            </p>
+        </div>
+
+        <!-- 3. STOFFKARTEN-RASTER -->
+        <div id="fabricGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5">
+            <!-- Wird dynamisch per JavaScript befüllt -->
+        </div>
+
+        <!-- 4. ATELIER-QUALITÄT & PFLEGETIPPS (Infobox) -->
+        <div class="bg-creme/90 rounded-3xl p-8 md:p-10 border border-darkbrown/10 shadow-sm grid md:grid-cols-3 gap-6 text-center md:text-left">
+            <div class="space-y-2">
+                <span class="text-2xl">🌱</span>
+                <h4 class="font-serif text-sm font-bold uppercase tracking-wider text-darkbrown">100 % Zertifizierte Bio-Stoffe</h4>
+                <p class="text-xs text-darkbrown/70 leading-relaxed font-light">
+                    Alle Stoffe sind nach GOTS oder OEKO-TEX Standard 100 zertifiziert. Garantiert frei von schädlichen Chemikalien und sanft zu zarter Babyhaut.
+                </p>
+            </div>
+            <div class="space-y-2">
+                <span class="text-2xl">🧺</span>
+                <h4 class="font-serif text-sm font-bold uppercase tracking-wider text-darkbrown">Vorgewaschen & Formstabil</h4>
+                <p class="text-xs text-darkbrown/70 leading-relaxed font-light">
+                    Ich wasche alle Stoffe vor dem Zuschneiden schonend mit ökologischem Waschmittel vor. So läuft bei dir zu Hause nichts mehr ein!
+                </p>
+            </div>
+            <div class="space-y-2">
+                <span class="text-2xl">🇨🇭</span>
+                <h4 class="font-serif text-sm font-bold uppercase tracking-wider text-darkbrown">Eigener Wunschstoff?</h4>
+                <p class="text-xs text-darkbrown/70 leading-relaxed font-light">
+                    Hast du einen ganz eigenen Stoff oder ein altes Lieblingsteil zum Upcycling? Bring ihn einfach im Atelier in Interlaken vorbei!
+                </p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer (Identisch mit allen Seiten) -->
+    <footer class="mt-auto bg-darkbrown text-sand py-12 px-4 border-t border-darkbrown/10">
+        <div class="max-w-7xl mx-auto space-y-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+                <div>
+                    <h3 class="font-serif text-lg font-bold tracking-wider mb-1">Unique by Lea</h3>
+                    <p class="text-xs text-sand/70">Dammweg 7 · 3800 Interlaken · Schweiz</p>
+                    <p class="text-[11px] text-sand/60 mt-1">E-Mail: uniquebylea@outlook.com</p>
+                </div>
+                <div class="flex flex-wrap justify-center items-center gap-5 uppercase text-[10px] tracking-widest font-bold">
+                    <a href="index.html" class="hover:text-terracotta transition">Startseite</a>
+                    <a href="shop.html" class="hover:text-terracotta transition">Shop</a>
+                    <a href="stoffe.html" class="text-terracotta">Stoffe</a>
+                    <a href="shop.html?openWishlist=true" class="hover:text-terracotta transition">Wunschkiste</a>
+                    <a href="shop.html?openCart=true" class="hover:text-terracotta transition">Nähkörbchen</a>
+                    <a href="ueber-mich.html" class="hover:text-terracotta transition">Über mich</a>
+                    <a href="kontakt.html" class="hover:text-terracotta transition">Kontakt</a>
+                    <a href="agb.html" class="hover:text-terracotta transition">AGB</a>
+                    <a href="impressum.html" class="hover:text-terracotta transition">Impressum</a>
+                    <a href="https://www.instagram.com/unique_by_lea" target="_blank" rel="noopener noreferrer" 
+                       class="hover:text-terracotta transition flex items-center gap-1.5 text-terracotta">
+                        <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        <span>@unique_by_lea</span>
+                    </a>
+                </div>
+            </div>
+            <div class="pt-6 border-t border-sand/10 flex flex-wrap items-center justify-between gap-4 text-[11px] text-sand/60">
+                <div class="flex items-center gap-2">
+                    <span>🇨🇭 Handgefertigt in Interlaken</span>
+                    <span>·</span>
+                    <span>Versand mit Schweizerischer Post</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="bg-white/10 px-2 py-0.5 rounded text-white text-[10px] font-bold tracking-wider">TWINT</span>
+                    <span class="bg-white/10 px-2 py-0.5 rounded text-white text-[10px] font-bold tracking-wider">VISA</span>
+                    <span class="bg-white/10 px-2 py-0.5 rounded text-white text-[10px] font-bold tracking-wider">MASTERCARD</span>
+                    <span class="bg-white/10 px-2 py-0.5 rounded text-white text-[10px] font-bold tracking-wider">APPLE PAY</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- INTERAKTIVES JAVASCRIPT -->
+    <script>
+        // Mobile Navigation Toggle
+        document.getElementById('nav-toggle').onclick = function() {
+            document.getElementById('nav-menu').classList.toggle('hidden');
+        };
+
+        // Stoff-Datenbank des Ateliers
+        const fabrics = [
+            {
+                code: "M-01",
+                name: "Bio-Musselin Salbeigrün",
+                cat: "musselin",
+                color: "#8A9A86",
+                textColor: "#FFFFFF",
+                textureClass: "texture-musselin",
+                material: "100 % Bio-Baumwolle (GOTS)",
+                badge: "Bestseller",
+                desc: "Zart gekreppt, federleicht und atmungsaktiv. Der absolute Liebling für Babynester & Halstücher."
+            },
+            {
+                code: "M-02",
+                name: "Bio-Musselin Natur / Sand",
+                cat: "musselin",
+                color: "#E2D7C7",
+                textColor: "#4A3728",
+                textureClass: "texture-musselin",
+                material: "100 % Bio-Baumwolle (GOTS)",
+                badge: "Klassiker",
+                desc: "Warmes Naturweiss. Beruhigend, zeitlos und wunderbar neutral zu kombinieren."
+            },
+            {
+                code: "M-03",
+                name: "Bio-Musselin Altrosa / Blush",
+                cat: "musselin",
+                color: "#D8B2A4",
+                textColor: "#FFFFFF",
+                textureClass: "texture-musselin",
+                material: "100 % Bio-Baumwolle (GOTS)",
+                badge: "Beliebt",
+                desc: "Pudriges, dezentes Altrosa. Wirkt edel und verspielt zugleich."
+            },
+            {
+                code: "M-04",
+                name: "Bio-Musselin Terracotta",
+                cat: "musselin",
+                color: "#AF6F51",
+                textColor: "#FFFFFF",
+                textureClass: "texture-musselin",
+                material: "100 % Bio-Baumwolle (GOTS)",
+                badge: "Atelier-Ton",
+                desc: "Warmer, sonniger Erdton. Verleiht jedem Unikat eine wohlige Wärme."
+            },
+            {
+                code: "M-05",
+                name: "Bio-Musselin Taubenblau",
+                cat: "musselin",
+                color: "#7D8F98",
+                textColor: "#FFFFFF",
+                textureClass: "texture-musselin",
+                material: "100 % Bio-Baumwolle (GOTS)",
+                badge: "Neu",
+                desc: "Sanfter alpiner Blauton. Erinnert an die ruhigen Bergseen rund um Interlaken."
+            },
+            {
+                code: "M-06",
+                name: "Bio-Musselin Ocker / Senf",
+                cat: "musselin",
+                color: "#CBA04A",
+                textColor: "#FFFFFF",
+                textureClass: "texture-musselin",
+                material: "100 % Bio-Baumwolle (GOTS)",
+                badge: "Farbtupfer",
+                desc: "Leuchtend warmer Akzentstoff. Wunderschön kombiniert mit Sand oder Natur."
+            },
+            {
+                code: "W-01",
+                name: "Waffelpiqué Sand / Camel",
+                cat: "waffel",
+                color: "#D5C2AD",
+                textColor: "#4A3728",
+                textureClass: "texture-waffle",
+                material: "100 % Baumwolle (OEKO-TEX)",
+                badge: "Bestseller",
+                desc: "Plastische 3D-Wabenstruktur. Formstabil, kuschelweich und herrlich saugstark."
+            },
+            {
+                code: "W-02",
+                name: "Waffelpiqué Wollweiss",
+                cat: "waffel",
+                color: "#F3EFE7",
+                textColor: "#4A3728",
+                textureClass: "texture-waffle",
+                material: "100 % Baumwolle (OEKO-TEX)",
+                badge: "Klassiker",
+                desc: "Pures, strahlendes Naturweiss. Die edle Basis für Krabbeldecken und Wickelauflagen."
+            },
+            {
+                code: "W-03",
+                name: "Waffelpiqué Salbei",
+                cat: "waffel",
+                color: "#92A28F",
+                textColor: "#FFFFFF",
+                textureClass: "texture-waffle",
+                material: "100 % Baumwolle (OEKO-TEX)",
+                badge: "Perfekte Kombi",
+                desc: "Ton-in-Ton abgestimmt auf unseren Musselin Salbei für ein harmonisches Set."
+            },
+            {
+                code: "W-04",
+                name: "Waffelpiqué Taupe / Mokka",
+                cat: "waffel",
+                color: "#9A8574",
+                textColor: "#FFFFFF",
+                textureClass: "texture-waffle",
+                material: "100 % Baumwolle (OEKO-TEX)",
+                badge: "Pflegeleicht",
+                desc: "Eleganter Erdfarbton. Besonders schmutzunempfindlich und robust für den Alltag."
+            },
+            {
+                code: "W-05",
+                name: "Waffelpiqué Nebelgrau",
+                cat: "waffel",
+                color: "#C2C5C3",
+                textColor: "#4A3728",
+                textureClass: "texture-waffle",
+                material: "100 % Baumwolle (OEKO-TEX)",
+                badge: "Dezent",
+                desc: "Neutrales, modernes Silbergrau. Passt zu allen gemusterten Stoffen."
+            },
+            {
+                code: "J-01",
+                name: "Bio-Jersey Waldtiere & Rehlein",
+                cat: "jersey",
+                color: "#EBE3D7",
+                textColor: "#4A3728",
+                textureClass: "texture-jersey",
+                material: "95% Bio-Baumwolle, 5% Elasthan",
+                badge: "Kinderliebling",
+                desc: "Bezaubernde handgezeichnete Waldtiere auf weichem Jersey. Ideal für Baby-Mützchen."
+            },
+            {
+                code: "J-02",
+                name: "Bio-Jersey Eukalyptus & Zweige",
+                cat: "jersey",
+                color: "#E5EBE2",
+                textColor: "#4A3728",
+                textureClass: "texture-jersey",
+                material: "95% Bio-Baumwolle, 5% Elasthan",
+                badge: "Botanisch",
+                desc: "Zarte grüne Blätterzweige auf hellem Grund. Dezent, modern und zeitlos."
+            },
+            {
+                code: "J-03",
+                name: "Bio-Jersey Streifen Salbei",
+                cat: "jersey",
+                color: "#DEE5DD",
+                textColor: "#4A3728",
+                textureClass: "texture-jersey",
+                material: "95% Bio-Baumwolle, 5% Elasthan",
+                badge: "Minimalistisch",
+                desc: "Feine Blockstreifen im skandinavischen Atelier-Look. Perfekt für Wende-Tücher."
+            },
+            {
+                code: "K-01",
+                name: "Makramee-Kordel Natur (3mm)",
+                cat: "makramee",
+                color: "#EEE9E0",
+                textColor: "#4A3728",
+                textureClass: "texture-cord",
+                material: "100 % recycelte Baumwolle",
+                badge: "Handgeknüpft",
+                desc: "Formstabiles Garn für Schnullerketten, Schlüsselanhänger und Boho-Wandbehänge."
+            },
+            {
+                code: "K-02",
+                name: "Makramee-Kordel Salbei (3mm)",
+                cat: "makramee",
+                color: "#96A794",
+                textColor: "#FFFFFF",
+                textureClass: "texture-cord",
+                material: "100 % recycelte Baumwolle",
+                badge: "Akzent",
+                desc: "Gefärbtes Naturbaumwollgarn. Wunderbarer Farbklecks für handgemachte Accessoires."
+            }
+        ];
+
+        // Status der Farbfächer-Auswahl
+        let selectedSlot1 = null;
+        let selectedSlot2 = null;
+
+        function renderFabrics(catFilter = 'all') {
+            const grid = document.getElementById('fabricGrid');
+            grid.innerHTML = '';
+
+            const filtered = catFilter === 'all' ? fabrics : fabrics.filter(f => f.cat === catFilter);
+
+            filtered.forEach(f => {
+                const isSlot1 = selectedSlot1 && selectedSlot1.code === f.code;
+                const isSlot2 = selectedSlot2 && selectedSlot2.code === f.code;
+
+                let borderStyle = "border-darkbrown/10";
+                let activeBadge = "";
+                if (isSlot1) {
+                    borderStyle = "ring-2 ring-terracotta border-terracotta shadow-md";
+                    activeBadge = `<span class="absolute top-3 left-3 bg-terracotta text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow">1. Hauptstoff</span>`;
+                } else if (isSlot2) {
+                    borderStyle = "ring-2 ring-darkbrown border-darkbrown shadow-md";
+                    activeBadge = `<span class="absolute top-3 left-3 bg-darkbrown text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow">2. Kombistoff</span>`;
+                }
+
+                const card = document.createElement('div');
+                card.className = `bg-white rounded-2xl p-4 border transition-all duration-200 hover:shadow-md flex flex-col justify-between relative ${borderStyle}`;
+                card.innerHTML = `
+                    <div>
+                        <!-- Stoffmuster Kachel -->
+                        <div class="h-32 rounded-xl mb-3 relative overflow-hidden shadow-inner flex items-center justify-center ${f.textureClass}"
+                             style="background-color: ${f.color};">
+                            <span class="text-[11px] font-bold px-2.5 py-1 rounded-full shadow-sm" style="background-color: rgba(255,255,255,0.85); color: #4A3728;">
+                                ${f.code}
+                            </span>
+                            ${activeBadge}
+                            <span class="absolute bottom-2 right-2 text-[9px] font-bold bg-white/90 text-darkbrown/80 px-2 py-0.5 rounded-full shadow-xs">
+                                ${f.badge}
+                            </span>
+                        </div>
+
+                        <!-- Name & Infos -->
+                        <h4 class="font-serif text-sm font-bold text-darkbrown leading-snug mb-1">${f.name}</h4>
+                        <p class="text-[10px] uppercase tracking-wider font-bold text-terracotta mb-2">${f.material}</p>
+                        <p class="text-[11px] text-darkbrown/70 font-light leading-relaxed mb-4">${f.desc}</p>
+                    </div>
+
+                    <!-- Auswahl-Buttons -->
+                    <div class="grid grid-cols-2 gap-1.5 pt-3 border-t border-darkbrown/5">
+                        <button onclick="selectFabric('${f.code}', 1)" 
+                                class="text-[10px] uppercase tracking-wider font-bold py-2 rounded-lg transition ${isSlot1 ? 'bg-terracotta text-white' : 'bg-sand/50 hover:bg-terracotta hover:text-white text-darkbrown'}">
+                            ${isSlot1 ? '✓ Als Haupt' : 'Als Haupt'}
+                        </button>
+                        <button onclick="selectFabric('${f.code}', 2)" 
+                                class="text-[10px] uppercase tracking-wider font-bold py-2 rounded-lg transition ${isSlot2 ? 'bg-darkbrown text-white' : 'bg-sand/50 hover:bg-darkbrown hover:text-white text-darkbrown'}">
+                            ${isSlot2 ? '✓ Als Kombi' : 'Als Kombi'}
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        window.selectFabric = function(code, slot) {
+            const fabric = fabrics.find(f => f.code === code);
+            if (!fabric) return;
+
+            if (slot === 1) {
+                if (selectedSlot1 && selectedSlot1.code === code) {
+                    selectedSlot1 = null; // Toggle off
+                } else {
+                    selectedSlot1 = fabric;
+                }
+            } else if (slot === 2) {
+                if (selectedSlot2 && selectedSlot2.code === code) {
+                    selectedSlot2 = null; // Toggle off
+                } else {
+                    selectedSlot2 = fabric;
+                }
+            }
+
+            updateCombinerUI();
+            // Re-render current category to update active border tags
+            const activeCatBtn = document.querySelector('.fabric-cat-btn.active');
+            const cat = activeCatBtn ? activeCatBtn.getAttribute('data-cat') : 'all';
+            renderFabrics(cat);
+        };
+
+        function updateCombinerUI() {
+            const slot1Preview = document.getElementById('slot1Preview');
+            const slot1Label = document.getElementById('slot1Label');
+            const slot2Preview = document.getElementById('slot2Preview');
+            const slot2Label = document.getElementById('slot2Label');
+            const comboTitle = document.getElementById('comboTitle');
+            const comboHint = document.getElementById('comboHint');
+            const inquireBtn = document.getElementById('inquireComboBtn');
+
+            // Slot 1
+            if (selectedSlot1) {
+                slot1Preview.className = `w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border-2 border-terracotta shadow-md flex items-center justify-center ${selectedSlot1.textureClass}`;
+                slot1Preview.style.backgroundColor = selectedSlot1.color;
+                slot1Preview.innerHTML = `<span class="text-xs font-bold bg-white/90 text-darkbrown px-2 py-0.5 rounded-full shadow-xs">${selectedSlot1.code}</span>`;
+                slot1Label.textContent = selectedSlot1.name;
+                slot1Label.title = selectedSlot1.name;
+            } else {
+                slot1Preview.className = "w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border-2 border-dashed border-darkbrown/25 flex items-center justify-center bg-sand/30 shadow-inner";
+                slot1Preview.style.backgroundColor = '';
+                slot1Preview.innerHTML = `<span class="text-[10px] text-darkbrown/50 italic px-2">Klick Stoff</span>`;
+                slot1Label.textContent = "Noch leer";
+            }
+
+            // Slot 2
+            if (selectedSlot2) {
+                slot2Preview.className = `w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border-2 border-darkbrown shadow-md flex items-center justify-center ${selectedSlot2.textureClass}`;
+                slot2Preview.style.backgroundColor = selectedSlot2.color;
+                slot2Preview.innerHTML = `<span class="text-xs font-bold bg-white/90 text-darkbrown px-2 py-0.5 rounded-full shadow-xs">${selectedSlot2.code}</span>`;
+                slot2Label.textContent = selectedSlot2.name;
+                slot2Label.title = selectedSlot2.name;
+            } else {
+                slot2Preview.className = "w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border-2 border-dashed border-darkbrown/25 flex items-center justify-center bg-sand/30 shadow-inner";
+                slot2Preview.style.backgroundColor = '';
+                slot2Preview.innerHTML = `<span class="text-[10px] text-darkbrown/50 italic px-2">Klick Stoff</span>`;
+                slot2Label.textContent = "Noch leer";
+            }
+
+            // Combiner Status & Text
+            if (selectedSlot1 && selectedSlot2) {
+                comboTitle.textContent = `${selectedSlot1.name} + ${selectedSlot2.name}`;
+                comboHint.innerHTML = `🌸 <strong>Traumhafte Kombination!</strong> Diese beiden Nuancen harmonieren wunderbar miteinander für Babynestchen, Krabbeldecken, Kissen oder Wende-Halstücher.`;
+                inquireBtn.disabled = false;
+            } else if (selectedSlot1) {
+                comboTitle.textContent = `Hauptstoff: ${selectedSlot1.name}`;
+                comboHint.textContent = `Sehr schön! Wähle jetzt noch einen zweiten Stoff als Kombistoff (Innenfutter oder Akzent), um deine Kombination zu vervollständigen.`;
+                inquireBtn.disabled = false;
+            } else if (selectedSlot2) {
+                comboTitle.textContent = `Kombistoff: ${selectedSlot2.name}`;
+                comboHint.textContent = `Toll! Wähle jetzt noch den Hauptstoff (z. B. für die Aussenseite deines Unikats).`;
+                inquireBtn.disabled = false;
+            } else {
+                comboTitle.textContent = "Wähle unten zwei Stoffe aus";
+                comboHint.textContent = "Tipp: Kombiniere z. B. gemusterten Bio-Jersey für aussen mit kuscheligem Waffelpiqué für innen!";
+                inquireBtn.disabled = true;
+            }
+        }
+
+        window.resetCombo = function() {
+            selectedSlot1 = null;
+            selectedSlot2 = null;
+            updateCombinerUI();
+            const activeCatBtn = document.querySelector('.fabric-cat-btn.active');
+            const cat = activeCatBtn ? activeCatBtn.getAttribute('data-cat') : 'all';
+            renderFabrics(cat);
+        };
+
+        window.filterFabrics = function(cat) {
+            document.querySelectorAll('.fabric-cat-btn').forEach(btn => {
+                if (btn.getAttribute('data-cat') === cat) {
+                    btn.classList.add('active', 'bg-terracotta', 'text-white', 'shadow-sm');
+                    btn.classList.remove('bg-creme', 'border', 'border-darkbrown/10', 'text-darkbrown');
+                } else {
+                    btn.classList.remove('active', 'bg-terracotta', 'text-white', 'shadow-sm');
+                    btn.classList.add('bg-creme', 'border', 'border-darkbrown/10', 'text-darkbrown');
+                }
+            });
+            renderFabrics(cat);
+        };
+
+        window.inquireCombo = function() {
+            let msg = "Hallo Lea, ich interessiere mich für eine Massanfertigung mit folgenden Stoffen aus deinem Stofffächer:";
+            if (selectedSlot1) msg += `\n- Hauptstoff: ${selectedSlot1.code} (${selectedSlot1.name})`;
+            if (selectedSlot2) msg += `\n- Kombistoff: ${selectedSlot2.code} (${selectedSlot2.name})`;
+
+            const params = new URLSearchParams();
+            if (selectedSlot1) params.set('fabric1', `${selectedSlot1.code} ${selectedSlot1.name}`);
+            if (selectedSlot2) params.set('fabric2', `${selectedSlot2.code} ${selectedSlot2.name}`);
+            params.set('msg', msg);
+
+            window.location.href = `kontakt.html?${params.toString()}`;
+        };
+
+        // Initialisierung
+        renderFabrics('all');
+        updateCombinerUI();
+    </script>
+</body>
+</html>
