@@ -20,7 +20,7 @@
 </head>
 <body class="bg-sand text-darkbrown font-sans min-h-screen flex flex-col selection:bg-terracotta selection:text-white">
 
-    <!-- Header & Navigation -->
+        <!-- Header & Navigation -->
     <nav class="bg-sand/95 backdrop-blur-md sticky top-0 z-50 border-b border-darkbrown/5">
         <div class="max-w-7xl mx-auto px-4 flex justify-between items-center h-20 md:h-24">
             <a href="index.html" class="flex items-center py-1">
@@ -30,9 +30,18 @@
             <div class="hidden md:flex items-center gap-8 uppercase text-[10px] tracking-[0.2em] font-bold">
                 <a href="index.html" class="hover:text-terracotta transition">Startseite</a>
                 <a href="shop.html" class="hover:text-terracotta transition">Shop</a>
+                <a href="shop.html?openWishlist=true" class="hover:text-terracotta transition flex items-center gap-1.5" title="Deine Wunschkiste">
+                    <svg class="w-3.5 h-3.5 text-terracotta fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    <span>Wunschkiste</span>
+                </a>
+                <a href="shop.html?openCart=true" class="hover:text-terracotta transition flex items-center gap-1.5" title="Dein Nähkörbchen">
+                    <svg class="w-3.5 h-3.5 text-darkbrown/70 hover:text-terracotta transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                    <span>Nähkörbchen</span>
+                </a>
                 <a href="ueber-mich.html" class="hover:text-terracotta transition">Über mich</a>
                 <a href="kontakt.html" class="hover:text-terracotta transition">Kontakt</a>
                 
+                <!-- Instagram -->
                 <a href="https://www.instagram.com/unique_by_lea" target="_blank" rel="noopener noreferrer" 
                    title="Instagram: @unique_by_lea" 
                    class="hover:text-terracotta transition pl-2 border-l border-darkbrown/15">
@@ -48,11 +57,28 @@
         <div id="nav-menu" class="hidden md:hidden flex flex-col items-center py-6 gap-5 uppercase text-[11px] tracking-widest font-bold bg-creme border-b border-darkbrown/10">
             <a href="index.html" class="hover:text-terracotta">Startseite</a>
             <a href="shop.html" class="hover:text-terracotta">Shop</a>
+            <a href="shop.html?openWishlist=true" class="hover:text-terracotta flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-terracotta fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                <span>Wunschkiste</span>
+            </a>
+            <a href="shop.html?openCart=true" class="hover:text-terracotta flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                <span>Nähkörbchen</span>
+            </a>
             <a href="ueber-mich.html" class="hover:text-terracotta">Über mich</a>
             <a href="kontakt.html" class="hover:text-terracotta">Kontakt</a>
             <a href="https://www.instagram.com/unique_by_lea" target="_blank" rel="noopener noreferrer" class="text-terracotta pt-2">Instagram: @unique_by_lea</a>
         </div>
     </nav>
+
+    <!-- Header Section (identisch wie Über mich) -->
+    <section class="pt-12 pb-8 md:pt-16 md:pb-12 text-center px-4 max-w-4xl mx-auto">
+        <span class="text-xs uppercase tracking-[0.25em] font-bold text-terracotta block mb-3">Transparenz & Datenschutz</span>
+        <h1 class="font-serif text-3xl md:text-5xl italic font-bold text-darkbrown mb-4">Impressum & Datenschutzerklärung</h1>
+        <div class="w-16 h-0.5 bg-terracotta/40 mx-auto mt-2"></div>
+    </section>
 
     <!-- Main Content -->
     <main class="max-w-4xl mx-auto px-4 py-12 md:py-16 flex-1 w-full">
