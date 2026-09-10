@@ -481,18 +481,23 @@
                     activeBadge = `<span class="absolute top-3 left-3 bg-darkbrown text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow">2. Kombistoff</span>`;
                 }
 
+                const bgStyle = (f.image || f.imageBase64)
+                    ? `background-color: ${f.color}; background-image: url('${f.image || f.imageBase64}'); background-size: cover; background-position: center;`
+                    : `background-color: ${f.color};`;
+
                 const card = document.createElement('div');
                 card.className = `bg-white rounded-2xl p-4 border transition-all duration-200 hover:shadow-md flex flex-col justify-between relative ${borderStyle}`;
                 card.innerHTML = `
                     <div>
                         <!-- Stoffmuster Kachel -->
                         <div class="h-32 rounded-xl mb-3 relative overflow-hidden shadow-inner flex items-center justify-center ${f.textureClass}"
-                             style="background-color: ${f.color};">
-                            <span class="text-[11px] font-bold px-2.5 py-1 rounded-full shadow-sm" style="background-color: rgba(255,255,255,0.85); color: #4A3728;">
+                             style="${bgStyle}">
+                            ${(f.image || f.imageBase64) ? '<div class="absolute inset-0 bg-black/15"></div>' : ''}
+                            <span class="text-[11px] font-bold px-2.5 py-1 rounded-full shadow-sm relative z-10" style="background-color: rgba(255,255,255,0.88); color: #4A3728;">
                                 ${f.code}
                             </span>
                             ${activeBadge}
-                            <span class="absolute bottom-2 right-2 text-[9px] font-bold bg-white/90 text-darkbrown/80 px-2 py-0.5 rounded-full shadow-xs">
+                            <span class="absolute bottom-2 right-2 text-[9px] font-bold bg-white/90 text-darkbrown/80 px-2 py-0.5 rounded-full shadow-xs relative z-10">
                                 ${f.badge}
                             </span>
                         </div>
@@ -555,28 +560,46 @@
 
             // Slot 1
             if (selectedSlot1) {
-                slot1Preview.className = `w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border-2 border-terracotta shadow-md flex items-center justify-center ${selectedSlot1.textureClass}`;
+                slot1Preview.className = `w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border-2 border-terracotta shadow-md flex items-center justify-center relative overflow-hidden ${selectedSlot1.textureClass}`;
                 slot1Preview.style.backgroundColor = selectedSlot1.color;
-                slot1Preview.innerHTML = `<span class="text-xs font-bold bg-white/90 text-darkbrown px-2 py-0.5 rounded-full shadow-xs">${selectedSlot1.code}</span>`;
+                const img1 = selectedSlot1.image || selectedSlot1.imageBase64;
+                if (img1) {
+                    slot1Preview.style.backgroundImage = `url('${img1}')`;
+                    slot1Preview.style.backgroundSize = 'cover';
+                    slot1Preview.style.backgroundPosition = 'center';
+                } else {
+                    slot1Preview.style.backgroundImage = '';
+                }
+                slot1Preview.innerHTML = `${img1 ? '<div class="absolute inset-0 bg-black/20"></div>' : ''}<span class="text-xs font-bold bg-white/90 text-darkbrown px-2 py-0.5 rounded-full shadow-xs relative z-10">${selectedSlot1.code}</span>`;
                 slot1Label.textContent = selectedSlot1.name;
                 slot1Label.title = selectedSlot1.name;
             } else {
                 slot1Preview.className = "w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border-2 border-dashed border-darkbrown/25 flex items-center justify-center bg-sand/30 shadow-inner";
                 slot1Preview.style.backgroundColor = '';
+                slot1Preview.style.backgroundImage = '';
                 slot1Preview.innerHTML = `<span class="text-[10px] text-darkbrown/50 italic px-2">Klick Stoff</span>`;
                 slot1Label.textContent = "Noch leer";
             }
 
             // Slot 2
             if (selectedSlot2) {
-                slot2Preview.className = `w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border-2 border-darkbrown shadow-md flex items-center justify-center ${selectedSlot2.textureClass}`;
+                slot2Preview.className = `w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border-2 border-darkbrown shadow-md flex items-center justify-center relative overflow-hidden ${selectedSlot2.textureClass}`;
                 slot2Preview.style.backgroundColor = selectedSlot2.color;
-                slot2Preview.innerHTML = `<span class="text-xs font-bold bg-white/90 text-darkbrown px-2 py-0.5 rounded-full shadow-xs">${selectedSlot2.code}</span>`;
+                const img2 = selectedSlot2.image || selectedSlot2.imageBase64;
+                if (img2) {
+                    slot2Preview.style.backgroundImage = `url('${img2}')`;
+                    slot2Preview.style.backgroundSize = 'cover';
+                    slot2Preview.style.backgroundPosition = 'center';
+                } else {
+                    slot2Preview.style.backgroundImage = '';
+                }
+                slot2Preview.innerHTML = `${img2 ? '<div class="absolute inset-0 bg-black/20"></div>' : ''}<span class="text-xs font-bold bg-white/90 text-darkbrown px-2 py-0.5 rounded-full shadow-xs relative z-10">${selectedSlot2.code}</span>`;
                 slot2Label.textContent = selectedSlot2.name;
                 slot2Label.title = selectedSlot2.name;
             } else {
                 slot2Preview.className = "w-20 h-20 sm:w-24 sm:h-24 rounded-2xl border-2 border-dashed border-darkbrown/25 flex items-center justify-center bg-sand/30 shadow-inner";
                 slot2Preview.style.backgroundColor = '';
+                slot2Preview.style.backgroundImage = '';
                 slot2Preview.innerHTML = `<span class="text-[10px] text-darkbrown/50 italic px-2">Klick Stoff</span>`;
                 slot2Label.textContent = "Noch leer";
             }
