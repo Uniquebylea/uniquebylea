@@ -1142,7 +1142,7 @@
 
             if (existsIdx >= 0) {
                 wishlist.splice(existsIdx, 1);
-                showToast(`Â«${name}Â» aus der Wunschkiste entfernt`);
+                showToast(`«${name}» aus der Wunschkiste entfernt`);
             } else {
                 wishlist.push({
                     name: item.name,
@@ -1150,7 +1150,7 @@
                     img: item.img || 'images/logo.png',
                     cat: item.cat || ''
                 });
-                showToast(`Â«${name}Â» in deine Wunschkiste gelegt â¤ï¸`);
+                showToast(`«${name}» in deine Wunschkiste gelegt ❤️`);
             }
 
             saveWishlist();
@@ -1223,7 +1223,7 @@
             if (wishlist.length === 0) {
                 container.innerHTML = `
                     <div class="text-center py-12 text-darkbrown/60 italic space-y-3">
-                        <div class="text-4xl text-darkbrown/30">â™¡</div>
+                        <div class="text-4xl text-darkbrown/30">♡</div>
                         <p class="text-xs">Deine Wunschkiste ist noch leer.</p>
                         <p class="text-[11px] text-darkbrown/40 font-light">Klicke beim Stöbern auf das Herz bei beliebigen Stücken, um sie dir hier zu merken.</p>
                     </div>
@@ -1279,7 +1279,7 @@
             applyFilters();
             updateModalHeartState();
             renderWishlist();
-            showToast(`Â«${name}Â» entfernt`);
+            showToast(`«${name}» entfernt`);
         };
 
         window.addWishlistItemToCart = function(name) {
@@ -1337,7 +1337,7 @@
                 authText.innerHTML = `<span>Angemeldet als: <strong>${currentUser.email}</strong></span>`;
                 authBtn.textContent = 'Konto';
             } else {
-                authText.innerHTML = `<span>ðŸ’¡ Melde dich an, um deine Wunschkiste dauerhaft zu sichern.</span>`;
+                authText.innerHTML = `<span>💡 Melde dich an, um deine Wunschkiste dauerhaft zu sichern.</span>`;
                 authBtn.textContent = 'Anmelden';
             }
         }
