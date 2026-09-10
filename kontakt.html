@@ -26,6 +26,36 @@
                 }
             }
         }
+        // URL-Parameter auswerten (z.B. Weiterleitung vom Stofffächer)
+        (function() {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const f1 = params.get('fabric1');
+                const f2 = params.get('fabric2');
+                const msgParam = params.get('msg');
+
+                if (f1 || f2) {
+                    const banner = document.getElementById('fabricBanner');
+                    const fabricNames = document.getElementById('fabricNames');
+                    if (banner && fabricNames) {
+                        banner.classList.remove('hidden');
+                        const selectedList = [];
+                        if (f1) selectedList.push(Hauptstoff: );
+                        if (f2) selectedList.push(Kombistoff: );
+                        fabricNames.textContent = selectedList.join(' · ');
+                    }
+                }
+
+                if (msgParam) {
+                    const msgEl = document.getElementById('msg');
+                    if (msgEl) {
+                        msgEl.value = msgParam;
+                    }
+                }
+            } catch (e) {
+                console.error("URL Params error:", e);
+            }
+        })();
     </script>
 </head>
 <body class="bg-sand text-darkbrown font-sans min-h-screen flex flex-col selection:bg-terracotta selection:text-white">
@@ -40,6 +70,7 @@
             <div class="hidden md:flex items-center gap-8 uppercase text-[10px] tracking-[0.2em] font-bold">
                 <a href="index.html" class="hover:text-terracotta transition">Startseite</a>
                 <a href="shop.html" class="hover:text-terracotta transition">Shop</a>
+                <a href="stoffe.html" class="hover:text-terracotta transition">Stoffe</a>
 
                 <a href="shop.html?openWishlist=true" class="hover:text-terracotta transition flex items-center gap-1.5" title="Deine Wunschkiste">
                     <svg class="w-3.5 h-3.5 text-terracotta fill-current" viewBox="0 0 24 24">
@@ -71,6 +102,7 @@
         <div id="nav-menu" class="hidden md:hidden flex flex-col items-center py-6 gap-5 uppercase text-[11px] tracking-widest font-bold bg-creme border-b border-darkbrown/10">
             <a href="index.html" class="hover:text-terracotta">Startseite</a>
             <a href="shop.html" class="hover:text-terracotta">Shop</a>
+            <a href="stoffe.html" class="hover:text-terracotta">Stoffe</a>
             <a href="shop.html?openWishlist=true" class="hover:text-terracotta flex items-center gap-1.5">
                 <svg class="w-3.5 h-3.5 text-terracotta fill-current" viewBox="0 0 24 24">
                     <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
@@ -104,6 +136,20 @@
             <p class="text-xs text-darkbrown/70 leading-relaxed mb-6 font-light">
                 Hast du eine Frage zu einem Produkt, suchst ein individuelles Geschenk zur Geburt oder möchtest ein Unikat persönlich im Atelier abholen? Ich freue mich auf deine Nachricht!
             </p>
+                        <!-- Stoff-Vorauswahl Banner (wird angezeigt wenn von stoffe.html weitergeleitet) -->
+            <div id="fabricBanner" class="hidden mb-5 p-3.5 bg-sand/60 border border-terracotta/40 rounded-2xl flex items-center justify-between gap-3 text-xs shadow-xs">
+                <div class="flex items-center gap-2.5">
+                    <span class="text-xl">🧵</span>
+                    <div>
+                        <strong class="text-terracotta block text-[10px] uppercase tracking-wider font-bold">Deine ausgewählten Atelier-Stoffe:</strong>
+                        <span id="fabricNames" class="text-darkbrown font-semibold text-xs"></span>
+                    </div>
+                </div>
+                <a href="stoffe.html" class="text-[10px] text-terracotta hover:underline uppercase tracking-wider font-bold whitespace-nowrap bg-white/80 px-2.5 py-1 rounded-lg border border-terracotta/20">
+                    Ändern ➔
+                </a>
+            </div>
+
             <form action="https://api.web3forms.com/submit" method="POST" class="space-y-4">
                 <input type="hidden" name="access_key" value="2b4e9f51-bdd3-4391-9732-39f55bb17727">
                 <input type="text" name="name" placeholder="Dein Name" required 
@@ -112,6 +158,10 @@
                        class="w-full bg-white border border-darkbrown/15 rounded-xl py-3 px-4 text-xs outline-none focus:ring-1 focus:ring-terracotta">
                 <textarea name="message" id="msg" rows="5" placeholder="Deine Nachricht oder Wunschbestellung..." required 
                           class="w-full bg-white border border-darkbrown/15 rounded-xl py-3 px-4 text-xs outline-none focus:ring-1 focus:ring-terracotta leading-relaxed"></textarea>
+                <div class="flex justify-between items-center text-[10px] text-darkbrown/60 px-1 pt-0.5">
+                    <span>🧵 Stoff noch nicht ausgewählt?</span>
+                    <a href="stoffe.html" class="text-terracotta hover:underline font-bold">Zum Stoff- & Farbfächer ➔</a>
+                </div>
                 <button type="submit" 
                         class="w-full bg-darkbrown hover:bg-terracotta text-white py-3.5 rounded-xl font-bold uppercase text-xs tracking-widest shadow-md transition">
                     Nachricht absenden ➔
@@ -192,6 +242,7 @@
             <div class="flex flex-wrap justify-center items-center gap-5 uppercase text-[10px] tracking-widest font-bold">
                 <a href="index.html" class="hover:text-terracotta transition">Startseite</a>
                 <a href="shop.html" class="hover:text-terracotta transition">Shop</a>
+                <a href="stoffe.html" class="hover:text-terracotta transition">Stoffe</a>
 
                 <a href="shop.html?openWishlist=true" class="hover:text-terracotta transition flex items-center gap-1.5" title="Deine Wunschkiste">
                     <svg class="w-3.5 h-3.5 text-terracotta fill-current" viewBox="0 0 24 24">
@@ -308,6 +359,36 @@
                 startAutoSlide();
             }, { passive: true });
         }
+        // URL-Parameter auswerten (z.B. Weiterleitung vom Stofffächer)
+        (function() {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const f1 = params.get('fabric1');
+                const f2 = params.get('fabric2');
+                const msgParam = params.get('msg');
+
+                if (f1 || f2) {
+                    const banner = document.getElementById('fabricBanner');
+                    const fabricNames = document.getElementById('fabricNames');
+                    if (banner && fabricNames) {
+                        banner.classList.remove('hidden');
+                        const selectedList = [];
+                        if (f1) selectedList.push(Hauptstoff: );
+                        if (f2) selectedList.push(Kombistoff: );
+                        fabricNames.textContent = selectedList.join(' · ');
+                    }
+                }
+
+                if (msgParam) {
+                    const msgEl = document.getElementById('msg');
+                    if (msgEl) {
+                        msgEl.value = msgParam;
+                    }
+                }
+            } catch (e) {
+                console.error("URL Params error:", e);
+            }
+        })();
     </script>
 </body>
 </html>
