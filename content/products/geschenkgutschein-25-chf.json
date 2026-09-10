@@ -1,5 +1,5 @@
 {
-  "name": "Geschenkgutschein 25 CHF",
+  "name": "Geschenkgutschein",
   "cat": "Gutscheine",
   "price": "25 CHF",
   "badge": "",
@@ -8,14 +8,20 @@
   "img": "images/geschenkgutschein-25-chf-gutschein-25.png",
   "options": [
     {
-      "name": "50 CHF Gutschein",
+      "name": "25 CHF Gutschein",
       "type": "dropdown",
       "required": false,
       "values": [
         {
-          "title": "50 CHF",
+          "title": "50 CHF Gutschein",
           "price_add": 25,
           "img": "/images/gutschein-50.png",
+          "stock": 10
+        },
+        {
+          "title": "75 CHF Gutschein",
+          "price_add": 50,
+          "img": "/images/gutschein-75.png",
           "stock": 10
         }
       ]
