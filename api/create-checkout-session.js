@@ -59,7 +59,7 @@ module.exports = async (req, res) => {
       params.append(`line_items[${index}][quantity]`, (Number(item.quantity) || 1).toString());
     });
 
-    // Versandkosten als Shipping Option
+    // Versandkosten als Shipping Option (Stripe erlaubt shipping_options nur, wenn shipping_address_collection aktiv ist)
     const costCents = Math.round((Number(shippingCost) || 0) * 100);
     let shippingName = 'Schweizerische Post (B-Post Paket)';
     if (shippingType === 'email') {
@@ -72,10 +72,20 @@ module.exports = async (req, res) => {
       shippingName = 'Abholung im Atelier (Interlaken)';
     }
 
-    params.append('shipping_options[0][shipping_rate_data][type]', 'fixed_amount');
-    params.append('shipping_options[0][shipping_rate_data][fixed_amount][amount]', costCents.toString());
-    params.append('shipping_options[0][shipping_rate_data][fixed_amount][currency]', 'chf');
-    params.append('shipping_options[0][shipping_rate_data][display_name]', shippingName);
+    if (!isVoucherEmailOnly) {
+      params.append('shipping_options[0][shipping_rate_data][type]', 'fixed_amount');
+      params.append('shipping_options[0][shipping_rate_data][fixed_amount][amount]', costCents.toString());
+      params.append('shipping_options[0][shipping_rate_data][fixed_amount][currency]', 'chf');
+      params.append('shipping_options[0][shipping_rate_data][display_name]', shippingName);
+    }
+
+    // Metadaten für Lea im Stripe Dashboard
+    params.append('metadata[shipping_type]', shippingType || 'bpost');
+    if (isVoucherEmailOnly) {
+      params.append('metadata[delivery_note]', 'Gutschein per E-Mail (PDF zum Ausdrucken)');
+    } else if (shippingType === 'letter') {
+      params.append('metadata[delivery_note]', 'Gutschein Post Briefversand (Gutscheinkarte)');
+    }
 
     // Call Stripe API
     const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
