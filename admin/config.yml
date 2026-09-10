@@ -27,7 +27,7 @@ collections:
         options: ["Baby", "Kinder", "Erwachsene", "Makramee", "Taschen", "Gutscheine", "Accessoires"]
       - {label: "Basispreis (z. B. 79.00 CHF)", name: "price", widget: "string"}
       - {label: "Badge (Optional, z. B. Neu, Unikat, Bestseller)", name: "badge", widget: "string", required: false}
-      - {label: "Standard-Bestand (falls keine Farben)", name: "stock", widget: "number", default: 1, value_type: "int", min: 0, required: false}
+      - {label: "Standard-Bestand (falls keine Optionen mit Bestand)", name: "stock", widget: "number", default: 1, value_type: "int", min: 0, required: false}
       - {label: "Beschreibung", name: "description", widget: "text", required: false}
       - {label: "Hauptbild", name: "img", widget: "image"}
 
@@ -38,27 +38,63 @@ collections:
         multiple: true
         required: false
       
-      # Farben mit eigenem Foto & eigenem Lagerbestand:
-      - label: "Farben (mit eigenem Foto & Bestand)"
-        name: "variants_color"
+      # Produkt-Optionen wie bei Ionos:
+      - label: "Produkt-Optionen (wie bei Ionos: Farbe, Größe, Dropdown, Checkbox)"
+        name: "options"
         widget: "list"
         required: false
-        collapsed: true
-        summary: "{{fields.name}} (Bestand: {{fields.stock}})"
+        collapsed: false
+        summary: "{{fields.name}} ({{fields.type}})"
+        hint: "Verwenden Sie den Optionstyp, der Ihr Produkt am besten präsentiert: Drop-Down-Listen, damit Kunden aus mehreren Optionen auswählen können, Auswahlknöpfe für eine Einzelauswahl und Kontrollkästchen für die Mehrfachauswahl. Fügen Sie als die gängigsten Anpassungsoptionen Farbe und Größe hinzu."
         fields:
-          - {label: "Farbe (z. B. Gelb, Grün)", name: "name", widget: "string"}
-          - {label: "Foto dieser Farbe", name: "img", widget: "image", required: false}
-          - {label: "Bestand dieser Farbe (0 = Ausverkauft)", name: "stock", widget: "number", default: 1, value_type: "int", min: 0}
-
-      # Größen mit Aufpreis in CHF:
-      - label: "Größen (mit Aufpreis in CHF)"
-        name: "variants_size"
-        widget: "list"
-        required: false
-        collapsed: true
-        summary: "{{fields.name}} (+{{fields.price_add}} CHF)"
-        fields:
-          - {label: "Größe (z. B. 6,5 cm oder 10 cm)", name: "name", widget: "string"}
-          - {label: "Aufpreis in CHF (z. B. 0 oder 5.00)", name: "price_add", widget: "number", default: 0, value_type: "float", min: 0, required: false}
-
-      - {label: "Wunschname für Bestickung erlauben?", name: "allow_custom_name", widget: "boolean", default: false, required: false}
+          - label: "Name der Option"
+            name: "name"
+            widget: "string"
+            hint: "Zum Beispiel „Größe“, „Farbe“, „Zusatz“ oder „Wunschname“"
+          - label: "Optionsart"
+            name: "type"
+            widget: "select"
+            default: "dropdown"
+            options:
+              - { label: "⊟ Drop-Down-Liste", value: "dropdown" }
+              - { label: "🎨 Farbe (mit Foto & Bestand)", value: "color" }
+              - { label: "🔘 Auswahlknöpfe (Einzelauswahl)", value: "radio" }
+              - { label: "📐 Größe (mit Aufpreis)", value: "size" }
+              - { label: "☑️ Kontrollkästchen (Zusatz / Mehrfachauswahl)", value: "checkbox" }
+              - { label: "✍️ Wunschname / Textfeld", value: "text" }
+          - label: "Auswahl erforderlich? (Pflichtfeld)"
+            name: "required"
+            widget: "boolean"
+            default: false
+            required: false
+            hint: "Muss der Kunde zwingend eine Auswahl treffen?"
+          - label: "Optionswerte"
+            name: "values"
+            widget: "list"
+            required: false
+            collapsed: false
+            summary: "{{fields.title}} (+{{fields.price_add}} CHF)"
+            fields:
+              - label: "Wert"
+                name: "title"
+                widget: "string"
+                hint: "Zum Beispiel „M“ für die Größe oder „Salbeigrün“"
+              - label: "Preisänderung / Aufpreis in CHF"
+                name: "price_add"
+                widget: "number"
+                default: 0
+                value_type: "float"
+                min: 0
+                required: false
+                hint: "Optionaler Aufpreis in CHF (z. B. 0 oder 15.00)"
+              - label: "Foto für diesen Wert (optional)"
+                name: "img"
+                widget: "image"
+                required: false
+              - label: "Lagerbestand für diesen Wert (0 = Ausverkauft)"
+                name: "stock"
+                widget: "number"
+                default: 1
+                value_type: "int"
+                min: 0
+                required: false
