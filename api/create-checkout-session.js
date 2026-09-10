@@ -87,6 +87,12 @@ module.exports = async (req, res) => {
       params.append('metadata[delivery_note]', 'Gutschein Post Briefversand (Gutscheinkarte)');
     }
 
+    const voucherWithMsg = items.find(i => i.personalMessage || (i.optionsSummary && i.optionsSummary.toLowerCase().includes('nachricht')));
+    if (voucherWithMsg) {
+      const msg = voucherWithMsg.personalMessage || voucherWithMsg.optionsSummary;
+      params.append('metadata[gutschein_nachricht]', msg.substring(0, 500));
+    }
+
     // Call Stripe API
     const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
