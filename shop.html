@@ -351,82 +351,92 @@
     </div>
 
     <!-- DETAIL- & GALERIE-MODAL (PRODUKTAUSWAHL MIT DROPDOWNS) -->
-    <div id="galleryModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto" onclick="closeModal(event)">
-        <div class="relative bg-creme rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-white/40 my-8 flex flex-col" onclick="event.stopPropagation()">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-darkbrown/60 hover:text-darkbrown text-xl font-bold w-8 h-8 flex items-center justify-center rounded-full bg-sand/60 z-10">✕</button>
+    <div id="galleryModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-6 overflow-y-auto" onclick="closeModal(event)">
+        <div class="relative bg-creme rounded-3xl max-w-lg md:max-w-3xl lg:max-w-4xl w-full p-5 sm:p-7 shadow-2xl border border-white/40 my-auto flex flex-col max-h-[92vh] overflow-y-auto" onclick="event.stopPropagation()">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-darkbrown/60 hover:text-darkbrown text-xl font-bold w-8 h-8 flex items-center justify-center rounded-full bg-sand/60 hover:bg-sand transition z-20" title="Schlie&szlig;en">&times;</button>
             
-            <!-- GroÃŸes Bild im Modal (wechselt bei Optionswahl & Galerie-Klick) -->
-            <div class="relative w-full aspect-[4/5] bg-white rounded-2xl overflow-hidden mb-3 flex items-center justify-center group">
-                <img id="modalCurrentImg" src="" alt="Produktfoto" class="w-full h-full object-cover transition duration-300 cursor-pointer" onclick="if (currentGalleryImages && currentGalleryImages.length > 1) navigateModalGallery(1)">
-                <div id="modalBadge" class="absolute top-3 left-3 bg-terracotta text-white text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider hidden"></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                <!-- LINKER BEREICH: BILDER & GALERIE -->
+                <div class="flex flex-col">
+                    <!-- Bild-Container mit object-contain (schneidet NIEMALS das Produkt oder den Gutschein ab) -->
+                    <div class="relative w-full aspect-square max-h-[340px] md:max-h-[420px] bg-white rounded-2xl overflow-hidden flex items-center justify-center p-3 border border-darkbrown/10 shadow-sm group">
+                        <img id="modalCurrentImg" src="" alt="Produktfoto" onerror="this.src='images/logo.png'" class="w-full h-full object-contain transition duration-300 cursor-pointer select-none" onclick="if (currentGalleryImages && currentGalleryImages.length > 1) navigateModalGallery(1)">
+                        <div id="modalBadge" class="absolute top-3 left-3 bg-terracotta text-white text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider hidden shadow-sm"></div>
 
-                <!-- Galerie Pfeile zum Weiterklicken -->
-                <button id="modalPrevImgBtn" type="button" onclick="navigateModalGallery(-1)" 
-                        class="hidden absolute left-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-darkbrown shadow-md flex items-center justify-center transition md:opacity-0 md:group-hover:opacity-100 hover:scale-105 z-10" 
-                        title="Vorheriges Foto">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-                </button>
-                <button id="modalNextImgBtn" type="button" onclick="navigateModalGallery(1)" 
-                        class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-darkbrown shadow-md flex items-center justify-center transition md:opacity-0 md:group-hover:opacity-100 hover:scale-105 z-10" 
-                        title="NÃ¤chstes Foto">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-                </button>
-            </div>
+                        <!-- Galerie Pfeile zum Weiterklicken -->
+                        <button id="modalPrevImgBtn" type="button" onclick="navigateModalGallery(-1)" 
+                                class="hidden absolute left-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/95 hover:bg-white text-darkbrown shadow-md flex items-center justify-center transition md:opacity-0 md:group-hover:opacity-100 hover:scale-105 z-10" 
+                                title="Vorheriges Foto">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                        </button>
+                        <button id="modalNextImgBtn" type="button" onclick="navigateModalGallery(1)" 
+                                class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/95 hover:bg-white text-darkbrown shadow-md flex items-center justify-center transition md:opacity-0 md:group-hover:opacity-100 hover:scale-105 z-10" 
+                                title="N&auml;chstes Foto">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                        </button>
+                    </div>
 
-            <!-- Galerie-Thumbnails -->
-            <div id="modalThumbnails" class="flex items-center gap-2 mb-3 overflow-x-auto no-scrollbar py-1 hidden"></div>
-
-            <!-- Titel, Preis & Verfügbarkeit -->
-            <div class="mb-3">
-                <div class="flex justify-between items-baseline gap-2">
-                    <h3 id="modalTitle" class="font-serif text-lg uppercase tracking-wider font-bold"></h3>
-                    <p id="modalPrice" class="text-terracotta font-bold text-base whitespace-nowrap"></p>
+                    <!-- Galerie-Thumbnails -->
+                    <div id="modalThumbnails" class="flex items-center gap-2 mt-3 overflow-x-auto no-scrollbar py-1 hidden"></div>
                 </div>
-                <div id="modalStockStatus" class="text-[10px] font-bold mt-0.5"></div>
-            </div>
 
-            <!-- Beschreibung -->
-            <div id="modalDescSection" class="border-t border-darkbrown/10 pt-2.5 mb-3 text-xs text-darkbrown/80 space-y-1.5">
-                <p id="modalDescription" class="leading-relaxed whitespace-pre-line"></p>
-            </div>
-
-            <!-- PRODUKT-OPTIONEN ALS DROPDOWNS -->
-            <div id="modalOptionsSection" class="border-t border-darkbrown/10 pt-3 mb-4 space-y-3">
-                <div id="dynamicOptionsContainer" class="space-y-3"></div>
-
-                <!-- Gutschein-Zustellung Info -->
-                <div id="voucherDeliveryContainer" class="hidden bg-sand/40 border border-terracotta/30 p-3.5 rounded-2xl space-y-1.5 text-xs">
-                    <span class="text-[10px] uppercase font-bold tracking-wider text-terracotta block">ðŸ’Œ Versandoptionen fÃ¼r diesen Gutschein:</span>
-                    <div class="space-y-1 text-[11px] text-darkbrown/85">
-                        <div class="flex items-center gap-2">
-                            <span>ðŸ“§</span>
-                            <span><strong>Per E-Mail (gratis):</strong> Schnelles PDF zum Ausdrucken & Verschenken.</span>
+                <!-- RECHTER BEREICH: TITEL, PREIS, BESCHREIBUNG, OPTIONEN & CTA -->
+                <div class="flex flex-col justify-between h-full">
+                    <div>
+                        <!-- Titel, Preis & Verf&uuml;gbarkeit -->
+                        <div class="mb-3">
+                            <div class="flex justify-between items-baseline gap-2">
+                                <h3 id="modalTitle" class="font-serif text-lg md:text-xl uppercase tracking-wider font-bold text-darkbrown"></h3>
+                                <p id="modalPrice" class="text-terracotta font-bold text-lg whitespace-nowrap"></p>
+                            </div>
+                            <div id="modalStockStatus" class="text-[11px] font-bold mt-1"></div>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <span>âœ‰ï¸</span>
-                            <span><strong>Post Briefversand:</strong> Als hochwertige Gutscheinkarte im Kuvert (2.00 CHF).</span>
+
+                        <!-- Beschreibung -->
+                        <div id="modalDescSection" class="border-t border-darkbrown/10 pt-2.5 mb-3 text-xs text-darkbrown/80 space-y-1.5">
+                            <p id="modalDescription" class="leading-relaxed whitespace-pre-line"></p>
+                        </div>
+
+                        <!-- PRODUKT-OPTIONEN ALS DROPDOWNS -->
+                        <div id="modalOptionsSection" class="border-t border-darkbrown/10 pt-3 mb-4 space-y-3">
+                            <div id="dynamicOptionsContainer" class="space-y-3"></div>
+
+                            <!-- Gutschein-Zustellung Info -->
+                            <div id="voucherDeliveryContainer" class="hidden bg-sand/40 border border-terracotta/30 p-3.5 rounded-2xl space-y-1.5 text-xs">
+                                <span class="text-[10px] uppercase font-bold tracking-wider text-terracotta block">&#x1F48C; Versandoptionen f&uuml;r diesen Gutschein:</span>
+                                <div class="space-y-1.5 text-[11px] text-darkbrown/85">
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-sm">&#x1F4E7;</span>
+                                        <span><strong>Per E-Mail (gratis):</strong> Schnelles PDF zum Ausdrucken &amp; Verschenken.</span>
+                                    </div>
+                                    <div class="flex items-start gap-2">
+                                        <span class="text-sm">&#x2709;&#xFE0F;</span>
+                                        <span><strong>Post Briefversand (2.00 CHF):</strong> Als hochwertige gedruckte Gutscheinkarte im Kuvert.</span>
+                                    </div>
+                                </div>
+                                <p class="text-[10px] text-darkbrown/60 pt-1 italic">Deine gew&uuml;nschte Versandart w&auml;hlst du direkt im N&auml;hk&ouml;rbchen (Warenkorb) aus!</p>
+                            </div>
                         </div>
                     </div>
-                    <p class="text-[10px] text-darkbrown/60 pt-1 italic">Deine gewÃ¼nschte Versandart wÃ¤hlst du direkt im NÃ¤hkÃ¶rbchen (Warenkorb) aus!</p>
-                </div>
-            </div>
 
-            <!-- Button: In den Warenkorb & Auf die Merkliste -->
-            <div class="flex items-center gap-2">
-                <button id="modalActionBtn" onclick="addCurrentModalToCart()" 
-                        class="flex-1 block text-center bg-darkbrown text-white py-3.5 rounded-xl text-xs uppercase font-bold tracking-widest hover:bg-terracotta transition shadow-md flex items-center justify-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                    </svg>
-                    <span>Ins Nähkörbchen</span>
-                </button>
-                <button id="modalWishlistBtn" type="button" onclick="toggleWishlistCurrentModal()" 
-                        title="In die Wunschkiste"
-                        class="w-12 h-12 rounded-xl border border-darkbrown/20 bg-white hover:border-terracotta text-darkbrown/70 hover:text-terracotta flex items-center justify-center transition shadow-sm flex-shrink-0">
-                    <svg class="w-5 h-5 transition" id="modalHeartSvg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                    </svg>
-                </button>
+                    <!-- Button: In den Warenkorb & Auf die Merkliste -->
+                    <div class="flex items-center gap-2 pt-3 border-t border-darkbrown/10 mt-2">
+                        <button id="modalActionBtn" onclick="addCurrentModalToCart()" 
+                                class="flex-1 block text-center bg-darkbrown text-white py-3.5 rounded-xl text-xs uppercase font-bold tracking-widest hover:bg-terracotta transition shadow-md flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            </svg>
+                            <span>Ins N&auml;hk&ouml;rbchen</span>
+                        </button>
+                        <button id="modalWishlistBtn" type="button" onclick="toggleWishlistCurrentModal()" 
+                                title="In die Wunschkiste"
+                                class="w-12 h-12 rounded-xl border border-darkbrown/20 bg-white hover:border-terracotta text-darkbrown/70 hover:text-terracotta flex items-center justify-center transition shadow-sm flex-shrink-0">
+                            <svg class="w-5 h-5 transition" id="modalHeartSvg" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -579,7 +589,7 @@
                     const hasMsgOpt = item.options.some(o => o.name && o.name.toLowerCase().includes('nachricht'));
                     if (!hasMsgOpt) {
                         item.options.push({
-                            name: "PersÃ¶nliche Nachricht",
+                            name: "Pers\u00f6nliche Nachricht",
                             type: "textarea",
                             required: false,
                             values: []
@@ -604,7 +614,7 @@
             }
             if (Array.isArray(item.variants_size) && item.variants_size.length > 0) {
                 opts.push({
-                    name: "GrÃ¶ÃŸe",
+                    name: "Gr\u00f6\u00dfe",
                     type: "size",
                     required: true,
                     values: item.variants_size.map(s => ({
@@ -616,7 +626,7 @@
             }
             if (item.allow_custom_name) {
                 opts.push({
-                    name: "Wunschname fÃ¼r Bestickung",
+                    name: "Wunschname f\u00fcr Bestickung",
                     type: "text",
                     required: false,
                     values: []
@@ -625,7 +635,7 @@
             const isVoucher = item.cat === 'Gutscheine' || (item.name && item.name.toLowerCase().includes('gutschein'));
             if (isVoucher) {
                 opts.push({
-                    name: "PersÃ¶nliche Nachricht",
+                    name: "Pers\u00f6nliche Nachricht",
                     type: "textarea",
                     required: false,
                     values: []
@@ -676,9 +686,9 @@
 
                 grid.innerHTML += `
                 <div class="bg-creme p-3.5 md:p-5 rounded-2xl shadow-sm border border-darkbrown/5 flex flex-col justify-between hover:shadow-md transition">
-                    <div class="relative cursor-pointer group mb-3 overflow-hidden rounded-xl bg-white aspect-[4/5]" onclick="openModal(${globalIndex})">
+                    <div class="relative cursor-pointer group mb-3 overflow-hidden rounded-xl bg-white aspect-[4/5] flex items-center justify-center p-1" onclick="openModal(${globalIndex})">
                         <img src="${imgSrc}" alt="${item.name}" onerror="this.src='images/logo.png'" 
-                             class="w-full h-full object-cover group-hover:scale-105 transition duration-300 ${isOutOfStock ? 'opacity-50 grayscale' : ''}">
+                             class="w-full h-full ${item.cat === 'Gutscheine' || (item.name && item.name.toLowerCase().includes('gutschein')) ? 'object-contain p-2' : 'object-cover'} group-hover:scale-105 transition duration-300 ${isOutOfStock ? 'opacity-50 grayscale' : ''}">
                         
                         ${badgeText ? `<span class="absolute top-2 left-2 ${isOutOfStock ? 'bg-darkbrown text-white' : 'bg-terracotta text-white'} text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider shadow-sm">${badgeText}</span>` : ''}
 
@@ -702,7 +712,7 @@
                         ` : hasVariants ? `
                             <button onclick="openModal(${globalIndex})" 
                                      class="w-full block text-center border border-terracotta text-terracotta hover:bg-terracotta hover:text-white py-2 rounded-lg text-[9px] uppercase font-bold transition">
-                                Optionen wÃ¤hlen
+                                Optionen w&auml;hlen
                             </button>
                         ` : `
                             <button onclick="quickAddToCart(${globalIndex})" 
@@ -824,16 +834,16 @@ let currentGalleryImages = [];
             // Highlight thumbnail
             document.querySelectorAll('.gallery-thumb').forEach((t, idx) => {
                 if (idx === currentGalleryIndex) {
-                    t.classList.remove('border-transparent', 'hover:border-terracotta/60');
+                    t.classList.remove('border-darkbrown/15', 'border-transparent', 'hover:border-terracotta/60');
                     t.classList.add('border-terracotta', 'ring-2', 'ring-terracotta/30');
                     t.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
                 } else {
                     t.classList.remove('border-terracotta', 'ring-2', 'ring-terracotta/30');
-                    t.classList.add('border-transparent', 'hover:border-terracotta/60');
+                    t.classList.add('border-darkbrown/15', 'hover:border-terracotta/60');
                 }
             });
 
-            // Automatisch die passende Option im Dropdown / Radio vorwÃ¤hlen
+            // Automatisch die passende Option im Dropdown / Radio vorwaehlen
             selectOptionByImage(src);
         };
 
@@ -924,12 +934,12 @@ let currentGalleryImages = [];
                         textarea.id = `opt_input_${optIdx}`;
                         textarea.rows = 3;
                         textarea.className = 'w-full bg-white border border-darkbrown/20 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-1 focus:ring-terracotta leading-relaxed shadow-sm resize-none';
-                        textarea.placeholder = 'Hier deine persÃ¶nliche Grussnachricht eingeben (z. B. FÃ¼r die liebe Sarah zum Geburtstag!)...';
+                        textarea.placeholder = 'Hier deine pers\u00f6nliche Grussnachricht eingeben (z. B. F\u00fcr die liebe Sarah zum Geburtstag!)...';
                         optWrapper.appendChild(textarea);
 
                         const hint = document.createElement('p');
                         hint.className = 'text-[10px] text-darkbrown/60 italic pt-0.5';
-                        hint.textContent = 'âœï¸ Deine Nachricht wird von Lea liebevoll auf die Gutscheinkarte gedruckt bzw. in das PDF eingefÃ¼gt.';
+                        hint.textContent = '\u270D\uFE0F Deine Nachricht wird von Lea liebevoll auf die Gutscheinkarte gedruckt bzw. in das PDF eingef\u00fcgt.';
                         optWrapper.appendChild(hint);
                     } else if (type === 'text') {
                         const input = document.createElement('input');
@@ -985,7 +995,7 @@ let currentGalleryImages = [];
                             let stockNotice = '';
                             if (type === 'color' || typeof v.stock !== 'undefined') {
                                 if (vStock === 0) stockNotice = ' (Ausverkauft)';
-                                else if (vStock === 1) stockNotice = ' (Nur 1x verfÃ¼gbar)';
+                                else if (vStock === 1) stockNotice = ' (Nur 1x verf\u00fcgbar)';
                             }
 
                             const optElem = document.createElement('option');
@@ -1066,12 +1076,12 @@ let currentGalleryImages = [];
 
                 document.querySelectorAll('.gallery-thumb').forEach((t, idx) => {
                     if (idx === currentGalleryIndex) {
-                        t.classList.remove('border-transparent', 'hover:border-terracotta/60');
+                        t.classList.remove('border-darkbrown/15', 'border-transparent', 'hover:border-terracotta/60');
                         t.classList.add('border-terracotta', 'ring-2', 'ring-terracotta/30');
                         t.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
                     } else {
                         t.classList.remove('border-terracotta', 'ring-2', 'ring-terracotta/30');
-                        t.classList.add('border-transparent', 'hover:border-terracotta/60');
+                        t.classList.add('border-darkbrown/15', 'hover:border-terracotta/60');
                     }
                 });
             }
@@ -1093,23 +1103,23 @@ let currentGalleryImages = [];
             if (stock <= 0) {
                 statusElem.innerHTML = '<span class="text-red-500 font-bold">In dieser Variante leider ausverkauft</span>';
                 actionBtn.disabled = true;
-                actionBtn.className = "w-full block text-center bg-darkbrown/15 text-darkbrown/40 py-3.5 rounded-xl text-xs uppercase font-bold tracking-widest cursor-not-allowed";
+                actionBtn.className = "flex-1 block text-center bg-darkbrown/15 text-darkbrown/40 py-3.5 rounded-xl text-xs uppercase font-bold tracking-widest cursor-not-allowed";
                 actionBtn.innerHTML = "<span>Ausverkauft</span>";
             } else if (stock === 1) {
-                statusElem.innerHTML = '<span class="text-terracotta font-bold">âœ¨ Nur 1x in dieser Variante verfÃ¼gbar!</span>';
+                statusElem.innerHTML = '<span class="text-terracotta font-bold">\u2728 Nur 1x in dieser Variante verf\u00fcgbar!</span>';
                 actionBtn.disabled = false;
-                actionBtn.className = "w-full block text-center bg-darkbrown text-white py-3.5 rounded-xl text-xs uppercase font-bold tracking-widest hover:bg-terracotta transition shadow-md flex items-center justify-center gap-2";
+                actionBtn.className = "flex-1 block text-center bg-darkbrown text-white py-3.5 rounded-xl text-xs uppercase font-bold tracking-widest hover:bg-terracotta transition shadow-md flex items-center justify-center gap-2";
                 actionBtn.innerHTML = `
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-                    <span>Ins NÃ¤hkÃ¶rbchen</span>
+                    <span>Ins N&auml;hk&ouml;rbchen</span>
                 `;
             } else {
-                statusElem.innerHTML = '<span class="text-emerald-700 font-bold">VerfÃ¼gbar</span>';
+                statusElem.innerHTML = '<span class="text-emerald-700 font-bold">Verf\u00fcgbar</span>';
                 actionBtn.disabled = false;
-                actionBtn.className = "w-full block text-center bg-darkbrown text-white py-3.5 rounded-xl text-xs uppercase font-bold tracking-widest hover:bg-terracotta transition shadow-md flex items-center justify-center gap-2";
+                actionBtn.className = "flex-1 block text-center bg-darkbrown text-white py-3.5 rounded-xl text-xs uppercase font-bold tracking-widest hover:bg-terracotta transition shadow-md flex items-center justify-center gap-2";
                 actionBtn.innerHTML = `
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-                    <span>Ins NÃ¤hkÃ¶rbchen</span>
+                    <span>Ins N&auml;hk&ouml;rbchen</span>
                 `;
             }
         }
@@ -1144,7 +1154,7 @@ let currentGalleryImages = [];
                     const input = row.querySelector('input[type="text"], textarea');
                     const val = input ? input.value.trim() : '';
                     if (isRequired && !val) {
-                        alert(`Bitte fÃ¼lle das Pflichtfeld â€ž${optName}â€œ aus!`);
+                        alert('Bitte f\u00fclle das Pflichtfeld \u201E' + optName + '\u201C aus!');
                         input.focus();
                         return;
                     }
@@ -1172,7 +1182,7 @@ let currentGalleryImages = [];
                         if (checkedRadio.dataset.stock !== undefined) {
                             lowestStock = Math.min(lowestStock, Number(checkedRadio.dataset.stock));
                         }
-                        if (optName.toLowerCase().includes('grÃ¶ÃŸe') || optName.toLowerCase().includes('grosse')) sizeName = checkedRadio.value;
+                        if ((optName.toLowerCase().includes('gr\u00f6\u00dfe') || optName.toLowerCase().includes('grosse') || optName.toLowerCase().includes('groesse')) || (optName.toLowerCase().includes('gr\u00f6\u00dfe') || optName.toLowerCase().includes('grosse') || optName.toLowerCase().includes('groesse'))) sizeName = checkedRadio.value;
                         if (optName.toLowerCase().includes('farbe')) colorName = checkedRadio.value;
                         selectedOptionsList.push({ name: optName, value: checkedRadio.value, priceAdd: add });
                     }
@@ -1188,7 +1198,7 @@ let currentGalleryImages = [];
                                 lowestStock = Math.min(lowestStock, Number(opt.dataset.stock));
                             }
                             if (type === 'color' || optName.toLowerCase().includes('farbe')) colorName = opt.value;
-                            if (type === 'size' || optName.toLowerCase().includes('grÃ¶ÃŸe') || optName.toLowerCase().includes('grosse')) sizeName = opt.value;
+                            if (type === 'size' || (optName.toLowerCase().includes('gr\u00f6\u00dfe') || optName.toLowerCase().includes('grosse') || optName.toLowerCase().includes('groesse')) || (optName.toLowerCase().includes('gr\u00f6\u00dfe') || optName.toLowerCase().includes('grosse') || optName.toLowerCase().includes('groesse'))) sizeName = opt.value;
                             selectedOptionsList.push({ name: optName, value: opt.value, priceAdd: add });
                         }
                     }
@@ -1206,7 +1216,7 @@ let currentGalleryImages = [];
                 const addText = o.priceAdd > 0 ? ` (+${o.priceAdd.toFixed(2)} CHF)` : '';
                 return `${o.name}: ${o.value}${addText}`;
             });
-            const optionsSummary = summaryParts.join(' Â· ');
+            const optionsSummary = summaryParts.join(' \u00B7 ');
 
             addCartItem(prod, colorName, sizeName, totalSurcharge, customName, chosenImg, lowestStock, optionsSummary, personalMessage);
             closeModal();
@@ -1219,7 +1229,7 @@ let currentGalleryImages = [];
 
             if (existingIndex > -1) {
                 if (cart[existingIndex].quantity >= maxStock) {
-                    alert(`Dieser Artikel ist nur ${maxStock}x verfÃ¼gbar!`);
+                    alert('Dieser Artikel ist nur ' + maxStock + 'x verf\u00fcgbar!');
                     openCart();
                     return;
                 }
@@ -1305,7 +1315,7 @@ let currentGalleryImages = [];
                     variantDetails.push(item.optionsSummary);
                 } else {
                     if (item.color) variantDetails.push(`Farbe: ${item.color}`);
-                    if (item.size) variantDetails.push(`GrÃ¶ÃŸe: ${item.size}`);
+                    if (item.size) variantDetails.push('Gr\u00f6\u00dfe: ' + item.size);
                     if (item.customName) variantDetails.push(`Name: "${item.customName}"`);
                     if (item.personalMessage) variantDetails.push(`Nachricht: "${item.personalMessage}"`);
                 }
@@ -1314,7 +1324,7 @@ let currentGalleryImages = [];
 
                 container.innerHTML += `
                 <div class="flex items-center gap-3 bg-white p-3 rounded-2xl border border-darkbrown/5 shadow-sm">
-                    <img src="${item.img}" alt="${item.name}" onerror="this.src='images/logo.png'" class="w-14 h-16 object-cover rounded-xl bg-sand/30 flex-shrink-0">
+                    <img src="${item.img}" alt="${item.name}" onerror="this.src='images/logo.png'" class="w-14 h-16 ${item.name && item.name.toLowerCase().includes('gutschein') ? 'object-contain p-1' : 'object-cover'} rounded-xl bg-sand/30 flex-shrink-0">
                     <div class="flex-1 min-w-0">
                         <h4 class="font-serif text-xs font-bold uppercase tracking-wider truncate mb-0.5">${item.name}</h4>
                         <p class="text-terracotta text-xs font-bold mb-1">${formatCHF(item.priceNum)}</p>
