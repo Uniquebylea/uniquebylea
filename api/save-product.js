@@ -83,6 +83,20 @@ module.exports = async (req, res) => {
     }
 
     // 2. Upload Product JSON to GitHub
+    const options = [];
+    if (Array.isArray(colorsList) && colorsList.length > 0) {
+      options.push({
+        name: "Farbe",
+        type: "color",
+        required: true,
+        values: colorsList.map(c => ({
+          title: c.name || c.title || 'Farbe',
+          price_add: 0,
+          stock: typeof c.stock !== 'undefined' ? Number(c.stock) : 1
+        }))
+      });
+    }
+
     const productData = {
       name: name,
       cat: cat || 'Unikate',
@@ -91,6 +105,7 @@ module.exports = async (req, res) => {
       stock: 1,
       description: description || '',
       img: imagePath,
+      options: options,
       variants_color: Array.isArray(colorsList) ? colorsList : [],
       variants_size: [],
       allow_custom_name: false
