@@ -20,6 +20,36 @@
 </head>
 <body class="bg-sand text-darkbrown font-sans min-h-screen flex flex-col p-3 md:p-8">
 
+    <!-- ATELIER-SICHERHEITSSPERRE -->
+    <div id="authOverlay" class="fixed inset-0 z-[9999] bg-sand flex items-center justify-center p-4">
+        <div class="bg-creme rounded-3xl p-8 max-w-sm w-full border border-darkbrown/15 shadow-2xl text-center space-y-4">
+            <div class="w-14 h-14 bg-terracotta/15 text-terracotta rounded-full flex items-center justify-center text-2xl mx-auto">
+                🔒
+            </div>
+            <div>
+                <span class="text-[10px] uppercase tracking-[0.2em] font-bold text-terracotta block mb-1">Geschützter Atelier-Bereich</span>
+                <h2 class="font-serif text-xl font-bold italic text-darkbrown">Anmeldung für Lea</h2>
+                <p class="text-xs text-darkbrown/70 font-light mt-1">Dieser Bereich ist ausschließlich für die Erfassung deiner Atelier-Stoffe reserviert.</p>
+            </div>
+            <form onsubmit="verifyAdminAuth(event)" class="space-y-3 pt-2">
+                <input type="password" id="adminPinInput" placeholder="Atelier-Passwort..." required
+                       class="w-full bg-white border border-darkbrown/20 rounded-xl py-3 px-4 text-xs text-center font-bold tracking-widest outline-none focus:ring-2 focus:ring-terracotta shadow-xs">
+                <button type="submit" 
+                        class="w-full bg-terracotta hover:bg-darkbrown text-white py-3 rounded-xl font-bold uppercase text-xs tracking-wider shadow-md transition">
+                    Bereich entsperren ➔
+                </button>
+                <div id="authErrorMsg" class="hidden text-xs text-red-600 font-medium pt-1">
+                    Passwort leider nicht korrekt.
+                </div>
+            </form>
+            <div class="pt-3 border-t border-darkbrown/10">
+                <a href="../index.html" class="text-[11px] text-darkbrown/60 hover:text-darkbrown transition">
+                    ← Zurück zur Startseite
+                </a>
+            </div>
+        </div>
+    </div>
+
     <div class="max-w-4xl mx-auto w-full space-y-6">
         
         <!-- Header & Nav Bar -->
@@ -169,6 +199,41 @@
 
     <!-- JAVASCRIPT LOGIK -->
     <script>
+        // Sicherheits-Check für Lea
+        function checkAuth() {
+            const isSaved = localStorage.getItem('uniquebylea_admin_auth') === 'verified';
+            let hasCmsLogin = false;
+            try {
+                const s = JSON.parse(localStorage.getItem('sveltia-cms.user') || '{}');
+                if (s && s.token) hasCmsLogin = true;
+            } catch (e) {}
+
+            if (isSaved || hasCmsLogin) {
+                const overlay = document.getElementById('authOverlay');
+                if (overlay) overlay.classList.add('hidden');
+                return true;
+            }
+            return false;
+        }
+
+        window.verifyAdminAuth = function(e) {
+            e.preventDefault();
+            const input = document.getElementById('adminPinInput');
+            const errorMsg = document.getElementById('authErrorMsg');
+            const val = input ? input.value.trim().toLowerCase() : '';
+
+            // Akzeptierte Passwörter für Lea
+            if (val === 'lea2026' || val === 'uniquebylea' || val === 'interlaken' || val === 'uniquebylea2026') {
+                localStorage.setItem('uniquebylea_admin_auth', 'verified');
+                const overlay = document.getElementById('authOverlay');
+                if (overlay) overlay.classList.add('hidden');
+            } else {
+                if (errorMsg) errorMsg.classList.remove('hidden');
+            }
+        };
+
+        checkAuth();
+
         let recognizedFabrics = [];
         let isProcessing = false;
 
