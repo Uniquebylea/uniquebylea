@@ -26,36 +26,6 @@
                 }
             }
         }
-        // URL-Parameter auswerten (z.B. Weiterleitung vom Stofffächer)
-        (function() {
-            try {
-                const params = new URLSearchParams(window.location.search);
-                const f1 = params.get('fabric1');
-                const f2 = params.get('fabric2');
-                const msgParam = params.get('msg');
-
-                if (f1 || f2) {
-                    const banner = document.getElementById('fabricBanner');
-                    const fabricNames = document.getElementById('fabricNames');
-                    if (banner && fabricNames) {
-                        banner.classList.remove('hidden');
-                        const selectedList = [];
-                        if (f1) selectedList.push(Hauptstoff: );
-                        if (f2) selectedList.push(Kombistoff: );
-                        fabricNames.textContent = selectedList.join(' · ');
-                    }
-                }
-
-                if (msgParam) {
-                    const msgEl = document.getElementById('msg');
-                    if (msgEl) {
-                        msgEl.value = msgParam;
-                    }
-                }
-            } catch (e) {
-                console.error("URL Params error:", e);
-            }
-        })();
     </script>
 </head>
 <body class="bg-sand text-darkbrown font-sans min-h-screen flex flex-col selection:bg-terracotta selection:text-white">
@@ -186,21 +156,21 @@
         </div>
         
         <div class="order-1 md:order-2 flex flex-col justify-center items-center text-center">
-            <!-- Automatischer Bilder-Slider (alle in Schwarz-Weiss) -->
+            <!-- Automatischer Bilder-Slider -->
             <div class="relative w-full max-w-sm rounded-3xl overflow-hidden shadow-xl border-8 border-white/60 bg-sand/30 aspect-[4/5] mb-6 group select-none">
                 <!-- Slides Container -->
                 <div id="contactSliderTrack" class="flex w-full h-full transition-transform duration-700 ease-in-out">
                     <div class="w-full h-full flex-shrink-0 relative">
-                        <img src="images/kontakt-slide-1.jpg" alt="Handgefertigtes Babykleid mit Musselin" class="w-full h-full object-cover grayscale">
+                        <img src="images/kontakt-slide-1.jpg" alt="Handgefertigtes Babykleid mit Musselin" class="w-full h-full object-cover">
                     </div>
                     <div class="w-full h-full flex-shrink-0 relative">
-                        <img src="images/kontakt-slide-2.jpg" alt="Handgefertigter Leo-Pullover" class="w-full h-full object-cover grayscale">
+                        <img src="images/kontakt-slide-2.jpg" alt="Handgefertigter Leo-Pullover" class="w-full h-full object-cover">
                     </div>
                     <div class="w-full h-full flex-shrink-0 relative">
-                        <img src="images/kontakt-slide-3.jpg" alt="Makramee Schlüsselanhänger Unikat" class="w-full h-full object-cover grayscale">
+                        <img src="images/kontakt-slide-3.jpg" alt="Makramee Schlüsselanhänger Unikat" class="w-full h-full object-cover">
                     </div>
                     <div class="w-full h-full flex-shrink-0 relative">
-                        <img src="images/kontakt-slide-4.jpg" alt="Handgefertigtes Leo-Kleidchen" class="w-full h-full object-cover grayscale">
+                        <img src="images/kontakt-slide-4.jpg" alt="Handgefertigtes Leo-Kleidchen" class="w-full h-full object-cover">
                     </div>
                 </div>
 
