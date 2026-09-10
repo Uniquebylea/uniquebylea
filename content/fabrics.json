@@ -1,0 +1,178 @@
+[
+  {
+    "code": "M-01",
+    "name": "Bio-Musselin Salbeigrün",
+    "cat": "musselin",
+    "color": "#97A594",
+    "textColor": "#FFFFFF",
+    "textureClass": "texture-musselin",
+    "material": "100 % Bio-Baumwolle (GOTS)",
+    "badge": "Bestseller",
+    "desc": "Wunderbar weicher, 4-lagiger Bio-Musselin. Ideal für Halstücher, Babydecken und Sommerbekleidung."
+  },
+  {
+    "code": "M-02",
+    "name": "Bio-Musselin Sand / Natur",
+    "cat": "musselin",
+    "color": "#E3DAC9",
+    "textColor": "#4A3728",
+    "textureClass": "texture-musselin",
+    "material": "100 % Bio-Baumwolle (GOTS)",
+    "badge": "Klassiker",
+    "desc": "Warmer, natürlicher Erdton. Passt perfekt zu allen Waffelstoffen und gemusterten Jerseys."
+  },
+  {
+    "code": "M-03",
+    "name": "Bio-Musselin Terracotta",
+    "cat": "musselin",
+    "color": "#B08968",
+    "textColor": "#FFFFFF",
+    "textureClass": "texture-musselin",
+    "material": "100 % Bio-Baumwolle (GOTS)",
+    "badge": "Beliebt",
+    "desc": "Atelier-Signaturfarbe. Verleiht jedem Unikat Wärme und zeitlose Schweizer Gemütlichkeit."
+  },
+  {
+    "code": "M-04",
+    "name": "Bio-Musselin Altrosa",
+    "cat": "musselin",
+    "color": "#D3A29D",
+    "textColor": "#FFFFFF",
+    "textureClass": "texture-musselin",
+    "material": "100 % Bio-Baumwolle (GOTS)",
+    "badge": "Zart",
+    "desc": "Pudriger Rosaton, sanft und edel. Sehr beliebt für Geburtsgeschenke und Mädchen-Kollektionen."
+  },
+  {
+    "code": "M-05",
+    "name": "Bio-Musselin Waldgrün",
+    "cat": "musselin",
+    "color": "#4A5D4E",
+    "textColor": "#FFFFFF",
+    "textureClass": "texture-musselin",
+    "material": "100 % Bio-Baumwolle (GOTS)",
+    "badge": "Natur",
+    "desc": "Tiefes, beruhigendes Waldgrün. Ein wunderschöner Kontrast zu hellem Creme-Waffelstoff."
+  },
+  {
+    "code": "W-01",
+    "name": "Waffelpiqué Creme Natur",
+    "cat": "waffel",
+    "color": "#F5EFEB",
+    "textColor": "#4A3728",
+    "textureClass": "texture-waffle",
+    "material": "100 % Baumwolle (OEKO-TEX)",
+    "badge": "Must-Have",
+    "desc": "Dreidimensionale Wabenstruktur, saugstark und herrlich weich. Der Allrounder für Babydecken."
+  },
+  {
+    "code": "W-02",
+    "name": "Waffelpiqué Salbeigrün",
+    "cat": "waffel",
+    "color": "#8F9E8B",
+    "textColor": "#FFFFFF",
+    "textureClass": "texture-waffle",
+    "material": "100 % Baumwolle (OEKO-TEX)",
+    "badge": "Trend",
+    "desc": "Griffige Waffelstruktur in dezenter Salbeinote. Traumhaft in Kombination mit M-01 oder J-01."
+  },
+  {
+    "code": "W-03",
+    "name": "Waffelpiqué Zartrosa",
+    "cat": "waffel",
+    "color": "#E8C5BE",
+    "textColor": "#4A3728",
+    "textureClass": "texture-waffle",
+    "material": "100 % Baumwolle (OEKO-TEX)",
+    "badge": "Lieblich",
+    "desc": "Sanfte Puderfarbe mit kuscheliger Textur. Perfekt für Wickelunterlagen und Einschlagdecken."
+  },
+  {
+    "code": "W-04",
+    "name": "Waffelpiqué Senfgelb",
+    "cat": "waffel",
+    "color": "#C89D47",
+    "textColor": "#FFFFFF",
+    "textureClass": "texture-waffle",
+    "material": "100 % Baumwolle (OEKO-TEX)",
+    "badge": "Sonne",
+    "desc": "Warmer Senf-Ton mit fröhlicher Ausstrahlung. Ein Highlight für moderne Kissen und Decken."
+  },
+  {
+    "code": "J-01",
+    "name": "Bio-Jersey Eukalyptus & Blätter",
+    "cat": "jersey",
+    "color": "#A3B19B",
+    "textColor": "#FFFFFF",
+    "textureClass": "texture-jersey",
+    "material": "95 % Bio-Baumwolle, 5 % Elasthan",
+    "badge": "Musterliebe",
+    "desc": "Elastisch, atmungsaktiv und samtweich. Wunderschöne filigrane Blattmotive auf sanftem Salbeigrund."
+  },
+  {
+    "code": "J-02",
+    "name": "Bio-Jersey Kleine Waldtiere",
+    "cat": "jersey",
+    "color": "#D8CBB5",
+    "textColor": "#4A3728",
+    "textureClass": "texture-jersey",
+    "material": "95 % Bio-Baumwolle, 5 % Elasthan",
+    "badge": "Für Babys",
+    "desc": "Liebevoll illustrierte Füchschen, Rehe und Eulen auf Naturcreme. Höchster Tragekomfort."
+  },
+  {
+    "code": "J-03",
+    "name": "Bio-Jersey Boho Regenbögen",
+    "cat": "jersey",
+    "color": "#E5C1B3",
+    "textColor": "#4A3728",
+    "textureClass": "texture-jersey",
+    "material": "95 % Bio-Baumwolle, 5 % Elasthan",
+    "badge": "Boutique",
+    "desc": "Warme Erdtöne und minimalistische Regenbögen. Einer der absoluten Lieblinge im Atelier."
+  },
+  {
+    "code": "J-04",
+    "name": "Bio-Jersey Terrazzo Punkte",
+    "cat": "jersey",
+    "color": "#ECE5DB",
+    "textColor": "#4A3728",
+    "textureClass": "texture-jersey",
+    "material": "95 % Bio-Baumwolle, 5 % Elasthan",
+    "badge": "Modern",
+    "desc": "Dezente Sprenkelung in Terracotta, Salbei und Sand auf hellem Hintergrund. Zeitlos verspielt."
+  },
+  {
+    "code": "K-01",
+    "name": "Makramee-Kordel Natur (3mm)",
+    "cat": "makramee",
+    "color": "#EEE9E0",
+    "textColor": "#4A3728",
+    "textureClass": "texture-cord",
+    "material": "100 % recycelte Baumwolle",
+    "badge": "Handgeknüpft",
+    "desc": "Formstabiles Garn für Schnullerketten, Schlüsselanhänger und Boho-Wandbehänge."
+  },
+  {
+    "code": "K-02",
+    "name": "Makramee-Kordel Salbei (3mm)",
+    "cat": "makramee",
+    "color": "#96A794",
+    "textColor": "#FFFFFF",
+    "textureClass": "texture-cord",
+    "material": "100 % recycelte Baumwolle",
+    "badge": "Akzent",
+    "desc": "Gefärbtes Naturbaumwollgarn. Wunderbarer Farbklecks für handgemachte Accessoires."
+  },
+  {
+    "code": "K-03",
+    "name": "Makramee-Kordel Terracotta (3mm)",
+    "cat": "makramee",
+    "color": "#B87358",
+    "textColor": "#FFFFFF",
+    "textureClass": "texture-cord",
+    "material": "100 % recycelte Baumwolle",
+    "badge": "Atelier",
+    "desc": "Warmer Terracotta-Ton. Harmoniert besonders mit Naturholz-Ringen und Schnullerketten."
+  }
+]
