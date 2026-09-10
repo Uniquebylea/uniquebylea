@@ -3,51 +3,8 @@
   "cat": "Baby",
   "price": "79.00 CHF",
   "badge": "Bestseller",
-  "stock": 2,
+  "stock": 0,
   "description": "Handgefertigtes Babynest mit kuscheligen Schafen für die Kleinsten. Liebevoll genäht in Interlaken.",
   "img": "images/baby-babynest.jpeg",
-  "options": [
-    {
-      "name": "Farbe",
-      "type": "color",
-      "required": true,
-      "values": [
-        {
-          "title": "Naturweiss / Schafe",
-          "price_add": 0,
-          "img": "images/baby-babynest.jpeg",
-          "stock": 2
-        },
-        {
-          "title": "Salbeigrün",
-          "price_add": 0,
-          "img": "images/baby-babynest.jpeg",
-          "stock": 0
-        }
-      ]
-    },
-    {
-      "name": "Größe",
-      "type": "size",
-      "required": true,
-      "values": [
-        {
-          "title": "Standard (ca. 75x40 cm)",
-          "price_add": 0,
-          "stock": 1
-        },
-        {
-          "title": "Maxi (ca. 90x50 cm)",
-          "price_add": 15,
-          "stock": 1
-        }
-      ]
-    },
-    {
-      "name": "Wunschname für Bestickung",
-      "type": "text",
-      "required": false,
-      "values": []
-    }
-  ]
+  "options": []
 }
