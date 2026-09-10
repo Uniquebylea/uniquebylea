@@ -329,13 +329,14 @@
                 startAutoSlide();
             }, { passive: true });
         }
-        // URL-Parameter auswerten (z.B. Weiterleitung vom Stofffächer)
+                // URL-Parameter auswerten (z.B. Weiterleitung vom Stofffächer oder von Abholung)
         (function() {
             try {
                 const params = new URLSearchParams(window.location.search);
                 const f1 = params.get('fabric1');
                 const f2 = params.get('fabric2');
                 const msgParam = params.get('msg');
+                const abholungParam = params.get('abholung');
 
                 if (f1 || f2) {
                     const banner = document.getElementById('fabricBanner');
@@ -343,13 +344,18 @@
                     if (banner && fabricNames) {
                         banner.classList.remove('hidden');
                         const selectedList = [];
-                        if (f1) selectedList.push(Hauptstoff: );
-                        if (f2) selectedList.push(Kombistoff: );
+                        if (f1) selectedList.push('Hauptstoff: ' + f1);
+                        if (f2) selectedList.push('Kombistoff: ' + f2);
                         fabricNames.textContent = selectedList.join(' · ');
                     }
                 }
 
-                if (msgParam) {
+                if (abholungParam) {
+                    const msgEl = document.getElementById('msg');
+                    if (msgEl) {
+                        msgEl.value = 'Hallo Lea,\n\nIch möchte folgende Artikel gerne bei dir im Atelier in Interlaken abholen und bar bezahlen:\n\n' + abholungParam + '\n\nWann würde es dir für die Abholung am besten passen?\n\nLiebe Grüsse';
+                    }
+                } else if (msgParam) {
                     const msgEl = document.getElementById('msg');
                     if (msgEl) {
                         msgEl.value = msgParam;
@@ -359,6 +365,7 @@
                 console.error("URL Params error:", e);
             }
         })();
+
     </script>
 </body>
 </html>
