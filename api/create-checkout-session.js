@@ -1,5 +1,5 @@
 // api/create-checkout-session.js
-// Erstellt eine Stripe Checkout-Session
+// Erstellt eine Stripe Checkout-Session mit Gutschein- und Paketversand
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -24,11 +24,19 @@ module.exports = async (req, res) => {
     const proto = req.headers['x-forwarded-proto'] || 'https';
     const baseUrl = `${proto}://${host}`;
 
+    const isVoucherEmailOnly = (shippingType === 'email') && items.every(item => 
+      item.cat === 'Gutscheine' || (item.name && item.name.toLowerCase().includes('gutschein'))
+    );
+
     const params = new URLSearchParams();
     params.append('mode', 'payment');
     params.append('billing_address_collection', 'required');
-    params.append('shipping_address_collection[allowed_countries][0]', 'CH');
-    params.append('shipping_address_collection[allowed_countries][1]', 'LI');
+
+    if (!isVoucherEmailOnly) {
+      params.append('shipping_address_collection[allowed_countries][0]', 'CH');
+      params.append('shipping_address_collection[allowed_countries][1]', 'LI');
+    }
+
     params.append('success_url', `${baseUrl}/shop.html?checkout=success&session_id={CHECKOUT_SESSION_ID}`);
     params.append('cancel_url', `${baseUrl}/shop.html?checkout=canceled`);
 
@@ -53,11 +61,16 @@ module.exports = async (req, res) => {
 
     // Versandkosten als Shipping Option
     const costCents = Math.round((Number(shippingCost) || 0) * 100);
-    const shippingName = shippingType === 'apost' 
-      ? 'Schweizerische Post (A-Post)' 
-      : shippingType === 'pickup' 
-        ? 'Abholung im Atelier (Interlaken)' 
-        : 'Schweizerische Post (B-Post)';
+    let shippingName = 'Schweizerische Post (B-Post Paket)';
+    if (shippingType === 'email') {
+      shippingName = 'Gutschein per E-Mail (PDF zum Ausdrucken, gratis)';
+    } else if (shippingType === 'letter') {
+      shippingName = 'Schweizerische Post (Briefversand Gutscheinkarte)';
+    } else if (shippingType === 'apost') {
+      shippingName = 'Schweizerische Post (A-Post Paket)';
+    } else if (shippingType === 'pickup') {
+      shippingName = 'Abholung im Atelier (Interlaken)';
+    }
 
     params.append('shipping_options[0][shipping_rate_data][type]', 'fixed_amount');
     params.append('shipping_options[0][shipping_rate_data][fixed_amount][amount]', costCents.toString());
