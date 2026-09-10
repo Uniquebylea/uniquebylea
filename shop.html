@@ -380,46 +380,23 @@
 
             <!-- PRODUKT-OPTIONEN ALS DROPDOWNS -->
             <div id="modalOptionsSection" class="border-t border-darkbrown/10 pt-3 mb-4 space-y-3">
-                
-                <!-- Farbe Dropdown -->
-                <div id="colorDropdownContainer" class="hidden">
-                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Farbe auswählen:</label>
-                    <select id="colorSelect" onchange="onColorChange()" 
-                            class="w-full bg-white border border-darkbrown/20 rounded-xl px-3.5 py-2.5 text-xs font-medium text-darkbrown outline-none focus:ring-1 focus:ring-terracotta cursor-pointer shadow-sm">
-                    </select>
-                </div>
-
-                <!-- Größe Dropdown (mit Aufpreis) -->
-                <div id="sizeDropdownContainer" class="hidden">
-                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Größe auswählen:</label>
-                    <select id="sizeSelect" onchange="onSizeChange()" 
-                            class="w-full bg-white border border-darkbrown/20 rounded-xl px-3.5 py-2.5 text-xs font-medium text-darkbrown outline-none focus:ring-1 focus:ring-terracotta cursor-pointer shadow-sm">
-                    </select>
-                </div>
-
-                <!-- Personalisierung / Wunschname -->
-                <div id="customNameContainer" class="hidden">
-                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Wunschname (z. B. für Bestickung):</label>
-                    <input type="text" id="customNameInput" placeholder="Name eingeben..." 
-                           class="w-full bg-white border border-darkbrown/20 rounded-xl px-3.5 py-2 text-xs outline-none focus:ring-1 focus:ring-terracotta">
-                </div>
+                <div id="dynamicOptionsContainer" class="space-y-3"></div>
 
                 <!-- Gutschein-Zustellung Info -->
                 <div id="voucherDeliveryContainer" class="hidden bg-sand/40 border border-terracotta/30 p-3.5 rounded-2xl space-y-1.5 text-xs">
-                    <span class="text-[10px] uppercase font-bold tracking-wider text-terracotta block">💌 Versandoptionen für diesen Gutschein:</span>
+                    <span class="text-[10px] uppercase font-bold tracking-wider text-terracotta block">ðŸ’Œ Versandoptionen fÃ¼r diesen Gutschein:</span>
                     <div class="space-y-1 text-[11px] text-darkbrown/85">
                         <div class="flex items-center gap-2">
-                            <span>📧</span>
+                            <span>ðŸ“§</span>
                             <span><strong>Per E-Mail (gratis):</strong> Schnelles PDF zum Ausdrucken & Verschenken.</span>
                         </div>
                         <div class="flex items-center gap-2">
-                            <span>✉️</span>
+                            <span>âœ‰ï¸</span>
                             <span><strong>Post Briefversand:</strong> Als hochwertige Gutscheinkarte im Kuvert (2.00 CHF).</span>
                         </div>
                     </div>
-                    <p class="text-[10px] text-darkbrown/60 pt-1 italic">Deine gewünschte Versandart wählst du direkt im Nähkörbchen (Warenkorb) aus!</p>
+                    <p class="text-[10px] text-darkbrown/60 pt-1 italic">Deine gewÃ¼nschte Versandart wÃ¤hlst du direkt im NÃ¤hkÃ¶rbchen (Warenkorb) aus!</p>
                 </div>
-
             </div>
 
             <!-- Button: In den Warenkorb & Auf die Merkliste -->
@@ -582,9 +559,61 @@
             render(filtered);
         }
 
-        function getProductTotalStock(item) {
+        function normalizeProductOptions(item) {
+            if (!item) return item;
+            if (Array.isArray(item.options) && item.options.length > 0) {
+                return item;
+            }
+            const opts = [];
             if (Array.isArray(item.variants_color) && item.variants_color.length > 0) {
-                return item.variants_color.reduce((sum, c) => sum + (Number(c.stock) || 0), 0);
+                opts.push({
+                    name: "Farbe",
+                    type: "color",
+                    required: true,
+                    values: item.variants_color.map(c => ({
+                        title: c.name || c.title || '',
+                        img: c.img || '',
+                        stock: typeof c.stock !== 'undefined' ? Number(c.stock) : 1,
+                        price_add: 0
+                    }))
+                });
+            }
+            if (Array.isArray(item.variants_size) && item.variants_size.length > 0) {
+                opts.push({
+                    name: "GrÃ¶ÃŸe",
+                    type: "size",
+                    required: true,
+                    values: item.variants_size.map(s => ({
+                        title: s.name || s.title || '',
+                        price_add: parseFloat(s.price_add) || 0,
+                        stock: 1
+                    }))
+                });
+            }
+            if (item.allow_custom_name) {
+                opts.push({
+                    name: "Wunschname fÃ¼r Bestickung",
+                    type: "text",
+                    required: false,
+                    values: []
+                });
+            }
+            item.options = opts;
+            return item;
+        }
+
+        function hasProductOptions(item) {
+            normalizeProductOptions(item);
+            return Array.isArray(item.options) && item.options.length > 0;
+        }
+
+        function getProductTotalStock(item) {
+            normalizeProductOptions(item);
+            if (Array.isArray(item.options) && item.options.length > 0) {
+                const colorOpt = item.options.find(o => o.type === 'color' || (o.name && o.name.toLowerCase().includes('farbe')));
+                if (colorOpt && Array.isArray(colorOpt.values) && colorOpt.values.length > 0) {
+                    return colorOpt.values.reduce((sum, v) => sum + (Number(v.stock) || 0), 0);
+                }
             }
             return typeof item.stock !== 'undefined' ? Number(item.stock) : 1;
         }
@@ -601,6 +630,7 @@
             noResults.classList.add('hidden');
 
             list.forEach((item) => {
+                normalizeProductOptions(item);
                 const globalIndex = allProducts.indexOf(item);
                 const imgSrc = item.img || 'images/logo.png';
                 const totalStock = getProductTotalStock(item);
@@ -609,9 +639,7 @@
                 let badgeText = item.badge || '';
                 if (isOutOfStock) badgeText = 'Ausverkauft';
 
-                const hasVariants = (item.variants_color && item.variants_color.length > 0) || 
-                                    (item.variants_size && item.variants_size.length > 0) || 
-                                    item.allow_custom_name;
+                const hasVariants = hasProductOptions(item);
 
                 grid.innerHTML += `
                 <div class="bg-creme p-3.5 md:p-5 rounded-2xl shadow-sm border border-darkbrown/5 flex flex-col justify-between hover:shadow-md transition">
@@ -640,12 +668,12 @@
                             </button>
                         ` : hasVariants ? `
                             <button onclick="openModal(${globalIndex})" 
-                                    class="w-full block text-center border border-terracotta text-terracotta hover:bg-terracotta hover:text-white py-2 rounded-lg text-[9px] uppercase font-bold transition">
-                                Optionen wählen
+                                     class="w-full block text-center border border-terracotta text-terracotta hover:bg-terracotta hover:text-white py-2 rounded-lg text-[9px] uppercase font-bold transition">
+                                Optionen wÃ¤hlen
                             </button>
                         ` : `
                             <button onclick="quickAddToCart(${globalIndex})" 
-                                    class="w-full block text-center border border-darkbrown/20 py-2 rounded-lg text-[9px] uppercase font-bold hover:bg-darkbrown hover:text-white transition">
+                                     class="w-full block text-center border border-darkbrown/20 py-2 rounded-lg text-[9px] uppercase font-bold hover:bg-darkbrown hover:text-white transition">
                                 In den Warenkorb
                             </button>
                         `}
@@ -661,6 +689,7 @@
             const item = allProducts[productIndex];
             if (!item) return;
 
+            normalizeProductOptions(item);
             activeBasePriceNum = parsePrice(item.price);
             activeSizeSurcharge = 0;
 
@@ -671,12 +700,11 @@
             document.getElementById('modalDescription').textContent = item.description || 'Liebevoll handgefertigtes Unikat aus Interlaken.';
 
             setupGallery(item);
-            setupDropdowns(item);
+            setupOptions(item);
             updateModalHeartState();
             document.getElementById('galleryModal').classList.remove('hidden');
         };
 
-        
         function setupGallery(item) {
             const container = document.getElementById('modalThumbnails');
             if (!container) return;
@@ -688,6 +716,15 @@
                 item.gallery.forEach(g => {
                     const src = typeof g === 'string' ? g : (g?.img || '');
                     if (src && !images.includes(src)) images.push(src);
+                });
+            }
+            if (Array.isArray(item.options)) {
+                item.options.forEach(opt => {
+                    if (Array.isArray(opt.values)) {
+                        opt.values.forEach(v => {
+                            if (v.img && !images.includes(v.img)) images.push(v.img);
+                        });
+                    }
                 });
             }
             if (Array.isArray(item.variants_color)) {
@@ -720,82 +757,165 @@
             }
         }
 
-        function setupDropdowns(item) {
-            const colorContainer = document.getElementById('colorDropdownContainer');
-            const colorSelect = document.getElementById('colorSelect');
-            colorSelect.innerHTML = '';
+        function setupOptions(item) {
+            const container = document.getElementById('dynamicOptionsContainer');
+            if (!container) return;
+            container.innerHTML = '';
 
-            if (Array.isArray(item.variants_color) && item.variants_color.length > 0) {
-                colorContainer.classList.remove('hidden');
-                item.variants_color.forEach(c => {
-                    const cStock = Number(c.stock) || 0;
-                    let stockNotice = '';
-                    if (cStock === 0) stockNotice = ' (Ausverkauft)';
-                    else if (cStock === 1) stockNotice = ' (Nur 1x verfügbar)';
+            const options = item.options || [];
 
-                    const opt = document.createElement('option');
-                    opt.value = c.name;
-                    opt.textContent = `${c.name}${stockNotice}`;
-                    opt.dataset.img = c.img || '';
-                    opt.dataset.stock = cStock;
-                    colorSelect.appendChild(opt);
-                });
-                onColorChange();
-            } else {
-                colorContainer.classList.add('hidden');
+            if (options.length === 0) {
                 updateAvailabilityDisplay(Number(item.stock) || 1);
-            }
-
-            const sizeContainer = document.getElementById('sizeDropdownContainer');
-            const sizeSelect = document.getElementById('sizeSelect');
-            sizeSelect.innerHTML = '';
-
-            if (Array.isArray(item.variants_size) && item.variants_size.length > 0) {
-                sizeContainer.classList.remove('hidden');
-                item.variants_size.forEach(s => {
-                    const add = parseFloat(s.price_add) || 0;
-                    const addText = add > 0 ? ` (+${add.toFixed(2)} CHF)` : '';
-
-                    const opt = document.createElement('option');
-                    opt.value = s.name;
-                    opt.textContent = `${s.name}${addText}`;
-                    opt.dataset.priceAdd = add;
-                    sizeSelect.appendChild(opt);
-                });
-                onSizeChange();
-            } else {
-                sizeContainer.classList.add('hidden');
-                activeSizeSurcharge = 0;
                 updateModalPriceDisplay();
+            } else {
+                options.forEach((opt, optIdx) => {
+                    const optWrapper = document.createElement('div');
+                    optWrapper.className = 'option-row space-y-1.5';
+                    optWrapper.dataset.optIndex = optIdx;
+                    optWrapper.dataset.optName = opt.name;
+                    optWrapper.dataset.optType = opt.type || 'dropdown';
+                    optWrapper.dataset.optRequired = opt.required ? 'true' : 'false';
+
+                    const label = document.createElement('label');
+                    label.className = 'block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70';
+                    label.textContent = opt.name + (opt.required ? ' *' : '') + ':';
+                    optWrapper.appendChild(label);
+
+                    const type = opt.type || 'dropdown';
+                    const values = Array.isArray(opt.values) ? opt.values : [];
+
+                    if (type === 'text') {
+                        const input = document.createElement('input');
+                        input.type = 'text';
+                        input.id = `opt_input_${optIdx}`;
+                        input.className = 'w-full bg-white border border-darkbrown/20 rounded-xl px-3.5 py-2 text-xs outline-none focus:ring-1 focus:ring-terracotta';
+                        input.placeholder = `${opt.name} eingeben...`;
+                        optWrapper.appendChild(input);
+                    } else if (type === 'checkbox') {
+                        const checkGroup = document.createElement('div');
+                        checkGroup.className = 'space-y-1.5';
+                        values.forEach((v, vIdx) => {
+                            const add = parseFloat(v.price_add) || 0;
+                            const addText = add > 0 ? `+${add.toFixed(2)} CHF` : '';
+                            const lbl = document.createElement('label');
+                            lbl.className = 'flex items-center justify-between p-2.5 rounded-xl border border-darkbrown/15 bg-white cursor-pointer hover:border-terracotta transition text-xs';
+                            lbl.innerHTML = `
+                                <span class="flex items-center gap-2">
+                                    <input type="checkbox" name="opt_check_${optIdx}" value="${v.title}" data-price-add="${add}" onchange="onOptionsUpdated()" class="accent-terracotta rounded">
+                                    <span class="font-medium text-darkbrown">${v.title}</span>
+                                </span>
+                                ${addText ? `<span class="text-terracotta font-bold text-xs">${addText}</span>` : ''}
+                            `;
+                            checkGroup.appendChild(lbl);
+                        });
+                        optWrapper.appendChild(checkGroup);
+                    } else if (type === 'radio') {
+                        const radioGroup = document.createElement('div');
+                        radioGroup.className = 'flex flex-wrap gap-2 pt-0.5';
+                        values.forEach((v, vIdx) => {
+                            const add = parseFloat(v.price_add) || 0;
+                            const addText = add > 0 ? ` (+${add.toFixed(2)} CHF)` : '';
+                            const lbl = document.createElement('label');
+                            lbl.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-darkbrown/15 bg-white cursor-pointer hover:border-terracotta transition text-xs';
+                            lbl.innerHTML = `
+                                <input type="radio" name="opt_radio_${optIdx}" value="${v.title}" data-price-add="${add}" data-img="${v.img || ''}" data-stock="${typeof v.stock !== 'undefined' ? v.stock : 1}" onchange="onOptionsUpdated()" class="accent-terracotta" ${vIdx === 0 ? 'checked' : ''}>
+                                <span class="text-darkbrown font-medium">${v.title}${addText}</span>
+                            `;
+                            radioGroup.appendChild(lbl);
+                        });
+                        optWrapper.appendChild(radioGroup);
+                    } else {
+                        // dropdown, size, color
+                        const select = document.createElement('select');
+                        select.id = `opt_select_${optIdx}`;
+                        select.className = 'w-full bg-white border border-darkbrown/20 rounded-xl px-3.5 py-2.5 text-xs font-medium text-darkbrown outline-none focus:ring-1 focus:ring-terracotta cursor-pointer shadow-sm';
+                        select.onchange = function() { onOptionsUpdated(); };
+
+                        values.forEach(v => {
+                            const add = parseFloat(v.price_add) || 0;
+                            const addText = add > 0 ? ` (+${add.toFixed(2)} CHF)` : '';
+                            const vStock = typeof v.stock !== 'undefined' ? Number(v.stock) : 1;
+                            let stockNotice = '';
+                            if (type === 'color' || typeof v.stock !== 'undefined') {
+                                if (vStock === 0) stockNotice = ' (Ausverkauft)';
+                                else if (vStock === 1) stockNotice = ' (Nur 1x verfÃ¼gbar)';
+                            }
+
+                            const optElem = document.createElement('option');
+                            optElem.value = v.title;
+                            optElem.textContent = `${v.title}${stockNotice}${addText}`;
+                            optElem.dataset.priceAdd = add;
+                            optElem.dataset.img = v.img || '';
+                            optElem.dataset.stock = vStock;
+                            select.appendChild(optElem);
+                        });
+                        optWrapper.appendChild(select);
+                    }
+
+                    container.appendChild(optWrapper);
+                });
+
+                onOptionsUpdated();
             }
 
-                        const customNameBox = document.getElementById('customNameContainer');
-            document.getElementById('customNameInput').value = '';
-            if (item.allow_custom_name) {
-                customNameBox.classList.remove('hidden');
-            } else {
-                customNameBox.classList.add('hidden');
-            }
-            
             const voucherBox = document.getElementById('voucherDeliveryContainer');
             const isVoucherItem = item.cat === 'Gutscheine' || (item.name && item.name.toLowerCase().includes('gutschein'));
             if (voucherBox) {
                 if (isVoucherItem) voucherBox.classList.remove('hidden');
                 else voucherBox.classList.add('hidden');
             }
-
         }
 
-        window.onColorChange = function() {
-            const colorSelect = document.getElementById('colorSelect');
-            const opt = colorSelect.options[colorSelect.selectedIndex];
-            if (!opt) return;
+        window.onOptionsUpdated = function() {
+            if (activeProductIndex === null) return;
+            const item = allProducts[activeProductIndex];
+            if (!item) return;
 
-            if (opt.dataset.img) {
-                document.getElementById('modalCurrentImg').src = opt.dataset.img;
+            let totalSurcharge = 0;
+            let lowestStock = Number(item.stock) || 1;
+            let chosenImg = null;
+
+            const rows = document.querySelectorAll('.option-row');
+            rows.forEach(row => {
+                const optIdx = row.dataset.optIndex;
+                const type = row.dataset.optType;
+
+                if (type === 'text') {
+                    // text input
+                } else if (type === 'checkbox') {
+                    const checkedBoxes = row.querySelectorAll('input[type="checkbox"]:checked');
+                    checkedBoxes.forEach(cb => {
+                        totalSurcharge += parseFloat(cb.dataset.priceAdd) || 0;
+                    });
+                } else if (type === 'radio') {
+                    const checkedRadio = row.querySelector('input[type="radio"]:checked');
+                    if (checkedRadio) {
+                        totalSurcharge += parseFloat(checkedRadio.dataset.priceAdd) || 0;
+                        if (checkedRadio.dataset.img) chosenImg = checkedRadio.dataset.img;
+                        if (checkedRadio.dataset.stock !== undefined) {
+                            lowestStock = Math.min(lowestStock, Number(checkedRadio.dataset.stock));
+                        }
+                    }
+                } else {
+                    const select = row.querySelector('select');
+                    if (select && select.selectedIndex >= 0) {
+                        const opt = select.options[select.selectedIndex];
+                        if (opt) {
+                            totalSurcharge += parseFloat(opt.dataset.priceAdd) || 0;
+                            if (opt.dataset.img) chosenImg = opt.dataset.img;
+                            if (type === 'color' || opt.dataset.stock !== undefined) {
+                                lowestStock = Math.min(lowestStock, Number(opt.dataset.stock));
+                            }
+                        }
+                    }
+                }
+            });
+
+            if (chosenImg) {
+                document.getElementById('modalCurrentImg').src = chosenImg;
                 document.querySelectorAll('.gallery-thumb').forEach(t => {
                     const thumbImg = t.querySelector('img');
-                    if (thumbImg && thumbImg.src.includes(opt.dataset.img)) {
+                    if (thumbImg && thumbImg.src.includes(chosenImg)) {
                         t.classList.remove('border-transparent');
                         t.classList.add('border-terracotta', 'ring-2', 'ring-terracotta/30');
                     } else {
@@ -803,19 +923,11 @@
                         t.classList.add('border-transparent');
                     }
                 });
-            } else if (activeProductIndex !== null && allProducts[activeProductIndex].img) {
-                document.getElementById('modalCurrentImg').src = allProducts[activeProductIndex].img;
             }
 
-            const stock = Number(opt.dataset.stock);
-            updateAvailabilityDisplay(stock);
-        };
-
-        window.onSizeChange = function() {
-            const sizeSelect = document.getElementById('sizeSelect');
-            const opt = sizeSelect.options[sizeSelect.selectedIndex];
-            activeSizeSurcharge = opt ? (parseFloat(opt.dataset.priceAdd) || 0) : 0;
+            activeSizeSurcharge = totalSurcharge;
             updateModalPriceDisplay();
+            updateAvailabilityDisplay(lowestStock);
         };
 
         function updateModalPriceDisplay() {
@@ -828,25 +940,25 @@
             const actionBtn = document.getElementById('modalActionBtn');
 
             if (stock <= 0) {
-                statusElem.innerHTML = '<span class="text-red-500 font-bold">In dieser Farbe leider ausverkauft</span>';
+                statusElem.innerHTML = '<span class="text-red-500 font-bold">In dieser Variante leider ausverkauft</span>';
                 actionBtn.disabled = true;
                 actionBtn.className = "w-full block text-center bg-darkbrown/15 text-darkbrown/40 py-3.5 rounded-xl text-xs uppercase font-bold tracking-widest cursor-not-allowed";
                 actionBtn.innerHTML = "<span>Ausverkauft</span>";
             } else if (stock === 1) {
-                statusElem.innerHTML = '<span class="text-terracotta font-bold">✨ Nur 1x in dieser Variante verfügbar!</span>';
+                statusElem.innerHTML = '<span class="text-terracotta font-bold">âœ¨ Nur 1x in dieser Variante verfÃ¼gbar!</span>';
                 actionBtn.disabled = false;
                 actionBtn.className = "w-full block text-center bg-darkbrown text-white py-3.5 rounded-xl text-xs uppercase font-bold tracking-widest hover:bg-terracotta transition shadow-md flex items-center justify-center gap-2";
                 actionBtn.innerHTML = `
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-                    <span>Ins Nähkörbchen</span>
+                    <span>Ins NÃ¤hkÃ¶rbchen</span>
                 `;
             } else {
-                statusElem.innerHTML = '<span class="text-emerald-700 font-bold">Verfügbar</span>';
+                statusElem.innerHTML = '<span class="text-emerald-700 font-bold">VerfÃ¼gbar</span>';
                 actionBtn.disabled = false;
                 actionBtn.className = "w-full block text-center bg-darkbrown text-white py-3.5 rounded-xl text-xs uppercase font-bold tracking-widest hover:bg-terracotta transition shadow-md flex items-center justify-center gap-2";
                 actionBtn.innerHTML = `
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-                    <span>Ins Nähkörbchen</span>
+                    <span>Ins NÃ¤hkÃ¶rbchen</span>
                 `;
             }
         }
@@ -854,7 +966,7 @@
         window.quickAddToCart = function(idx) {
             const prod = allProducts[idx];
             if (!prod) return;
-            addCartItem(prod, '', '', 0, '', prod.img || 'images/logo.png', Number(prod.stock) || 1);
+            addCartItem(prod, '', '', 0, '', prod.img || 'images/logo.png', Number(prod.stock) || 1, '');
         };
 
         window.addCurrentModalToCart = function() {
@@ -862,46 +974,96 @@
             const prod = allProducts[activeProductIndex];
             if (!prod) return;
 
-            let chosenColor = '';
+            let totalSurcharge = 0;
+            let lowestStock = Number(prod.stock) || 1;
             let chosenImg = prod.img || 'images/logo.png';
-            let chosenStock = Number(prod.stock) || 1;
+            const selectedOptionsList = [];
+            let colorName = '';
+            let sizeName = '';
+            let customName = '';
 
-            const colorSelect = document.getElementById('colorSelect');
-            if (colorSelect && colorSelect.options.length > 0) {
-                const opt = colorSelect.options[colorSelect.selectedIndex];
-                chosenColor = opt.value;
-                if (opt.dataset.img) chosenImg = opt.dataset.img;
-                chosenStock = Number(opt.dataset.stock);
+            const rows = document.querySelectorAll('.option-row');
+            for (let row of rows) {
+                const optName = row.dataset.optName;
+                const type = row.dataset.optType;
+                const isRequired = row.dataset.optRequired === 'true';
+
+                if (type === 'text') {
+                    const input = row.querySelector('input[type="text"]');
+                    const val = input ? input.value.trim() : '';
+                    if (isRequired && !val) {
+                        alert(`Bitte fÃ¼lle das Pflichtfeld â€ž${optName}â€œ aus!`);
+                        input.focus();
+                        return;
+                    }
+                    if (val) {
+                        customName = val;
+                        selectedOptionsList.push({ name: optName, value: val, priceAdd: 0 });
+                    }
+                } else if (type === 'checkbox') {
+                    const checkedBoxes = row.querySelectorAll('input[type="checkbox"]:checked');
+                    checkedBoxes.forEach(cb => {
+                        const add = parseFloat(cb.dataset.priceAdd) || 0;
+                        totalSurcharge += add;
+                        selectedOptionsList.push({ name: optName, value: cb.value, priceAdd: add });
+                    });
+                } else if (type === 'radio') {
+                    const checkedRadio = row.querySelector('input[type="radio"]:checked');
+                    if (checkedRadio) {
+                        const add = parseFloat(checkedRadio.dataset.priceAdd) || 0;
+                        totalSurcharge += add;
+                        if (checkedRadio.dataset.img) chosenImg = checkedRadio.dataset.img;
+                        if (checkedRadio.dataset.stock !== undefined) {
+                            lowestStock = Math.min(lowestStock, Number(checkedRadio.dataset.stock));
+                        }
+                        if (optName.toLowerCase().includes('grÃ¶ÃŸe') || optName.toLowerCase().includes('grosse')) sizeName = checkedRadio.value;
+                        if (optName.toLowerCase().includes('farbe')) colorName = checkedRadio.value;
+                        selectedOptionsList.push({ name: optName, value: checkedRadio.value, priceAdd: add });
+                    }
+                } else {
+                    const select = row.querySelector('select');
+                    if (select && select.selectedIndex >= 0) {
+                        const opt = select.options[select.selectedIndex];
+                        if (opt) {
+                            const add = parseFloat(opt.dataset.priceAdd) || 0;
+                            totalSurcharge += add;
+                            if (opt.dataset.img) chosenImg = opt.dataset.img;
+                            if (type === 'color' || opt.dataset.stock !== undefined) {
+                                lowestStock = Math.min(lowestStock, Number(opt.dataset.stock));
+                            }
+                            if (type === 'color' || optName.toLowerCase().includes('farbe')) colorName = opt.value;
+                            if (type === 'size' || optName.toLowerCase().includes('grÃ¶ÃŸe') || optName.toLowerCase().includes('grosse')) sizeName = opt.value;
+                            selectedOptionsList.push({ name: optName, value: opt.value, priceAdd: add });
+                        }
+                    }
+                }
             }
 
-            if (chosenStock <= 0) {
+            if (lowestStock <= 0) {
                 alert("Diese Variante ist leider ausverkauft!");
                 return;
             }
 
-            let chosenSize = '';
-            let sizeAdd = 0;
-            const sizeSelect = document.getElementById('sizeSelect');
-            if (sizeSelect && sizeSelect.options.length > 0) {
-                const opt = sizeSelect.options[sizeSelect.selectedIndex];
-                chosenSize = opt.value;
-                sizeAdd = parseFloat(opt.dataset.priceAdd) || 0;
-            }
+            const finalPrice = parsePrice(prod.price) + totalSurcharge;
+            
+            const summaryParts = selectedOptionsList.map(o => {
+                const addText = o.priceAdd > 0 ? ` (+${o.priceAdd.toFixed(2)} CHF)` : '';
+                return `${o.name}: ${o.value}${addText}`;
+            });
+            const optionsSummary = summaryParts.join(' Â· ');
 
-            const customName = document.getElementById('customNameInput').value.trim();
-
-            addCartItem(prod, chosenColor, chosenSize, sizeAdd, customName, chosenImg, chosenStock);
+            addCartItem(prod, colorName, sizeName, totalSurcharge, customName, chosenImg, lowestStock, optionsSummary);
             closeModal();
         };
 
-        function addCartItem(prod, color, size, sizeAdd, customName, img, maxStock) {
+        function addCartItem(prod, color, size, sizeAdd, customName, img, maxStock, optionsSummary) {
             const finalPrice = parsePrice(prod.price) + sizeAdd;
-            const cartKey = `${prod.name}_${color}_${size}_${customName}`;
+            const cartKey = `${prod.name}_${optionsSummary || `${color}_${size}_${customName}`}`;
             const existingIndex = cart.findIndex(c => c.key === cartKey);
 
             if (existingIndex > -1) {
                 if (cart[existingIndex].quantity >= maxStock) {
-                    alert(`Dieser Artikel ist nur ${maxStock}x verfügbar!`);
+                    alert(`Dieser Artikel ist nur ${maxStock}x verfÃ¼gbar!`);
                     openCart();
                     return;
                 }
@@ -916,6 +1078,7 @@
                     color: color,
                     size: size,
                     customName: customName,
+                    optionsSummary: optionsSummary || '',
                     maxStock: maxStock,
                     quantity: 1
                 });
@@ -981,9 +1144,13 @@
 
             cart.forEach((item, idx) => {
                 const variantDetails = [];
-                if (item.color) variantDetails.push(`Farbe: ${item.color}`);
-                if (item.size) variantDetails.push(`Größe: ${item.size}`);
-                if (item.customName) variantDetails.push(`Name: "${item.customName}"`);
+                if (item.optionsSummary) {
+                    variantDetails.push(item.optionsSummary);
+                } else {
+                    if (item.color) variantDetails.push(`Farbe: ${item.color}`);
+                    if (item.size) variantDetails.push(`GrÃ¶ÃŸe: ${item.size}`);
+                    if (item.customName) variantDetails.push(`Name: "${item.customName}"`);
+                }
 
                 const isMaxedOut = item.quantity >= item.maxStock;
 
@@ -1480,9 +1647,7 @@
             if (prodIndex < 0) return;
             const prod = allProducts[prodIndex];
             
-            const hasVariants = (prod.variants_color && prod.variants_color.length > 0) || 
-                                (prod.variants_size && prod.variants_size.length > 0) || 
-                                prod.allow_custom_name;
+            const hasVariants = hasProductOptions(prod);
             if (hasVariants) {
                 closeWishlist();
                 openModal(prodIndex);
@@ -1501,9 +1666,7 @@
                 if (prodIndex >= 0) {
                     const prod = allProducts[prodIndex];
                     if (getProductTotalStock(prod) > 0) {
-                        const hasVariants = (prod.variants_color && prod.variants_color.length > 0) || 
-                                            (prod.variants_size && prod.variants_size.length > 0) || 
-                                            prod.allow_custom_name;
+                        const hasVariants = hasProductOptions(prod);
                         if (!hasVariants) {
                             quickAddToCart(prodIndex);
                             addedCount++;
