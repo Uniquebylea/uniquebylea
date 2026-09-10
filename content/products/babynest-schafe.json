@@ -6,22 +6,48 @@
   "stock": 2,
   "description": "Handgefertigtes Babynest mit kuscheligen Schafen für die Kleinsten. Liebevoll genäht in Interlaken.",
   "img": "images/baby-babynest.jpeg",
-  "variants_color": [
+  "options": [
     {
-      "name": "Naturweiss / Schafe",
-      "img": "images/baby-babynest.jpeg",
-      "stock": 0
-    }
-  ],
-  "variants_size": [
-    {
-      "name": "Standard (ca. 75x40 cm)",
-      "price_add": 0
+      "name": "Farbe",
+      "type": "color",
+      "required": true,
+      "values": [
+        {
+          "title": "Naturweiss / Schafe",
+          "price_add": 0,
+          "img": "images/baby-babynest.jpeg",
+          "stock": 2
+        },
+        {
+          "title": "Salbeigrün",
+          "price_add": 0,
+          "img": "images/baby-babynest.jpeg",
+          "stock": 0
+        }
+      ]
     },
     {
-      "name": "Maxi (ca. 90x50 cm)",
-      "price_add": 15
+      "name": "Größe",
+      "type": "size",
+      "required": true,
+      "values": [
+        {
+          "title": "Standard (ca. 75x40 cm)",
+          "price_add": 0,
+          "stock": 1
+        },
+        {
+          "title": "Maxi (ca. 90x50 cm)",
+          "price_add": 15,
+          "stock": 1
+        }
+      ]
+    },
+    {
+      "name": "Wunschname für Bestickung",
+      "type": "text",
+      "required": false,
+      "values": []
     }
-  ],
-  "allow_custom_name": true
+  ]
 }
