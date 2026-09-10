@@ -111,6 +111,13 @@
         <p class="text-xs md:text-sm text-darkbrown/80 font-light max-w-2xl mx-auto leading-relaxed">
             Wähle deine Lieblingsstoffe für dein persönliches Unikat. Klicke auf zwei Stoffe, um sie virtuell nebeneinander zu legen und das harmonische Zusammenspiel direkt zu sehen!
         </p>
+        <div class="mt-4 flex justify-center">
+            <a href="admin/stoffe.html" 
+               class="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-wider font-bold text-terracotta bg-white/80 hover:bg-terracotta hover:text-white px-3.5 py-1.5 rounded-full border border-terracotta/30 transition shadow-xs">
+                <span>📷 Neue Stoffe mit KI fotografieren & hochladen</span>
+                <span>➔</span>
+            </a>
+        </div>
     </section>
 
     <!-- MAIN CONTENT -->
@@ -629,9 +636,48 @@
             window.location.href = `kontakt.html?${params.toString()}`;
         };
 
+        const defaultFabricsList = [...fabrics];
+
+        async function loadDynamicFabrics() {
+            try {
+                let local = [];
+                try {
+                    local = JSON.parse(localStorage.getItem('uniquebylea_custom_fabrics') || '[]');
+                } catch (e) {}
+
+                let remote = [];
+                try {
+                    const res = await fetch('content/fabrics.json');
+                    if (res.ok) {
+                        remote = await res.json();
+                    }
+                } catch (e) {}
+
+                const seen = new Set();
+                const merged = [];
+                for (const f of [...local, ...remote, ...defaultFabricsList]) {
+                    if (f && f.code && !seen.has(f.code)) {
+                        seen.add(f.code);
+                        merged.push(f);
+                    }
+                }
+                if (merged.length > 0) {
+                    fabrics = merged;
+                }
+            } catch (err) {
+                console.warn("Could not load dynamic fabrics:", err);
+            }
+
+            const activeCatBtn = document.querySelector('.fabric-cat-btn.active');
+            const cat = activeCatBtn ? activeCatBtn.getAttribute('data-cat') : 'all';
+            renderFabrics(cat);
+            updateCombinerUI();
+        }
+
         // Initialisierung
         renderFabrics('all');
         updateCombinerUI();
+        loadDynamicFabrics();
     </script>
 </body>
 </html>
