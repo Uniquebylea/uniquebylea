@@ -772,6 +772,13 @@
             const customNameBox = document.getElementById('customNameContainer');
             document.getElementById('customNameInput').value = '';
             if (item.allow_custom_name) customNameBox.classList.remove('hidden');
+            
+            const voucherBox = document.getElementById('voucherDeliveryContainer');
+            const isVoucherItem = item.cat === 'Gutscheine' || (item.name && item.name.toLowerCase().includes('gutschein'));
+            if (voucherBox) {
+                if (isVoucherItem) voucherBox.classList.remove('hidden');
+                else voucherBox.classList.add('hidden');
+            }
             else customNameBox.classList.add('hidden');
         }
 
@@ -996,6 +1003,76 @@
                     <button onclick="removeFromCart(${idx})" class="text-darkbrown/40 hover:text-red-500 p-2 transition text-base">🗑️</button>
                 </div>`;
             });
+
+                        // Versandoptionen dynamisch aufbauen (Gutscheine vs. physische Produkte)
+            const isOnlyVouchers = cart.length > 0 && cart.every(item => 
+                item.cat === 'Gutscheine' || (item.name && item.name.toLowerCase().includes('gutschein'))
+            );
+            const hasVoucher = cart.some(item => 
+                item.cat === 'Gutscheine' || (item.name && item.name.toLowerCase().includes('gutschein'))
+            );
+
+            const shippingLabel = document.getElementById('shippingOptionsLabel');
+            const shippingList = document.getElementById('shippingOptionsList');
+            const prevSelected = document.querySelector('input[name="shipping"]:checked')?.value;
+
+            if (shippingList && shippingLabel) {
+                if (isOnlyVouchers) {
+                    const activeShip = (prevSelected === 'letter' || prevSelected === 'pickup') ? prevSelected : 'email';
+                    shippingLabel.textContent = "Versandart für Gutschein (Schweiz):";
+                    shippingList.innerHTML = 
+                        <label class="flex items-center justify-between p-2.5 rounded-xl border border-darkbrown/10 bg-creme cursor-pointer hover:border-terracotta transition">
+                            <span class="flex items-center gap-2">
+                                <input type="radio" name="shipping" value="email" \ onchange="updateCartTotals()" class="accent-terracotta">
+                                <span>📧 Per E-Mail (PDF zum Ausdrucken)</span>
+                            </span>
+                            <span class="text-terracotta font-bold">Gratis</span>
+                        </label>
+                        <label class="flex items-center justify-between p-2.5 rounded-xl border border-darkbrown/10 bg-creme cursor-pointer hover:border-terracotta transition">
+                            <span class="flex items-center gap-2">
+                                <input type="radio" name="shipping" value="letter" \ onchange="updateCartTotals()" class="accent-terracotta">
+                                <span>✉️ Post Briefversand (Gutscheinkarte)</span>
+                            </span>
+                            <span class="font-bold">2.00 CHF</span>
+                        </label>
+                        <label class="flex items-center justify-between p-2.5 rounded-xl border border-darkbrown/10 bg-creme cursor-pointer hover:border-terracotta transition">
+                            <span class="flex items-center gap-2">
+                                <input type="radio" name="shipping" value="pickup" \ onchange="updateCartTotals()" class="accent-terracotta">
+                                <span>🏠 Abholung im Atelier (Interlaken)</span>
+                            </span>
+                            <span class="text-terracotta font-bold">Gratis</span>
+                        </label>
+                    ;
+                } else {
+                    const activeShip = (prevSelected === 'apost' || prevSelected === 'pickup') ? prevSelected : 'bpost';
+                    const subtotal = cart.reduce((acc, item) => acc + (item.priceNum * item.quantity), 0);
+                    shippingLabel.textContent = "Versandart (Schweiz):";
+                    shippingList.innerHTML = 
+                        <label class="flex items-center justify-between p-2.5 rounded-xl border border-darkbrown/10 bg-creme cursor-pointer hover:border-terracotta transition">
+                            <span class="flex items-center gap-2">
+                                <input type="radio" name="shipping" value="bpost" \ onchange="updateCartTotals()" class="accent-terracotta">
+                                <span>📦 Schweizer Post (B-Post Paket)</span>
+                            </span>
+                            <span id="bpostCost" class="font-bold">\</span>
+                        </label>
+                        <label class="flex items-center justify-between p-2.5 rounded-xl border border-darkbrown/10 bg-creme cursor-pointer hover:border-terracotta transition">
+                            <span class="flex items-center gap-2">
+                                <input type="radio" name="shipping" value="apost" \ onchange="updateCartTotals()" class="accent-terracotta">
+                                <span>⚡ Schweizer Post (A-Post Paket)</span>
+                            </span>
+                            <span class="font-bold">9.00 CHF</span>
+                        </label>
+                        <label class="flex items-center justify-between p-2.5 rounded-xl border border-darkbrown/10 bg-creme cursor-pointer hover:border-terracotta transition">
+                            <span class="flex items-center gap-2">
+                                <input type="radio" name="shipping" value="pickup" \ onchange="updateCartTotals()" class="accent-terracotta">
+                                <span>🏠 Abholung im Atelier (Interlaken)</span>
+                            </span>
+                            <span class="text-terracotta font-bold">Gratis</span>
+                        </label>
+                        \
+                    ;
+                }
+            }
 
             updateCartTotals();
         }
