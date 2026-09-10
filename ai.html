@@ -2,13 +2,281 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=/admin/ai.html">
-    <title>Weiterleitung zum KI-Assistenten...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KI Produkt-Assistent | Unique by Lea</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script>
-        window.location.replace('/admin/ai.html');
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { sand: '#EAE3D9', creme: '#F9F6F2', terracotta: '#B08968', darkbrown: '#4A3728' },
+                    fontFamily: { serif: ['Playfair Display', 'serif'], sans: ['Montserrat', 'sans-serif'] }
+                }
+            }
+        }
     </script>
 </head>
-<body style="font-family: sans-serif; background: #EAE3D9; color: #4A3728; display: flex; justify-content: center; items-center; height: 100vh; margin: 0;">
-    <p>Leite weiter zum KI Produkt-Assistenten... <a href="/admin/ai.html" style="color: #B08968;">Hier klicken, falls die Weiterleitung nicht automatisch startet.</a></p>
+<body class="bg-sand text-darkbrown font-sans min-h-screen flex flex-col p-4 md:p-8">
+
+    <div class="max-w-2xl mx-auto w-full bg-creme rounded-3xl p-6 md:p-10 shadow-xl border border-white/60">
+        
+        <!-- Kopfzeile mit Zurück-Link -->
+        <div class="flex justify-between items-center mb-6 pb-4 border-b border-darkbrown/10">
+            <div>
+                <h1 class="font-serif text-xl md:text-2xl font-bold italic">✨ KI Produkt-Assistent</h1>
+                <p class="text-[11px] text-darkbrown/70">Foto hochladen ➔ KI füllt alles automatisch aus</p>
+            </div>
+            <a href="/admin/" class="text-[10px] uppercase tracking-widest font-bold text-darkbrown/60 hover:text-terracotta border border-darkbrown/15 px-3 py-1.5 rounded-full transition">
+                Zum CMS ➔
+            </a>
+        </div>
+
+        <!-- 1. Foto Upload Box -->
+        <div class="mb-6">
+            <label class="block text-xs font-bold uppercase tracking-wider text-darkbrown/80 mb-2">1. Produktfoto auswählen oder reinziehen:</label>
+            <div id="dropzone" onclick="document.getElementById('fileInput').click()" 
+                 class="border-2 border-dashed border-darkbrown/20 hover:border-terracotta rounded-2xl p-6 text-center cursor-pointer bg-white/50 hover:bg-white transition flex flex-col items-center justify-center min-h-[160px]">
+                <img id="imagePreview" class="max-h-48 rounded-xl mb-3 hidden object-contain shadow-sm">
+                <div id="uploadPrompt" class="space-y-1">
+                    <svg class="w-8 h-8 mx-auto text-darkbrown/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                    <p class="text-xs font-bold text-darkbrown">Foto hier ablegen oder klicken</p>
+                    <p class="text-[10px] text-darkbrown/60">PNG, JPG, JPEG (vom Smartphone oder PC)</p>
+                </div>
+            </div>
+            <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleFileSelect(event)">
+            
+            <button id="analyzeBtn" onclick="analyzeImage()" disabled 
+                    class="w-full mt-3 bg-terracotta hover:bg-darkbrown disabled:opacity-40 disabled:cursor-not-allowed text-white py-3 rounded-xl text-xs uppercase font-bold tracking-widest shadow transition flex items-center justify-center gap-2">
+                <span>✨ Foto jetzt mit KI analysieren</span>
+            </button>
+        </div>
+
+        <!-- Status / Ladeanimation -->
+        <div id="statusMessage" class="hidden text-center py-4 text-xs font-bold text-terracotta animate-pulse"></div>
+
+        <!-- 2. Automatisch befüllte Felder -->
+        <form id="productForm" onsubmit="saveProduct(event)" class="space-y-4 border-t border-darkbrown/10 pt-6">
+            
+            <div>
+                <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Produktname:</label>
+                <input type="text" id="nameInput" required placeholder="Wird von der KI generiert..." 
+                       class="w-full bg-white border border-darkbrown/15 rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 focus:ring-terracotta">
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Kategorie:</label>
+                    <select id="catInput" required class="w-full bg-white border border-darkbrown/15 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-1 focus:ring-terracotta cursor-pointer">
+                        <option value="Baby">Baby</option>
+                        <option value="Kinder">Kinder</option>
+                        <option value="Erwachsene">Erwachsene</option>
+                        <option value="Makramee">Makramee</option>
+                        <option value="Taschen">Taschen</option>
+                        <option value="Gutscheine">Gutscheine</option>
+                        <option value="Accessoires">Accessoires</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Preis (CHF):</label>
+                    <input type="text" id="priceInput" required placeholder="z. B. 79.00 CHF" 
+                           class="w-full bg-white border border-darkbrown/15 rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 focus:ring-terracotta font-bold text-terracotta">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Liebevolle Beschreibung:</label>
+                <textarea id="descInput" rows="3" placeholder="Wird von der KI geschrieben..." 
+                          class="w-full bg-white border border-darkbrown/15 rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 focus:ring-terracotta leading-relaxed"></textarea>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Erkannte Farben (Kommagetrennt):</label>
+                    <input type="text" id="colorsInput" placeholder="z. B. Salbei, Naturweiss" 
+                           class="w-full bg-white border border-darkbrown/15 rounded-xl px-4 py-2 text-xs outline-none focus:ring-1 focus:ring-terracotta">
+                </div>
+
+                <div>
+                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Badge:</label>
+                    <input type="text" id="badgeInput" value="Unikat" 
+                           class="w-full bg-white border border-darkbrown/15 rounded-xl px-4 py-2 text-xs outline-none focus:ring-1 focus:ring-terracotta">
+                </div>
+            </div>
+
+            <button type="submit" id="saveBtn" 
+                    class="w-full bg-darkbrown hover:bg-terracotta text-white py-3.5 rounded-xl text-xs uppercase font-bold tracking-widest shadow-md transition flex items-center justify-center gap-2 mt-4">
+                <span>🚀 Produkt jetzt veröffentlichen</span>
+            </button>
+        </form>
+
+    </div>
+
+    <!-- JavaScript Logik -->
+    <script>
+        let currentBase64 = '';
+        let currentMimeType = '';
+        let currentFileName = '';
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            currentMimeType = file.type;
+            currentFileName = file.name.toLowerCase().replace(/[^a-z0-9.]/g, '-');
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentBase64 = e.target.result;
+                const img = document.getElementById('imagePreview');
+                img.src = currentBase64;
+                img.classList.remove('hidden');
+                document.getElementById('uploadPrompt').classList.add('hidden');
+                document.getElementById('analyzeBtn').disabled = false;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function analyzeImage() {
+            const btn = document.getElementById('analyzeBtn');
+            const status = document.getElementById('statusMessage');
+            btn.disabled = true;
+            status.textContent = '✨ KI analysiert dein Foto und erstellt die Texte...';
+            status.classList.remove('hidden');
+
+            try {
+                const res = await fetch('/api/ai-analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        imageBase64: currentBase64,
+                        mimeType: currentMimeType
+                    })
+                });
+
+                const data = await res.json();
+                if (data.error) throw new Error(data.error);
+
+                // Felder befüllen
+                document.getElementById('nameInput').value = data.name || '';
+                document.getElementById('descInput').value = data.description || '';
+                if (data.cat) document.getElementById('catInput').value = data.cat;
+                if (data.colors) document.getElementById('colorsInput').value = Array.isArray(data.colors) ? data.colors.join(', ') : data.colors;
+                if (data.badge) document.getElementById('badgeInput').value = data.badge;
+
+                status.textContent = '🎉 Fertig ausgefüllt! Überprüfe kurz den Preis und speichere das Produkt.';
+                status.classList.remove('text-terracotta');
+                status.classList.add('text-emerald-700');
+            } catch (err) {
+                alert("Fehler bei der KI-Analyse: " + err.message);
+                status.classList.add('hidden');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        async function saveProduct(e) {
+            e.preventDefault();
+            const btn = document.getElementById('saveBtn');
+            btn.disabled = true;
+            btn.textContent = 'Wird gespeichert...';
+
+            const name = document.getElementById('nameInput').value.trim();
+            const slug = name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+            const cat = document.getElementById('catInput').value;
+            const price = document.getElementById('priceInput').value.trim();
+            const description = document.getElementById('descInput').value.trim();
+            const badge = document.getElementById('badgeInput').value.trim();
+            const colorsStr = document.getElementById('colorsInput').value.trim();
+
+            const colorsList = colorsStr ? colorsStr.split(',').map(c => ({ name: c.trim(), stock: 1 })) : [];
+
+            // Token aus Sveltia CMS Login oder localStorage holen
+            let token = '';
+            try {
+                const sveltiaUser = JSON.parse(localStorage.getItem('sveltia-cms.user') || '{}');
+                token = sveltiaUser.token || localStorage.getItem('uniquebylea_gh_token');
+            } catch (err) {}
+
+            if (!token) {
+                token = prompt("Bitte gib dein GitHub Personal Access Token ein (wird sicher in deinem Browser gespeichert):");
+                if (token) {
+                    token = token.trim();
+                    localStorage.setItem('uniquebylea_gh_token', token);
+                } else {
+                    alert("Ohne Token kann das Produkt nicht gespeichert werden. Bitte logge dich im CMS ein (/admin/)!");
+                    btn.disabled = false;
+                    btn.textContent = '🚀 Produkt jetzt veröffentlichen';
+                    return;
+                }
+            }
+
+            try {
+                // 1. Bild hochladen
+                const imagePath = `images/${slug}-${currentFileName}`;
+                const rawBase64 = currentBase64.replace(/^data:image\/\w+;base64,/, '');
+
+                await fetch(`https://api.github.com/repos/Uniquebylea/uniquebylea/contents/${imagePath}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `Upload image for ${name}`,
+                        content: rawBase64
+                    })
+                });
+
+                // 2. Produkt-JSON anlegen
+                const productData = {
+                    name: name,
+                    cat: cat,
+                    price: price.includes('CHF') ? price : `${price} CHF`,
+                    badge: badge,
+                    stock: 1,
+                    description: description,
+                    img: imagePath,
+                    options: colorsList.length > 0 ? [
+                        {
+                            name: "Farbe",
+                            type: "color",
+                            required: true,
+                            values: colorsList.map(c => ({
+                                title: c.name,
+                                price_add: 0,
+                                stock: c.stock || 1
+                            }))
+                        }
+                    ] : [],
+                    variants_color: colorsList,
+                    variants_size: [],
+                    allow_custom_name: false
+                };
+
+                const productJsonBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(productData, null, 2))));
+
+                await fetch(`https://api.github.com/repos/Uniquebylea/uniquebylea/contents/content/products/${slug}.json`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `Create product ${name}`,
+                        content: productJsonBase64
+                    })
+                });
+
+                alert(`🎉 Fantastisch! Das Produkt "${name}" wurde erfolgreich erstellt und ist in ca. 20 Sekunden in deinem Shop online!`);
+                window.location.href = '/shop.html';
+            } catch (err) {
+                alert("Fehler beim Speichern: " + err.message);
+                btn.disabled = false;
+                btn.textContent = '🚀 Produkt jetzt veröffentlichen';
+            }
+        }
+    </script>
 </body>
 </html>
