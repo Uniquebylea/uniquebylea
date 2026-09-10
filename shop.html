@@ -562,6 +562,18 @@
         function normalizeProductOptions(item) {
             if (!item) return item;
             if (Array.isArray(item.options) && item.options.length > 0) {
+                const isVoucherItem = item.cat === 'Gutscheine' || (item.name && item.name.toLowerCase().includes('gutschein'));
+                if (isVoucherItem) {
+                    const hasMsgOpt = item.options.some(o => o.name && o.name.toLowerCase().includes('nachricht'));
+                    if (!hasMsgOpt) {
+                        item.options.push({
+                            name: "PersÃ¶nliche Nachricht",
+                            type: "textarea",
+                            required: false,
+                            values: []
+                        });
+                    }
+                }
                 return item;
             }
             const opts = [];
@@ -594,6 +606,15 @@
                 opts.push({
                     name: "Wunschname fÃ¼r Bestickung",
                     type: "text",
+                    required: false,
+                    values: []
+                });
+            }
+            const isVoucher = item.cat === 'Gutscheine' || (item.name && item.name.toLowerCase().includes('gutschein'));
+            if (isVoucher) {
+                opts.push({
+                    name: "PersÃ¶nliche Nachricht",
+                    type: "textarea",
                     required: false,
                     values: []
                 });
@@ -784,7 +805,19 @@
                     const type = opt.type || 'dropdown';
                     const values = Array.isArray(opt.values) ? opt.values : [];
 
-                    if (type === 'text') {
+                    if (type === 'textarea' || (type === 'text' && opt.name.toLowerCase().includes('nachricht'))) {
+                        const textarea = document.createElement('textarea');
+                        textarea.id = `opt_input_${optIdx}`;
+                        textarea.rows = 3;
+                        textarea.className = 'w-full bg-white border border-darkbrown/20 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-1 focus:ring-terracotta leading-relaxed shadow-sm resize-none';
+                        textarea.placeholder = 'Hier deine persÃ¶nliche Grussnachricht eingeben (z. B. FÃ¼r die liebe Sarah zum Geburtstag!)...';
+                        optWrapper.appendChild(textarea);
+
+                        const hint = document.createElement('p');
+                        hint.className = 'text-[10px] text-darkbrown/60 italic pt-0.5';
+                        hint.textContent = 'âœï¸ Deine Nachricht wird von Lea liebevoll auf die Gutscheinkarte gedruckt bzw. in das PDF eingefÃ¼gt.';
+                        optWrapper.appendChild(hint);
+                    } else if (type === 'text') {
                         const input = document.createElement('input');
                         input.type = 'text';
                         input.id = `opt_input_${optIdx}`;
@@ -880,7 +913,7 @@
                 const optIdx = row.dataset.optIndex;
                 const type = row.dataset.optType;
 
-                if (type === 'text') {
+                if (type === 'text' || type === 'textarea') {
                     // text input
                 } else if (type === 'checkbox') {
                     const checkedBoxes = row.querySelectorAll('input[type="checkbox"]:checked');
@@ -966,7 +999,7 @@
         window.quickAddToCart = function(idx) {
             const prod = allProducts[idx];
             if (!prod) return;
-            addCartItem(prod, '', '', 0, '', prod.img || 'images/logo.png', Number(prod.stock) || 1, '');
+            addCartItem(prod, '', '', 0, '', prod.img || 'images/logo.png', Number(prod.stock) || 1, '', '');
         };
 
         window.addCurrentModalToCart = function() {
@@ -981,6 +1014,7 @@
             let colorName = '';
             let sizeName = '';
             let customName = '';
+            let personalMessage = '';
 
             const rows = document.querySelectorAll('.option-row');
             for (let row of rows) {
@@ -988,8 +1022,8 @@
                 const type = row.dataset.optType;
                 const isRequired = row.dataset.optRequired === 'true';
 
-                if (type === 'text') {
-                    const input = row.querySelector('input[type="text"]');
+                if (type === 'text' || type === 'textarea') {
+                    const input = row.querySelector('input[type="text"], textarea');
                     const val = input ? input.value.trim() : '';
                     if (isRequired && !val) {
                         alert(`Bitte fÃ¼lle das Pflichtfeld â€ž${optName}â€œ aus!`);
@@ -997,7 +1031,11 @@
                         return;
                     }
                     if (val) {
-                        customName = val;
+                        if (optName.toLowerCase().includes('nachricht')) {
+                            personalMessage = val;
+                        } else {
+                            customName = val;
+                        }
                         selectedOptionsList.push({ name: optName, value: val, priceAdd: 0 });
                     }
                 } else if (type === 'checkbox') {
@@ -1052,13 +1090,13 @@
             });
             const optionsSummary = summaryParts.join(' Â· ');
 
-            addCartItem(prod, colorName, sizeName, totalSurcharge, customName, chosenImg, lowestStock, optionsSummary);
+            addCartItem(prod, colorName, sizeName, totalSurcharge, customName, chosenImg, lowestStock, optionsSummary, personalMessage);
             closeModal();
         };
 
-        function addCartItem(prod, color, size, sizeAdd, customName, img, maxStock, optionsSummary) {
+        function addCartItem(prod, color, size, sizeAdd, customName, img, maxStock, optionsSummary, personalMessage) {
             const finalPrice = parsePrice(prod.price) + sizeAdd;
-            const cartKey = `${prod.name}_${optionsSummary || `${color}_${size}_${customName}`}`;
+            const cartKey = `${prod.name}_${optionsSummary || `${color}_${size}_${customName}_${personalMessage || ''}`}`;
             const existingIndex = cart.findIndex(c => c.key === cartKey);
 
             if (existingIndex > -1) {
@@ -1078,6 +1116,7 @@
                     color: color,
                     size: size,
                     customName: customName,
+                    personalMessage: personalMessage || '',
                     optionsSummary: optionsSummary || '',
                     maxStock: maxStock,
                     quantity: 1
@@ -1150,6 +1189,7 @@
                     if (item.color) variantDetails.push(`Farbe: ${item.color}`);
                     if (item.size) variantDetails.push(`GrÃ¶ÃŸe: ${item.size}`);
                     if (item.customName) variantDetails.push(`Name: "${item.customName}"`);
+                    if (item.personalMessage) variantDetails.push(`Nachricht: "${item.personalMessage}"`);
                 }
 
                 const isMaxedOut = item.quantity >= item.maxStock;
