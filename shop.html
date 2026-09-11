@@ -512,6 +512,20 @@
 
                 if (urlParams.get('checkout') === 'success') {
                     const sessionId = urlParams.get('session_id') || '';
+
+                    // Bezahlten Gutschein im Warenkorb ermitteln (falls vorhanden)
+                    const boughtVoucher = cart.find(i => i.isVoucher || i.voucherConfig || i.cat === 'Gutscheine' || (i.name && i.name.toLowerCase().includes('gutschein')));
+                    let voucherDownloadUrl = null;
+                    if (boughtVoucher) {
+                        const vc = boughtVoucher.voucherConfig || {};
+                        const val = vc.wert || boughtVoucher.priceNum || 50;
+                        const randomCode = 'UNIQUE-' + Math.floor(1000 + Math.random() * 9000) + '-LIEBE';
+                        const fuer = vc.fuer || '';
+                        const von = vc.von || '';
+                        const text = vc.text || '';
+                        voucherDownloadUrl = /gutschein?paid=true&wert=&code=&fuer=&von=&text=;
+                    }
+
                     try {
                         fetch('https://api.web3forms.com/submit', {
                             method: 'POST',
@@ -520,7 +534,7 @@
                                 access_key: '2b4e9f51-bdd3-4391-9732-39f55bb17727',
                                 from_name: 'Unique by Lea Onlineshop',
                                 subject: '🎉 Neue Bestellung im Shop bezahlt!',
-                                message: `Liebe Lea,\n\nEs wurde soeben eine neue Bestellung erfolgreich über Stripe bezahlt!\nAlle Versand- und Kundendetails findest du direkt in deinem Stripe-Dashboard.\n\nSession-ID: ${sessionId}`
+                                message: Liebe Lea,\n\nEs wurde soeben eine neue Bestellung erfolgreich über Stripe bezahlt!\nAlle Versand- und Kundendetails findest du direkt in deinem Stripe-Dashboard.\n\nSession-ID: 
                             })
                         });
                     } catch (e) {}
@@ -528,7 +542,7 @@
                     localStorage.removeItem('uniquebylea_cart');
                     cart = [];
                     updateCartBadge();
-                    showOrderSuccessModal();
+                    showOrderSuccessModal(voucherDownloadUrl);
                 } else if (urlParams.get('checkout') === 'canceled') {
                     openCart();
                 }
@@ -662,6 +676,24 @@
                 return;
             }
             noResults.classList.add('hidden');
+
+            if (currentCategory === 'Gutscheine') {
+                grid.innerHTML += `
+                <div class="col-span-full bg-gradient-to-r from-[#F4EFEA] to-[#FAF8F5] p-5 sm:p-7 rounded-3xl border border-terracotta/30 flex flex-col md:flex-row items-center justify-between gap-5 shadow-sm mb-3">
+                    <div class="flex items-center gap-4 text-left">
+                        <div class="w-14 h-14 rounded-2xl bg-terracotta/15 flex items-center justify-center text-3xl shrink-0">🎁</div>
+                        <div>
+                            <span class="text-[10px] uppercase font-bold tracking-[0.2em] text-terracotta block mb-0.5">Interaktiver Live-Konfigurator</span>
+                            <h3 class="font-serif text-lg md:text-xl font-bold italic text-darkbrown">Gutschein selbst gestalten &amp; personalisieren</h3>
+                            <p class="text-xs text-darkbrown/70 mt-1 max-w-xl font-light">Wähle Betrag, Farbton und Anlass. Verfasse deine persönliche Nachricht direkt live in der DIN A4 Druck- und PDF-Vorschau!</p>
+                        </div>
+                    </div>
+                    <a href="/gutschein" class="shrink-0 bg-terracotta hover:bg-darkbrown text-white text-xs font-bold uppercase tracking-wider px-5 py-3 rounded-xl shadow transition flex items-center gap-2">
+                        <span>🎨 Jetzt Gutschein gestalten</span>
+                        <span>➔</span>
+                    </a>
+                </div>`;
+            }
 
             list.forEach((item) => {
                 normalizeProductOptions(item);
@@ -897,6 +929,23 @@ let currentGalleryImages = [];
             const container = document.getElementById('dynamicOptionsContainer');
             if (!container) return;
             container.innerHTML = '';
+
+            const isVoucherItem = item.cat === 'Gutscheine' || (item.name && item.name.toLowerCase().includes('gutschein'));
+            if (isVoucherItem) {
+                const liveConfigBox = document.createElement('div');
+                liveConfigBox.className = 'p-3.5 bg-sand/40 border border-terracotta/30 rounded-2xl flex items-center justify-between gap-3 mb-2';
+                liveConfigBox.innerHTML = `
+                    <div class="text-left">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-terracotta block">Neu: Gutschein-Studio</span>
+                        <span class="text-[11px] text-darkbrown/80 font-light">Möchtest du den Gutschein mit Live-Vorschau selbst gestalten?</span>
+                    </div>
+                    <a href="/gutschein" class="shrink-0 bg-terracotta hover:bg-darkbrown text-white text-[10px] font-bold uppercase tracking-wider px-3.5 py-2 rounded-xl transition flex items-center gap-1 shadow-xs">
+                        <span>Live-Studio</span>
+                        <span>➔</span>
+                    </a>
+                `;
+                container.appendChild(liveConfigBox);
+            }
 
             const options = item.options || [];
 
@@ -1553,14 +1602,30 @@ let currentGalleryImages = [];
             }
         };
 
-        function showOrderSuccessModal() {
+        function showOrderSuccessModal(voucherDownloadUrl) {
             const overlay = document.createElement('div');
             overlay.className = "fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4";
             overlay.innerHTML = `
                 <div class="bg-creme rounded-3xl max-w-md w-full p-8 shadow-2xl text-center border border-white/60">
                     <div class="w-16 h-16 bg-emerald-100 text-emerald-700 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">✓</div>
                     <h2 class="font-serif text-2xl font-bold text-darkbrown mb-2 italic">Herzlichen Dank!</h2>
-                    <p class="text-xs text-darkbrown/80 leading-relaxed mb-6">Deine Bestellung ist erfolgreich eingegangen. Ich bereite dein handgefertigtes Unikat liebevoll in meinem Atelier in Interlaken für dich vor.</p>
+                    <p class="text-xs text-darkbrown/80 leading-relaxed mb-4">Deine Bestellung ist erfolgreich eingegangen. Ich bereite deine Bestellung liebevoll in meinem Atelier in Interlaken für dich vor.</p>
+                    
+                    ${voucherDownloadUrl ? `
+                    <div class="bg-sand-50 p-4 rounded-2xl border border-terracotta/30 text-left my-5 space-y-2.5">
+                        <div class="font-bold text-xs uppercase tracking-wider text-terracotta flex items-center gap-1.5">
+                            🎁 Dein Gutschein ist bezahlt &amp; bereit!
+                        </div>
+                        <p class="text-xs text-darkbrown/80 leading-relaxed font-light">
+                            Du kannst deinen personalisierten DIN A4 Gutschein jetzt direkt als druckfertiges PDF öffnen oder drucken:
+                        </p>
+                        <a href="${voucherDownloadUrl}" target="_blank" 
+                           class="w-full inline-flex items-center justify-center gap-2 bg-terracotta hover:bg-darkbrown text-white py-3 rounded-xl font-bold uppercase text-xs tracking-wider shadow-md transition">
+                            <span>📄 Gutschein jetzt als PDF öffnen / drucken ➔</span>
+                        </a>
+                    </div>
+                    ` : ''}
+
                     <button onclick="this.closest('.fixed').remove(); window.history.replaceState({}, document.title, window.location.pathname);" 
                             class="bg-darkbrown hover:bg-terracotta text-white px-8 py-3 rounded-xl text-xs uppercase font-bold tracking-widest transition">
                         Weiter einkaufen
