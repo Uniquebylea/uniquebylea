@@ -281,6 +281,28 @@
           <textarea id="input-text" rows="4" oninput="syncField('text', this.value)" class="w-full px-3 py-2 bg-sand-50 border border-sand-200 rounded-lg text-xs text-charcoal leading-relaxed focus:ring-1 focus:ring-terracotta focus:border-terracotta outline-none">Von Herzen alles Liebe zur Geburt eures kleinen Wunders! Möge jeder Tag voller Liebe, Geborgenheit und Sonnenschein sein. Viel Freude beim Aussuchen eines liebevoll handgefertigten Unikats.</textarea>
         </div>
 
+        <!-- Schriftart für den Text -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-xs font-semibold text-sand-800 uppercase tracking-wider">Schriftart für deinen Text</label>
+            <span id="font-label" class="text-[11px] text-sand-800/80 italic font-medium">Elegante Serife</span>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <button type="button" id="btn-font-serif" onclick="setTextFont('serif')" class="p-2.5 rounded-xl border-2 border-charcoal bg-sand-50 text-center transition flex flex-col items-center justify-center shadow-xs">
+              <span class="font-serif text-lg leading-none text-charcoal italic font-medium">Aa</span>
+              <span class="text-[10.5px] font-bold text-charcoal mt-1">Serife</span>
+            </button>
+            <button type="button" id="btn-font-script" onclick="setTextFont('script')" class="p-2.5 rounded-xl border border-sand-200 bg-white hover:bg-sand-50 text-center transition flex flex-col items-center justify-center shadow-xs">
+              <span class="font-script text-2xl leading-none text-charcoal">Aa</span>
+              <span class="text-[10.5px] font-medium text-sand-800 mt-1">Handschrift</span>
+            </button>
+            <button type="button" id="btn-font-sans" onclick="setTextFont('sans')" class="p-2.5 rounded-xl border border-sand-200 bg-white hover:bg-sand-50 text-center transition flex flex-col items-center justify-center shadow-xs">
+              <span class="font-sans font-semibold text-sm leading-none text-charcoal">Aa</span>
+              <span class="text-[10.5px] font-medium text-sand-800 mt-1">Modern</span>
+            </button>
+          </div>
+        </div>
+
         <!-- Gültigkeit Info -->
         <div class="p-3 bg-[#FAF8F5] rounded-xl border border-[#E8DFD5] flex items-center gap-2.5 text-xs text-[#7D6B60]">
           <span class="text-base">✨</span>
@@ -290,15 +312,21 @@
           </div>
         </div>
 
-        <!-- Akzentfarbe wählen -->
+        <!-- Akzentfarbe wählen (Begrenzt auf Schwarz & Braun) -->
         <div>
-          <label class="block text-xs font-semibold text-sand-800 uppercase tracking-wider mb-2">Farbakzent Gutschein</label>
-          <div class="flex items-center space-x-3">
-            <button type="button" onclick="setAccentTheme('#9C7D6B', '#FDFBF8', 'Terracotta')" class="w-7 h-7 rounded-full bg-[#9C7D6B] border-2 border-white shadow-sm ring-1 ring-sand-300 hover:scale-105 transition" title="Warmes Terracotta / Mütze"></button>
-            <button type="button" onclick="setAccentTheme('#7C8A79', '#FAFBF9', 'Salbeigrün')" class="w-7 h-7 rounded-full bg-[#7C8A79] border-2 border-white shadow-sm ring-1 ring-sand-300 hover:scale-105 transition" title="Salbeigrün / Poncho"></button>
-            <button type="button" onclick="setAccentTheme('#A88D77', '#FDFBF9', 'Sandbraun')" class="w-7 h-7 rounded-full bg-[#A88D77] border-2 border-white shadow-sm ring-1 ring-sand-300 hover:scale-105 transition" title="Warmes Sandbraun / Shop"></button>
-            <button type="button" onclick="setAccentTheme('#4A403A', '#FAF8F6', 'Anthrazit')" class="w-7 h-7 rounded-full bg-[#4A403A] border-2 border-white shadow-sm ring-1 ring-sand-300 hover:scale-105 transition" title="Klassisch Dunkelbraun"></button>
-            <span id="theme-label" class="text-xs text-sand-800 italic">Terracotta</span>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-xs font-semibold text-sand-800 uppercase tracking-wider">Farbe Gutschein</label>
+            <span id="theme-label" class="text-[11px] text-sand-800/80 italic font-medium">Schwarz</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2.5">
+            <button type="button" id="btn-color-schwarz" onclick="setAccentTheme('#221F1D', '#FAF8F5', 'Schwarz')" class="flex items-center justify-center gap-2.5 px-3 py-2 rounded-xl border-2 border-charcoal bg-sand-50 transition shadow-xs">
+              <span class="w-4 h-4 rounded-full bg-[#221F1D] inline-block border-2 border-white shadow-xs"></span>
+              <span class="text-xs font-bold text-charcoal">Schwarz</span>
+            </button>
+            <button type="button" id="btn-color-braun" onclick="setAccentTheme('#6E4E3A', '#FAF6F0', 'Braun')" class="flex items-center justify-center gap-2.5 px-3 py-2 rounded-xl border border-sand-200 bg-white hover:bg-sand-50 transition shadow-xs">
+              <span class="w-4 h-4 rounded-full bg-[#6E4E3A] inline-block border-2 border-white shadow-xs"></span>
+              <span class="text-xs font-medium text-sand-800">Braun</span>
+            </button>
           </div>
         </div>
 
@@ -328,10 +356,10 @@
           <div id="voucher-inner-frame" class="w-full h-full border border-[#E8DFD5] p-[8mm] relative flex flex-col justify-between bg-white shadow-sm transition-colors duration-300">
 
             <!-- VIER EDLE ECKEN-ORNAMENTE -->
-            <div class="absolute top-2 left-2 w-4 h-4 border-t border-l border-[#9C7D6B] pointer-events-none"></div>
-            <div class="absolute top-2 right-2 w-4 h-4 border-t border-r border-[#9C7D6B] pointer-events-none"></div>
-            <div class="absolute bottom-2 left-2 w-4 h-4 border-b border-l border-[#9C7D6B] pointer-events-none"></div>
-            <div class="absolute bottom-2 right-2 w-4 h-4 border-b border-r border-[#9C7D6B] pointer-events-none"></div>
+            <div class="corner-ornament absolute top-2 left-2 w-4 h-4 border-t border-l border-[#221F1D] pointer-events-none transition-colors"></div>
+            <div class="corner-ornament absolute top-2 right-2 w-4 h-4 border-t border-r border-[#221F1D] pointer-events-none transition-colors"></div>
+            <div class="corner-ornament absolute bottom-2 left-2 w-4 h-4 border-b border-l border-[#221F1D] pointer-events-none transition-colors"></div>
+            <div class="corner-ornament absolute bottom-2 right-2 w-4 h-4 border-b border-r border-[#221F1D] pointer-events-none transition-colors"></div>
 
             <!-- 1. KOPFBEREICH: LOGO & TITEL -->
             <div class="text-center pt-2">
@@ -344,14 +372,14 @@
               <!-- Untertitel / Slogan -->
               <div class="flex items-center justify-center gap-3 my-2">
                 <div class="h-[0.5px] w-12 bg-[#D9CCC0]"></div>
-                <span class="text-[10.5px] tracking-[3px] uppercase text-terracotta font-semibold font-sans">
+                <span id="voucher-subtitle" class="text-[10.5px] tracking-[3px] uppercase text-[#221F1D] font-semibold font-sans transition-colors">
                   Einzigartige Handarbeit aus Interlaken
                 </span>
                 <div class="h-[0.5px] w-12 bg-[#D9CCC0]"></div>
               </div>
 
               <!-- Hauptüberschrift GUTSCHEIN -->
-              <h2 id="voucher-title" contenteditable="true" oninput="reverseSync('title', this.innerText)" class="font-serif text-[42px] sm:text-[46px] font-normal tracking-[8px] uppercase text-charcoal mt-1 leading-tight">
+              <h2 id="voucher-title" contenteditable="true" oninput="reverseSync('title', this.innerText)" class="font-serif text-[42px] sm:text-[46px] font-normal tracking-[8px] uppercase text-[#221F1D] mt-1 leading-tight transition-colors">
                 Gutschein
               </h2>
 
@@ -365,10 +393,10 @@
               
               <!-- GROSSER BETRAG / WERT -->
               <div class="text-center">
-                <span class="text-[10px] tracking-[2.5px] uppercase text-[#9C7D6B] font-bold block mb-1">
+                <span id="label-wert" class="text-[10px] tracking-[2.5px] uppercase text-[#221F1D] font-bold block mb-1 transition-colors">
                   Im Wert von
                 </span>
-                <div id="voucher-wert" contenteditable="true" oninput="reverseSync('wert', this.innerText)" class="font-serif text-[48px] sm:text-[54px] font-normal leading-none tracking-tight text-charcoal">
+                <div id="voucher-wert" contenteditable="true" oninput="reverseSync('wert', this.innerText)" class="font-serif text-[48px] sm:text-[54px] font-normal leading-none tracking-tight text-[#221F1D] transition-colors">
                   CHF 50.–
                 </div>
               </div>
@@ -376,13 +404,13 @@
               <!-- FÜR & VON ZEILE -->
               <div class="grid grid-cols-2 gap-4 py-2 border-y border-[#EFE8DF]">
                 <div class="text-left px-4">
-                  <span class="text-[9px] tracking-[2px] uppercase text-[#9C7D6B] font-bold block">Für</span>
+                  <span id="label-fuer" class="text-[9px] tracking-[2px] uppercase text-[#221F1D] font-bold block transition-colors">Für</span>
                   <div id="voucher-fuer" contenteditable="true" oninput="reverseSync('fuer', this.innerText)" class="font-serif text-lg text-charcoal font-medium">
                     Liebe Anna &amp; kleiner Noah
                   </div>
                 </div>
                 <div class="text-right px-4 border-l border-[#EFE8DF]">
-                  <span class="text-[9px] tracking-[2px] uppercase text-[#9C7D6B] font-bold block">Von</span>
+                  <span id="label-von" class="text-[9px] tracking-[2px] uppercase text-[#221F1D] font-bold block transition-colors">Von</span>
                   <div id="voucher-von" contenteditable="true" oninput="reverseSync('von', this.innerText)" class="font-serif text-lg text-charcoal font-medium">
                     Gotti Sarah &amp; Marco
                   </div>
@@ -390,18 +418,18 @@
               </div>
 
               <!-- PERSÖNLICHE WIDMUNG -->
-              <div class="bg-[#FAF7F2] p-5 rounded-lg border border-[#EFE8DE] relative text-center">
-                <span class="text-2xl text-terracotta/40 font-serif absolute top-2 left-3">«</span>
-                <p id="voucher-text" contenteditable="true" oninput="reverseSync('text', this.innerText)" class="font-serif italic text-[16px] sm:text-[17px] leading-[1.7] text-[#4A423D] px-4 my-1">
+              <div class="bg-[#FAF7F2] p-5 rounded-lg border border-[#EFE8DE] relative text-center min-h-[90px] flex items-center justify-center">
+                <span id="quote-left" class="text-2xl text-[#221F1D]/30 font-serif absolute top-2 left-3 pointer-events-none transition-colors">«</span>
+                <p id="voucher-text" contenteditable="true" oninput="reverseSync('text', this.innerText)" class="font-serif italic text-[17px] leading-[1.7] text-[#2D2724] px-4 my-1 w-full transition-all">
                   Von Herzen alles Liebe zur Geburt eures kleinen Wunders! Möge jeder Tag voller Liebe, Geborgenheit und Sonnenschein sein. Viel Freude beim Aussuchen eines liebevoll handgefertigten Unikats.
                 </p>
-                <span class="text-2xl text-terracotta/40 font-serif absolute bottom-1 right-3 leading-none">»</span>
+                <span id="quote-right" class="text-2xl text-[#221F1D]/30 font-serif absolute bottom-1 right-3 leading-none pointer-events-none transition-colors">»</span>
               </div>
 
               <!-- GUTSCHEINCODE KASTEN -->
               <div class="flex flex-col sm:flex-row items-center justify-between p-3.5 bg-white border border-dashed border-[#C8B9AA] rounded-md gap-2">
                 <div class="text-left">
-                  <span class="text-[9px] tracking-[2px] uppercase text-sand-800 font-bold block">Gutscheincode</span>
+                  <span id="label-code" class="text-[9px] tracking-[2px] uppercase text-[#221F1D] font-bold block transition-colors">Gutscheincode</span>
                   <span class="text-[11px] text-sand-800 font-sans">Einzulösen im Bestellprozess</span>
                 </div>
                 <div id="voucher-code" contenteditable="true" oninput="reverseSync('code', this.innerText)" class="font-mono text-[19px] font-bold tracking-[3px] text-charcoal bg-[#F7F4EE] px-4 py-1.5 rounded border border-[#E2D9CC] uppercase">
@@ -420,9 +448,9 @@
                   UNIQUE by Lea Limburg
                 </div>
                 <div class="font-sans text-[10.5px]">
-                  Onlineshop: <strong class="text-terracotta font-semibold underline">uniquebylea.com</strong>
+                  Onlineshop: <strong class="text-charcoal font-semibold underline">uniquebylea.com</strong>
                 </div>
-                <div id="voucher-gueltig" class="text-[10px] font-medium text-terracotta flex items-center gap-1 pt-0.5">
+                <div id="voucher-gueltig" class="text-[10px] font-medium text-[#221F1D] flex items-center gap-1 pt-0.5 transition-colors">
                   <span>✨</span><span>Unbegrenzt gültig im Onlineshop &amp; Atelier</span>
                 </div>
               </div>
@@ -544,7 +572,8 @@
     }
 
     let appMode = 'configurator'; // 'configurator', 'paid', 'admin'
-    let currentThemeLabel = 'Terracotta';
+    let currentThemeLabel = 'Schwarz';
+    let currentFont = 'serif';
 
     // Aktualisiert den Text auf dem Warenkorb-Button
     function updateCartButtonPrice() {
@@ -574,6 +603,7 @@
       const von = document.getElementById('input-von').value.trim() || 'Gotti Sarah & Marco';
       const text = document.getElementById('input-text').value.trim();
       const gueltig = document.getElementById('input-gueltig')?.value?.trim() || 'Unbegrenzt gültig';
+      const fontName = currentFont === 'script' ? 'Handschrift' : (currentFont === 'sans' ? 'Modern' : 'Serife');
 
       const cartItem = {
         id: 'voucher-custom-' + Date.now(),
@@ -582,12 +612,13 @@
         quantity: 1,
         maxStock: 99,
         img: 'images/geschenkgutschein-25-chf-gutschein-25.png',
-        optionsSummary: `Für: ${fuer} | Von: ${von} | Design: ${currentThemeLabel}`,
+        optionsSummary: `Für: ${fuer} | Von: ${von} | Farbe: ${currentThemeLabel} | Schrift: ${fontName}`,
         options: [
           { name: 'Gutscheinwert', value: formattedWert },
           { name: 'Für (Empfänger)', value: fuer },
           { name: 'Von (Absender)', value: von },
-          { name: 'Design / Farbakzent', value: currentThemeLabel },
+          { name: 'Farbe', value: currentThemeLabel },
+          { name: 'Schriftart', value: fontName },
           { name: 'Persönliche Nachricht', value: text }
         ],
         isVoucher: true,
@@ -597,6 +628,7 @@
           von: von,
           text: text,
           theme: currentThemeLabel,
+          font: currentFont,
           gueltig: gueltig
         }
       };
@@ -614,20 +646,123 @@
       }
     }
 
-    // Farbthema anpassen
+    // Farbthema anpassen (Schwarz oder Braun)
     function setAccentTheme(colorHex, bgTint, label) {
       currentThemeLabel = label;
-      document.getElementById('voucher-wert').style.color = colorHex;
-      document.getElementById('theme-label').innerText = label;
       
-      // Akzentuierungen anpassen
-      const title = document.getElementById('voucher-title');
-      if (title) title.style.color = colorHex === '#4A403A' ? '#2D2724' : '#2D2724';
+      const themeLabel = document.getElementById('theme-label');
+      if (themeLabel) themeLabel.innerText = label;
+
+      const btnSchwarz = document.getElementById('btn-color-schwarz');
+      const btnBraun = document.getElementById('btn-color-braun');
+      if (btnSchwarz && btnBraun) {
+        if (label === 'Schwarz') {
+          btnSchwarz.className = "flex items-center justify-center gap-2.5 px-3 py-2 rounded-xl border-2 border-charcoal bg-sand-50 transition shadow-xs";
+          const s1 = btnSchwarz.querySelector('span:last-child');
+          if (s1) s1.className = "text-xs font-bold text-charcoal";
+          btnBraun.className = "flex items-center justify-center gap-2.5 px-3 py-2 rounded-xl border border-sand-200 bg-white hover:bg-sand-50 transition shadow-xs";
+          const s2 = btnBraun.querySelector('span:last-child');
+          if (s2) s2.className = "text-xs font-medium text-sand-800";
+        } else {
+          btnBraun.className = "flex items-center justify-center gap-2.5 px-3 py-2 rounded-xl border-2 border-[#6E4E3A] bg-[#FAF6F0] transition shadow-xs";
+          const s2 = btnBraun.querySelector('span:last-child');
+          if (s2) s2.className = "text-xs font-bold text-[#6E4E3A]";
+          btnSchwarz.className = "flex items-center justify-center gap-2.5 px-3 py-2 rounded-xl border border-sand-200 bg-white hover:bg-sand-50 transition shadow-xs";
+          const s1 = btnSchwarz.querySelector('span:last-child');
+          if (s1) s1.className = "text-xs font-medium text-sand-800";
+        }
+      }
+
+      // Card elements
+      const vWert = document.getElementById('voucher-wert');
+      if (vWert) vWert.style.color = colorHex;
       
+      const vTitle = document.getElementById('voucher-title');
+      if (vTitle) vTitle.style.color = colorHex;
+
       const outer = document.getElementById('voucher-outer-frame');
       if (outer) outer.style.backgroundColor = bgTint;
 
-      showToast(`Farbschema auf ${label} geändert`);
+      ['label-wert', 'label-fuer', 'label-von', 'label-code', 'voucher-subtitle', 'voucher-gueltig'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.color = colorHex;
+      });
+
+      document.querySelectorAll('.corner-ornament').forEach(el => {
+        el.style.borderColor = colorHex;
+      });
+
+      const qL = document.getElementById('quote-left');
+      const qR = document.getElementById('quote-right');
+      if (qL) qL.style.color = colorHex;
+      if (qR) qR.style.color = colorHex;
+
+      showToast(`Farbe auf ${label} geändert`);
+    }
+
+    // Schriftart für den Text anpassen (Serife, Handschrift, Modern)
+    function setTextFont(fontType) {
+      currentFont = fontType;
+      const textEl = document.getElementById('voucher-text');
+      const fontLabel = document.getElementById('font-label');
+      const btnSerif = document.getElementById('btn-font-serif');
+      const btnScript = document.getElementById('btn-font-script');
+      const btnSans = document.getElementById('btn-font-sans');
+
+      [btnSerif, btnScript, btnSans].forEach(b => {
+        if (b) {
+          b.className = "p-2.5 rounded-xl border border-sand-200 bg-white hover:bg-sand-50 text-center transition flex flex-col items-center justify-center shadow-xs";
+          const lbl = b.querySelector('span:last-child');
+          if (lbl) lbl.className = "text-[10.5px] font-medium text-sand-800 mt-1";
+        }
+      });
+
+      if (fontType === 'serif') {
+        if (fontLabel) fontLabel.innerText = "Elegante Serife";
+        if (btnSerif) {
+          btnSerif.className = "p-2.5 rounded-xl border-2 border-charcoal bg-sand-50 text-center transition flex flex-col items-center justify-center shadow-xs";
+          const lbl = btnSerif.querySelector('span:last-child');
+          if (lbl) lbl.className = "text-[10.5px] font-bold text-charcoal mt-1";
+        }
+        if (textEl) {
+          textEl.style.fontFamily = '"Cormorant Garamond", Georgia, serif';
+          textEl.style.fontStyle = 'italic';
+          textEl.style.fontSize = '17px';
+          textEl.style.lineHeight = '1.7';
+          textEl.style.fontWeight = '400';
+        }
+        showToast('Schriftart: Elegante Serife gewählt');
+      } else if (fontType === 'script') {
+        if (fontLabel) fontLabel.innerText = "Feine Handschrift";
+        if (btnScript) {
+          btnScript.className = "p-2.5 rounded-xl border-2 border-charcoal bg-sand-50 text-center transition flex flex-col items-center justify-center shadow-xs";
+          const lbl = btnScript.querySelector('span:last-child');
+          if (lbl) lbl.className = "text-[10.5px] font-bold text-charcoal mt-1";
+        }
+        if (textEl) {
+          textEl.style.fontFamily = '"Alex Brush", cursive';
+          textEl.style.fontStyle = 'normal';
+          textEl.style.fontSize = '26px';
+          textEl.style.lineHeight = '1.4';
+          textEl.style.fontWeight = '400';
+        }
+        showToast('Schriftart: Feine Handschrift gewählt');
+      } else if (fontType === 'sans') {
+        if (fontLabel) fontLabel.innerText = "Moderne Schrift";
+        if (btnSans) {
+          btnSans.className = "p-2.5 rounded-xl border-2 border-charcoal bg-sand-50 text-center transition flex flex-col items-center justify-center shadow-xs";
+          const lbl = btnSans.querySelector('span:last-child');
+          if (lbl) lbl.className = "text-[10.5px] font-bold text-charcoal mt-1";
+        }
+        if (textEl) {
+          textEl.style.fontFamily = '"Plus Jakarta Sans", Arial, sans-serif';
+          textEl.style.fontStyle = 'normal';
+          textEl.style.fontSize = '14px';
+          textEl.style.lineHeight = '1.65';
+          textEl.style.fontWeight = '400';
+        }
+        showToast('Schriftart: Moderne Schrift gewählt');
+      }
     }
 
     // Schnittmarken Ein-/Ausblenden
@@ -654,7 +789,9 @@
         fuer: document.getElementById('input-fuer').value,
         von: document.getElementById('input-von').value,
         text: document.getElementById('input-text').value,
-        gueltig: document.getElementById('input-gueltig').value
+        theme: currentThemeLabel,
+        font: currentFont,
+        gueltig: document.getElementById('input-gueltig') ? document.getElementById('input-gueltig').value : 'Unbegrenzt gültig'
       };
       
       try {
@@ -686,6 +823,8 @@
       if (document.getElementById('input-gueltig')) {
         document.getElementById('input-gueltig').value = 'Unbegrenzt gültig';
       }
+      setAccentTheme('#221F1D', '#FAF8F5', 'Schwarz');
+      setTextFont('serif');
       showToast('Standardwerte wiederhergestellt');
     }
 
@@ -786,8 +925,10 @@
         const pVon = urlParams.get('von');
         const pText = urlParams.get('text');
         const pGueltig = urlParams.get('gueltig');
+        const pTheme = urlParams.get('theme');
+        const pFont = urlParams.get('font');
 
-        if (pWert || pCode || pFuer || pVon || pText || pGueltig) {
+        if (pWert || pCode || pFuer || pVon || pText || pGueltig || pTheme || pFont) {
           hasUrlParams = true;
           if (pWert) { 
             const formatted = pWert.startsWith('CHF') ? pWert : 'CHF ' + pWert + '.–';
@@ -798,7 +939,14 @@
           if (pFuer) { document.getElementById('input-fuer').value = pFuer; syncField('fuer', pFuer); }
           if (pVon) { document.getElementById('input-von').value = pVon; syncField('von', pVon); }
           if (pText) { document.getElementById('input-text').value = pText; syncField('text', pText); }
-          if (pGueltig) { document.getElementById('input-gueltig').value = pGueltig; syncField('gueltig', pGueltig); }
+          if (pGueltig && document.getElementById('input-gueltig')) { document.getElementById('input-gueltig').value = pGueltig; syncField('gueltig', pGueltig); }
+          if (pTheme) {
+            if (pTheme.toLowerCase() === 'braun') setAccentTheme('#6E4E3A', '#FAF6F0', 'Braun');
+            else setAccentTheme('#221F1D', '#FAF8F5', 'Schwarz');
+          }
+          if (pFont && ['serif', 'script', 'sans'].includes(pFont)) {
+            setTextFont(pFont);
+          }
         }
 
         if (!hasUrlParams) {
@@ -810,7 +958,16 @@
             if (d.fuer) { document.getElementById('input-fuer').value = d.fuer; syncField('fuer', d.fuer); }
             if (d.von) { document.getElementById('input-von').value = d.von; syncField('von', d.von); }
             if (d.text) { document.getElementById('input-text').value = d.text; syncField('text', d.text); }
-            if (d.gueltig) { document.getElementById('input-gueltig').value = d.gueltig; syncField('gueltig', d.gueltig); }
+            if (d.theme) {
+              if (d.theme.toLowerCase() === 'braun') setAccentTheme('#6E4E3A', '#FAF6F0', 'Braun');
+              else setAccentTheme('#221F1D', '#FAF8F5', 'Schwarz');
+            }
+            if (d.font) setTextFont(d.font);
+            if (d.gueltig && document.getElementById('input-gueltig')) { document.getElementById('input-gueltig').value = d.gueltig; syncField('gueltig', d.gueltig); }
+          } else {
+            // Default initial theme & font
+            setAccentTheme('#221F1D', '#FAF8F5', 'Schwarz');
+            setTextFont('serif');
           }
         }
       } catch(e) {}
