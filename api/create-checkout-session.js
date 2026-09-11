@@ -51,6 +51,12 @@ module.exports = async (req, res) => {
       if (item.color) descParts.push(`Farbe: ${item.color}`);
       if (item.size) descParts.push(`Grösse: ${item.size}`);
       if (item.customName) descParts.push(`Wunschname: ${item.customName}`);
+      if (item.optionsSummary) descParts.push(item.optionsSummary);
+      if (item.voucherConfig) {
+        if (item.voucherConfig.fuer) descParts.push(`Für: ${item.voucherConfig.fuer}`);
+        if (item.voucherConfig.von) descParts.push(`Von: ${item.voucherConfig.von}`);
+        if (item.voucherConfig.theme) descParts.push(`Design: ${item.voucherConfig.theme}`);
+      }
 
       if (descParts.length > 0) {
         params.append(`line_items[${index}][price_data][product_data][description]`, descParts.join(' | '));
@@ -87,10 +93,18 @@ module.exports = async (req, res) => {
       params.append('metadata[delivery_note]', 'Gutschein Post Briefversand (Gutscheinkarte)');
     }
 
-    const voucherWithMsg = items.find(i => i.personalMessage || (i.optionsSummary && i.optionsSummary.toLowerCase().includes('nachricht')));
+    const voucherWithMsg = items.find(i => i.personalMessage || (i.voucherConfig && i.voucherConfig.text) || (i.optionsSummary && i.optionsSummary.toLowerCase().includes('nachricht')));
     if (voucherWithMsg) {
-      const msg = voucherWithMsg.personalMessage || voucherWithMsg.optionsSummary;
+      const msg = voucherWithMsg.personalMessage || (voucherWithMsg.voucherConfig && voucherWithMsg.voucherConfig.text) || voucherWithMsg.optionsSummary;
       params.append('metadata[gutschein_nachricht]', msg.substring(0, 500));
+    }
+
+    const customVoucher = items.find(i => i.isVoucher || i.voucherConfig);
+    if (customVoucher && customVoucher.voucherConfig) {
+      const vc = customVoucher.voucherConfig;
+      params.append('metadata[gutschein_wert]', (vc.wert || '').toString());
+      params.append('metadata[gutschein_fuer]', (vc.fuer || '').substring(0, 100));
+      params.append('metadata[gutschein_von]', (vc.von || '').substring(0, 100));
     }
 
     // Call Stripe API
