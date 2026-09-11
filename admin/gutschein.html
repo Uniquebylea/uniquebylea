@@ -149,6 +149,9 @@
 
     <!-- Quick action buttons -->
     <div class="flex items-center space-x-2 sm:space-x-3">
+      <a href="gutscheine.html" class="px-3 py-2 text-xs font-bold text-white bg-terracotta hover:bg-darkbrown rounded-lg transition border border-terracotta flex items-center space-x-1.5 shadow-sm">
+        <span>💳 Restguthaben &amp; Ledger</span>
+      </a>
       <a href="/shop.html" class="px-3 py-2 text-xs font-medium text-charcoal bg-sand-100 hover:bg-sand-200 rounded-lg transition-colors border border-sand-200 flex items-center space-x-1.5">
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
         <span>Zum Shop</span>
@@ -281,10 +284,13 @@
           <textarea id="input-text" rows="4" oninput="syncField('text', this.value)" class="w-full px-3 py-2 bg-sand-50 border border-sand-200 rounded-lg text-xs text-charcoal leading-relaxed focus:ring-1 focus:ring-terracotta focus:border-terracotta outline-none">Von Herzen alles Liebe zur Geburt eures kleinen Wunders! Möge jeder Tag voller Liebe, Geborgenheit und Sonnenschein sein. Viel Freude beim Aussuchen eines liebevoll handgefertigten Unikats.</textarea>
         </div>
 
-        <!-- Gültigkeit & Datum -->
-        <div>
-          <label class="block text-xs font-semibold text-sand-800 uppercase tracking-wider mb-1">Gültigkeit / Datum</label>
-          <input type="text" id="input-gueltig" oninput="syncField('gueltig', this.value)" value="Gültig bis: 31. Dezember 2028" class="w-full px-3 py-2 bg-sand-50 border border-sand-200 rounded-lg text-xs text-charcoal focus:ring-1 focus:ring-terracotta focus:border-terracotta outline-none">
+        <!-- Gültigkeit Info -->
+        <div class="p-3 bg-[#FAF8F5] rounded-xl border border-[#E8DFD5] flex items-center gap-2.5 text-xs text-[#7D6B60]">
+          <span class="text-base">✨</span>
+          <div>
+            <span class="font-bold text-[#4A403A] block">Unbegrenzt gültig</span>
+            <span class="text-[11px] text-[#7D6B60]/80">Gutscheine behalten ihre Gültigkeit und haben kein Ablaufdatum.</span>
+          </div>
         </div>
 
         <!-- Akzentfarbe wählen -->
@@ -333,23 +339,9 @@
             <!-- 1. KOPFBEREICH: LOGO & TITEL -->
             <div class="text-center pt-2">
               
-              <!-- Schneiderpuppen-Logo SVG (Exakt passend zum originalen UNIQUE Logo) -->
-              <div class="mx-auto mb-3 flex flex-col items-center justify-center">
-                <svg class="w-14 h-16 text-charcoal" viewBox="0 0 100 120" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
-                  <!-- Halsansatz & Knauf -->
-                  <path d="M47 8 C47 5, 53 5, 53 8 C53 11, 47 11, 47 8 Z" fill="currentColor"/>
-                  <path d="M46 12 L54 12" />
-                  <!-- Mannequin Torso Linienführung -->
-                  <path d="M42 16 C38 18, 30 26, 32 38 C33 46, 38 52, 40 60 C42 67, 40 76, 37 86 C34 94, 38 98, 50 98 C62 98, 66 94, 63 86 C60 76, 58 67, 60 60 C62 52, 67 46, 68 38 C70 26, 62 18, 58 16 Z" />
-                  <!-- Elegantes Band / Tuch um die Schulter -->
-                  <path d="M34 28 C42 36, 58 42, 67 36 C70 42, 69 49, 68 53" stroke-width="2" />
-                  <path d="M68 53 C67 58, 66 65, 68 70" stroke-width="1.8" />
-                  <!-- Standfuss unten (minimalistisch) -->
-                  <path d="M41 98 C46 102, 54 102, 59 98" />
-                </svg>
-
-                <div class="font-sans text-[18px] tracking-[6px] font-medium uppercase text-charcoal mt-1 ml-1.5">UNIQUE</div>
-                <div class="font-sans text-[9px] tracking-[3px] uppercase text-[#7D6B60]">by Lea Limburg</div>
+              <!-- Original Logo UNIQUE by Lea Limburg -->
+              <div class="mx-auto mb-2 flex flex-col items-center justify-center">
+                <img src="images/logo.png" alt="Unique by Lea Limburg" class="h-20 sm:h-24 w-auto object-contain mx-auto" onerror="this.src='../images/logo.png'">
               </div>
 
               <!-- Untertitel / Slogan -->
@@ -433,8 +425,8 @@
                 <div class="font-sans text-[10.5px]">
                   Onlineshop: <strong class="text-terracotta font-semibold underline">uniquebylea.com</strong>
                 </div>
-                <div id="voucher-gueltig" contenteditable="true" oninput="reverseSync('gueltig', this.innerText)" class="text-[10px] text-sand-800">
-                  Gültig bis: 31. Dezember 2028
+                <div id="voucher-gueltig" class="text-[10px] font-medium text-terracotta flex items-center gap-1 pt-0.5">
+                  <span>✨</span><span>Unbegrenzt gültig im Onlineshop &amp; Atelier</span>
                 </div>
               </div>
 
@@ -584,7 +576,7 @@
       const fuer = document.getElementById('input-fuer').value.trim() || 'Liebe Anna & kleiner Noah';
       const von = document.getElementById('input-von').value.trim() || 'Gotti Sarah & Marco';
       const text = document.getElementById('input-text').value.trim();
-      const gueltig = document.getElementById('input-gueltig').value.trim() || 'Gültig bis: 31. Dezember 2028';
+      const gueltig = document.getElementById('input-gueltig')?.value?.trim() || 'Unbegrenzt gültig';
 
       const cartItem = {
         id: 'voucher-custom-' + Date.now(),
@@ -694,9 +686,9 @@
       document.getElementById('input-text').value = 'Von Herzen alles Liebe zur Geburt eures kleinen Wunders! Möge jeder Tag voller Liebe, Geborgenheit und Sonnenschein sein. Viel Freude beim Aussuchen eines liebevoll handgefertigten Unikats.';
       syncField('text', document.getElementById('input-text').value);
 
-      document.getElementById('input-gueltig').value = 'Gültig bis: 31. Dezember 2028';
-      syncField('gueltig', 'Gültig bis: 31. Dezember 2028');
-
+      if (document.getElementById('input-gueltig')) {
+        document.getElementById('input-gueltig').value = 'Unbegrenzt gültig';
+      }
       showToast('Standardwerte wiederhergestellt');
     }
 
