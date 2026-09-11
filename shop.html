@@ -184,11 +184,35 @@
 
 
 
+                    <!-- Gutschein-Code einlösen -->
+                    <div class="pt-2 border-t border-darkbrown/10">
+                        <div class="flex items-center justify-between cursor-pointer py-1" onclick="toggleCartVoucherInput()">
+                            <span class="text-xs font-bold text-darkbrown flex items-center gap-1.5">
+                                <span>🎁</span><span>Gutschein einlösen</span>
+                            </span>
+                            <span id="voucherToggleLabel" class="text-[10px] uppercase font-bold text-terracotta hover:underline">+ Code eingeben</span>
+                        </div>
+                        <div id="cartVoucherBox" class="hidden mt-2 space-y-1.5">
+                            <div class="flex gap-2">
+                                <input type="text" id="cartVoucherCodeInput" placeholder="z. B. UNIQUE-2026-LIEBE" 
+                                       class="flex-1 bg-white border border-darkbrown/20 rounded-xl px-3 py-1.5 text-xs font-mono uppercase tracking-wider outline-none focus:ring-1 focus:ring-terracotta">
+                                <button type="button" onclick="applyVoucherToCart()" class="bg-terracotta hover:bg-darkbrown text-white text-xs font-bold px-3 py-1.5 rounded-xl transition shadow-xs">
+                                    Anwenden
+                                </button>
+                            </div>
+                            <div id="cartVoucherFeedback" class="text-[11px] hidden"></div>
+                        </div>
+                    </div>
+
                     <!-- Zwischensumme & Gesamtsumme -->
                     <div class="space-y-1.5 pt-2 border-t border-darkbrown/10 text-xs">
                         <div class="flex justify-between text-darkbrown/70">
                             <span>Zwischensumme:</span>
                             <span id="cartSubtotal" class="font-bold">0.00 CHF</span>
+                        </div>
+                        <div id="cartVoucherDiscountRow" class="hidden flex justify-between text-emerald-700 font-medium">
+                            <span id="cartVoucherDiscountLabel">Gutschein:</span>
+                            <span id="cartVoucherDiscountVal" class="font-bold">-0.00 CHF</span>
                         </div>
                         <div class="flex justify-between text-darkbrown/70">
                             <span>Versand:</span>
@@ -1484,7 +1508,93 @@ let currentGalleryImages = [];
             renderCartDrawer();
         };
 
-                window.updateCartTotals = function() {
+        let appliedCartVoucher = null;
+
+        window.toggleCartVoucherInput = function() {
+            const box = document.getElementById('cartVoucherBox');
+            if (box) box.classList.toggle('hidden');
+        };
+
+        window.applyVoucherToCart = async function() {
+            const input = document.getElementById('cartVoucherCodeInput');
+            const feedback = document.getElementById('cartVoucherFeedback');
+            const code = input ? input.value.trim().toUpperCase() : '';
+
+            if (!code) {
+                if (feedback) {
+                    feedback.className = "text-[11px] text-red-600 block";
+                    feedback.textContent = "Bitte gib deinen Gutscheincode ein.";
+                }
+                return;
+            }
+
+            if (feedback) {
+                feedback.className = "text-[11px] text-darkbrown/70 block";
+                feedback.textContent = "Code wird geprüft...";
+            }
+
+            try {
+                let foundVoucher = null;
+                try {
+                    const res = await fetch(`/api/vouchers?code=${encodeURIComponent(code)}&t=${Date.now()}`);
+                    if (res.ok) {
+                        const json = await res.json();
+                        if (json.success) foundVoucher = json.voucher;
+                    }
+                } catch (e) {}
+
+                if (!foundVoucher) {
+                    try {
+                        const res2 = await fetch(`content/vouchers.json?t=${Date.now()}`);
+                        if (res2.ok) {
+                            const json2 = await res2.json();
+                            const vList = json2.vouchers || [];
+                            foundVoucher = vList.find(v => (v.code || '').toUpperCase() === code);
+                        }
+                    } catch (e) {}
+                }
+
+                if (!foundVoucher) {
+                    if (feedback) {
+                        feedback.className = "text-[11px] text-red-600 block";
+                        feedback.textContent = "Dieser Gutscheincode existiert nicht oder ist ungültig.";
+                    }
+                    return;
+                }
+
+                const bal = Number(foundVoucher.remaining_balance) || 0;
+                if (bal <= 0) {
+                    if (feedback) {
+                        feedback.className = "text-[11px] text-red-600 block";
+                        feedback.textContent = "Dieser Gutschein wurde bereits vollständig eingelöst.";
+                    }
+                    return;
+                }
+
+                appliedCartVoucher = foundVoucher;
+                if (feedback) {
+                    feedback.className = "text-[11px] text-emerald-700 font-bold block";
+                    feedback.textContent = `✓ Gutschein angewendet! Verfügbares Guthaben: ${formatCHF(bal)}`;
+                }
+                updateCartTotals();
+            } catch (err) {
+                if (feedback) {
+                    feedback.className = "text-[11px] text-red-600 block";
+                    feedback.textContent = "Fehler bei der Überprüfung: " + err.message;
+                }
+            }
+        };
+
+        window.removeAppliedVoucher = function() {
+            appliedCartVoucher = null;
+            const input = document.getElementById('cartVoucherCodeInput');
+            if (input) input.value = '';
+            const feedback = document.getElementById('cartVoucherFeedback');
+            if (feedback) feedback.classList.add('hidden');
+            updateCartTotals();
+        };
+
+        window.updateCartTotals = function() {
             const subtotal = cart.reduce((acc, item) => acc + (item.priceNum * item.quantity), 0);
             const isOnlyVouchers = cart.length > 0 && cart.every(item => 
                 item.cat === 'Gutscheine' || (item.name && item.name.toLowerCase().includes('gutschein'))
@@ -1515,7 +1625,26 @@ let currentGalleryImages = [];
                 }
             }
 
-            const grandTotal = subtotal + shippingCost;
+            let voucherDiscount = 0.00;
+            const discountRow = document.getElementById('cartVoucherDiscountRow');
+            const discountVal = document.getElementById('cartVoucherDiscountVal');
+            const discountLabel = document.getElementById('cartVoucherDiscountLabel');
+
+            if (appliedCartVoucher && appliedCartVoucher.remaining_balance > 0) {
+                const bal = Number(appliedCartVoucher.remaining_balance) || 0;
+                voucherDiscount = Math.min(subtotal, bal);
+                if (discountRow && discountVal) {
+                    discountRow.classList.remove('hidden');
+                    if (discountLabel) {
+                        discountLabel.innerHTML = `Gutschein (${appliedCartVoucher.code}) <button type="button" onclick="removeAppliedVoucher()" class="text-[10px] text-red-500 hover:underline ml-1">✕ entfernen</button>:`;
+                    }
+                    discountVal.textContent = `-${formatCHF(voucherDiscount)}`;
+                }
+            } else {
+                if (discountRow) discountRow.classList.add('hidden');
+            }
+
+            const grandTotal = Math.max(0, subtotal - voucherDiscount + shippingCost);
 
             document.getElementById('cartSubtotal').textContent = formatCHF(subtotal);
             document.getElementById('cartShippingCost').textContent = shippingCost === 0 ? 'Gratis' : formatCHF(shippingCost);
