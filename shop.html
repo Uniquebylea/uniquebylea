@@ -523,7 +523,7 @@
                         const fuer = vc.fuer || '';
                         const von = vc.von || '';
                         const text = vc.text || '';
-                        voucherDownloadUrl = /gutschein?paid=true&wert=&code=&fuer=&von=&text=;
+                        voucherDownloadUrl = `/gutschein?paid=true&wert=${val}&code=${randomCode}&fuer=${encodeURIComponent(fuer)}&von=${encodeURIComponent(von)}&text=${encodeURIComponent(text)}`;
                     }
 
                     try {
@@ -534,7 +534,7 @@
                                 access_key: '2b4e9f51-bdd3-4391-9732-39f55bb17727',
                                 from_name: 'Unique by Lea Onlineshop',
                                 subject: '🎉 Neue Bestellung im Shop bezahlt!',
-                                message: Liebe Lea,\n\nEs wurde soeben eine neue Bestellung erfolgreich über Stripe bezahlt!\nAlle Versand- und Kundendetails findest du direkt in deinem Stripe-Dashboard.\n\nSession-ID: 
+                                message: `Liebe Lea,\n\nEs wurde soeben eine neue Bestellung erfolgreich über Stripe bezahlt!\nAlle Versand- und Kundendetails findest du direkt in deinem Stripe-Dashboard.\n\nSession-ID: ${sessionId}${boughtVoucher ? '\n(Bestellung enthält bezahlten Gutschein)' : ''}`
                             })
                         });
                     } catch (e) {}
