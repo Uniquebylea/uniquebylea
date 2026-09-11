@@ -1060,7 +1060,6 @@ let currentGalleryImages = [];
             }
 
             const voucherBox = document.getElementById('voucherDeliveryContainer');
-            const isVoucherItem = item.cat === 'Gutscheine' || (item.name && item.name.toLowerCase().includes('gutschein'));
             if (voucherBox) {
                 if (isVoucherItem) voucherBox.classList.remove('hidden');
                 else voucherBox.classList.add('hidden');
