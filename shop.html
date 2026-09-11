@@ -468,6 +468,10 @@
 
         // Warenkorb im Browser (LocalStorage)
         let cart = JSON.parse(localStorage.getItem('uniquebylea_cart')) || [];
+        let wishlist = JSON.parse(localStorage.getItem('uniquebylea_wishlist')) || [];
+        let currentUser = JSON.parse(localStorage.getItem('uniquebylea_user')) || null;
+        let authToken = localStorage.getItem('uniquebylea_token') || '';
+        let currentAuthTab = 'login';
 
         function parsePrice(str) {
             if (typeof str === 'number') return str;
@@ -1655,10 +1659,6 @@ let currentGalleryImages = [];
         load();
     
         // ================= MERKLISTE & KUNDENKONTO LOGIK =================
-        let wishlist = JSON.parse(localStorage.getItem('uniquebylea_wishlist')) || [];
-        let currentUser = JSON.parse(localStorage.getItem('uniquebylea_user')) || null;
-        let authToken = localStorage.getItem('uniquebylea_token') || '';
-        let currentAuthTab = 'login';
 
         function saveWishlist() {
             localStorage.setItem('uniquebylea_wishlist', JSON.stringify(wishlist));
