@@ -1,0 +1,51 @@
+{
+  "vouchers": [
+    {
+      "code": "UNIQUE-2026-LIEBE",
+      "created_at": "2026-09-11",
+      "original_amount": 50.0,
+      "remaining_balance": 50.0,
+      "for": "Liebe Anna & kleiner Noah",
+      "from": "Gotti Sarah & Marco",
+      "message": "Von Herzen alles Liebe zur Geburt eures kleinen Wunders! Möge jeder Tag voller Liebe, Geborgenheit und Sonnenschein sein. Viel Freude beim Aussuchen eines handgemachten Lieblingsstücks.",
+      "theme": "Terracotta",
+      "status": "active",
+      "transactions": [
+        {
+          "date": "2026-09-11",
+          "type": "issue",
+          "amount": 50.0,
+          "note": "Gutschein ausgestellt",
+          "new_balance": 50.0
+        }
+      ]
+    },
+    {
+      "code": "UNIQUE-GLUECK-4891",
+      "created_at": "2026-09-10",
+      "original_amount": 100.0,
+      "remaining_balance": 65.0,
+      "for": "Familie Meier",
+      "from": "Oma Brigitte",
+      "message": "Für ein kuscheliges Babynest und süsse Accessoires für euren Liebling.",
+      "theme": "Salbeigrün",
+      "status": "partially_redeemed",
+      "transactions": [
+        {
+          "date": "2026-09-10",
+          "type": "issue",
+          "amount": 100.0,
+          "note": "Gutschein ausgestellt",
+          "new_balance": 100.0
+        },
+        {
+          "date": "2026-09-11",
+          "type": "redeem",
+          "amount": 35.0,
+          "note": "Einkauf Baby-Mütze & Halstuch im Atelier",
+          "new_balance": 65.0
+        }
+      ]
+    }
+  ]
+}
