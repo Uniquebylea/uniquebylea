@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gutschein-Verwaltung & Restguthaben | Unique by Lea</title>
+    <link rel="icon" type="image/png" href="../images/logo.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { sand: "#EAE3D9", creme: "#F9F6F2", terracotta: "#B08968", darkbrown: "#4A3728" },
+                    fontFamily: { serif: ["Playfair Display", "serif"], sans: ["Montserrat", "sans-serif"] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-sand text-darkbrown font-sans min-h-screen flex flex-col p-3 md:p-8">
+
+    <!-- ATELIER-SICHERHEITSSPERRE -->
+    <div id="authOverlay" class="fixed inset-0 z-[9999] bg-sand flex items-center justify-center p-4">
+        <div class="bg-creme rounded-3xl p-8 max-w-sm w-full border border-darkbrown/15 shadow-2xl text-center space-y-4">
+            <div class="w-14 h-14 bg-terracotta/15 text-terracotta rounded-full flex items-center justify-center text-2xl mx-auto">
+                🔒
+            </div>
+            <div>
+                <span class="text-[10px] uppercase tracking-[0.2em] font-bold text-terracotta block mb-1">Geschützter Atelier-Bereich</span>
+                <h2 class="font-serif text-xl font-bold italic text-darkbrown">Anmeldung für Lea</h2>
+                <p class="text-xs text-darkbrown/70 font-light mt-1">Hier verwaltest du deine Gutscheine und buchst Restguthaben ab.</p>
+            </div>
+            <form onsubmit="verifyAdminAuth(event)" class="space-y-3 pt-2">
+                <input type="password" id="adminPinInput" placeholder="Atelier-Passwort..." required
+                       class="w-full bg-white border border-darkbrown/20 rounded-xl py-3 px-4 text-xs text-center font-bold tracking-widest outline-none focus:ring-2 focus:ring-terracotta shadow-xs">
+                <button type="submit" 
+                        class="w-full bg-terracotta hover:bg-darkbrown text-white py-3 rounded-xl font-bold uppercase text-xs tracking-wider shadow-md transition">
+                    Bereich entsperren ➔
+                </button>
+                <div id="authErrorMsg" class="hidden text-xs text-red-600 font-medium pt-1">
+                    Passwort leider nicht korrekt.
+                </div>
+            </form>
+            <div class="pt-3 border-t border-darkbrown/10">
+                <a href="../shop.html" class="text-[11px] text-darkbrown/60 hover:text-darkbrown transition">
+                    ← Zurück zum Shop
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto w-full space-y-6">
+        
+        <!-- Header & Nav Bar -->
+        <header class="bg-creme/90 backdrop-blur-md rounded-3xl p-5 md:p-6 shadow-md border border-white/60 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3.5">
+                <a href="../index.html">
+                    <img src="../images/logo.png" alt="Unique by Lea Logo" class="h-12 md:h-14 object-contain">
+                </a>
+                <div>
+                    <span class="text-[10px] uppercase tracking-[0.2em] font-bold text-terracotta block">Atelier-Verwaltung</span>
+                    <h1 class="font-serif text-xl md:text-2xl font-bold text-darkbrown italic">Gutscheine &amp; Restguthaben</h1>
+                </div>
+            </div>
+
+            <div class="flex items-center flex-wrap gap-2 text-xs font-bold">
+                <a href="gutschein.html" class="bg-creme hover:bg-white text-darkbrown border border-darkbrown/15 px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-xs">
+                    <span>🎨 Gutschein-Studio (DIN A4 Vorlage &amp; Druck)</span>
+                </a>
+                <a href="stoffe.html" class="bg-creme hover:bg-white text-darkbrown border border-darkbrown/15 px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-xs">
+                    <span>🧵 Stoff-Scanner</span>
+                </a>
+                <a href="../shop.html" class="bg-terracotta hover:bg-darkbrown text-white px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-xs">
+                    <span>Zum Shop ➔</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- KENNZAHLEN / STATS -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+            <div class="bg-creme p-4 md:p-5 rounded-2xl border border-darkbrown/10 shadow-sm flex flex-col justify-between">
+                <span class="text-[10px] uppercase font-bold tracking-wider text-darkbrown/60">Gutscheine Total</span>
+                <div class="flex items-baseline justify-between mt-2">
+                    <span id="statCount" class="font-serif text-2xl md:text-3xl font-bold text-darkbrown">0</span>
+                    <span class="text-xs text-terracotta font-bold">Ausgestellt</span>
+                </div>
+            </div>
+            <div class="bg-creme p-4 md:p-5 rounded-2xl border border-darkbrown/10 shadow-sm flex flex-col justify-between">
+                <span class="text-[10px] uppercase font-bold tracking-wider text-darkbrown/60">Ausgabewert Total</span>
+                <div class="flex items-baseline justify-between mt-2">
+                    <span id="statTotalIssued" class="font-serif text-2xl md:text-3xl font-bold text-darkbrown">CHF 0.–</span>
+                    <span class="text-xs text-darkbrown/50">100%</span>
+                </div>
+            </div>
+            <div class="bg-creme p-4 md:p-5 rounded-2xl border border-terracotta/30 bg-gradient-to-br from-creme to-terracotta/10 shadow-sm flex flex-col justify-between">
+                <span class="text-[10px] uppercase font-bold tracking-wider text-terracotta">Offenes Restguthaben</span>
+                <div class="flex items-baseline justify-between mt-2">
+                    <span id="statOpenBalance" class="font-serif text-2xl md:text-3xl font-bold text-terracotta">CHF 0.–</span>
+                    <span class="text-xs text-terracotta font-bold">Im Umlauf</span>
+                </div>
+            </div>
+            <div class="bg-creme p-4 md:p-5 rounded-2xl border border-darkbrown/10 shadow-sm flex flex-col justify-between">
+                <span class="text-[10px] uppercase font-bold tracking-wider text-darkbrown/60">Bereits eingelöst</span>
+                <div class="flex items-baseline justify-between mt-2">
+                    <span id="statRedeemed" class="font-serif text-2xl md:text-3xl font-bold text-darkbrown/80">CHF 0.–</span>
+                    <span class="text-xs text-emerald-600 font-bold">Verrechnet</span>
+                </div>
+            </div>
+        </div>
+        <!-- SCHNELLE GUTSCHEIN-PRÜFUNG & ABBUCHUNG -->
+        <section class="bg-creme rounded-3xl p-5 md:p-7 border border-darkbrown/10 shadow-sm space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-darkbrown/10 pb-4">
+                <div>
+                    <span class="text-[10px] uppercase font-bold tracking-[0.2em] text-terracotta block">Direktprüfung im Atelier</span>
+                    <h2 class="font-serif text-xl md:text-2xl font-bold italic text-darkbrown">Restguthaben prüfen &amp; Teilbetrag abbuchen</h2>
+                </div>
+                <button type="button" onclick="openCreateModal()" class="bg-terracotta hover:bg-darkbrown text-white text-xs font-bold uppercase tracking-wider px-4 py-2.5 rounded-xl transition flex items-center gap-1.5 shadow-sm self-start sm:self-auto">
+                    <span>+ Neuer Gutschein erfassen</span>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- Linke Spalte: Code-Eingabe / Auswahl -->
+                <div class="lg:col-span-5 space-y-4">
+                    <div>
+                        <label class="block text-xs uppercase font-bold tracking-wider text-darkbrown/70 mb-1.5">Gutscheincode suchen / scannen</label>
+                        <div class="relative">
+                            <input type="text" id="lookupCodeInput" placeholder="z. B. UNIQUE-2026-LIEBE" 
+                                   class="w-full bg-white border border-darkbrown/20 rounded-xl px-4 py-3 text-sm font-mono uppercase tracking-wider text-darkbrown outline-none focus:ring-2 focus:ring-terracotta shadow-xs"
+                                   oninput="handleCodeSearchInput(this.value)">
+                            <button type="button" onclick="searchEnteredCode()" class="absolute right-2 top-2 bg-terracotta hover:bg-darkbrown text-white text-xs font-bold px-3 py-1.5 rounded-lg transition">
+                                Suchen
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/60 mb-1">Schnellwahl aus aktiven Gutscheinen:</label>
+                        <select id="quickSelectVoucher" onchange="selectVoucherByCode(this.value)" 
+                                class="w-full bg-white border border-darkbrown/15 rounded-xl px-3 py-2 text-xs text-darkbrown outline-none focus:ring-1 focus:ring-terracotta cursor-pointer">
+                            <option value="">-- Gutschein auswählen --</option>
+                        </select>
+                    </div>
+
+                    <p class="text-[11px] text-darkbrown/60 italic leading-relaxed">
+                        Tipp: Wenn eine Kundin mit ihrem Gutschein im Atelier bezahlt, wähle ihren Code aus, gib den Betrag des Einkaufs ein und klicke auf «Betrag abbuchen». Das Restguthaben wird sofort berechnet.
+                    </p>
+                </div>
+
+                <!-- Rechte Spalte: Detail-Karte des ausgewählten Gutscheins & Abbuchung -->
+                <div class="lg:col-span-7">
+                    <div id="voucherDetailEmpty" class="h-full min-h-[220px] rounded-2xl border-2 border-dashed border-darkbrown/15 flex flex-col items-center justify-center p-6 text-center text-darkbrown/50">
+                        <span class="text-3xl mb-2">🏷️</span>
+                        <p class="text-xs font-medium">Wähle links einen Gutschein aus oder tippe einen Code ein, um das aktuelle Restguthaben anzuzeigen.</p>
+                    </div>
+
+                    <div id="voucherDetailCard" class="hidden bg-white rounded-2xl border border-terracotta/30 p-5 md:p-6 shadow-sm space-y-5">
+                        
+                        <!-- Kopfzeile: Code & Status -->
+                        <div class="flex items-start justify-between gap-3 border-b border-darkbrown/10 pb-4">
+                            <div>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-darkbrown/60 block">Gutscheincode</span>
+                                <h3 id="cardCode" class="font-mono text-xl font-bold text-darkbrown tracking-wider">UNIQUE-2026-LIEBE</h3>
+                                <div id="cardMeta" class="text-xs text-darkbrown/70 mt-1">Ausgestellt für: <strong>Anna</strong> &bull; Von: <strong>Sarah</strong></div>
+                            </div>
+                            <span id="cardStatusBadge" class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-300">
+                                Aktiv
+                            </span>
+                        </div>
+
+                        <!-- Grosse Guthaben-Anzeige -->
+                        <div class="bg-sand/40 p-4 rounded-xl flex items-center justify-between border border-darkbrown/5">
+                            <div>
+                                <span class="text-[10px] uppercase font-bold tracking-wider text-darkbrown/60 block">Aktuelles Restguthaben</span>
+                                <div id="cardRemaining" class="font-serif text-3xl md:text-4xl font-bold text-terracotta">
+                                    CHF 50.00
+                                </div>
+                            </div>
+                            <div class="text-right text-xs space-y-0.5 text-darkbrown/70">
+                                <div>Originalwert: <strong id="cardOriginal">CHF 50.00</strong></div>
+                                <div>Bereits verrechnet: <strong id="cardUsed" class="text-emerald-700">CHF 0.00</strong></div>
+                                <div class="text-[10px] text-terracotta font-medium pt-1">✨ Unbegrenzt gültig</div>
+                            </div>
+                        </div>
+
+                        <!-- Abbuchungs-Formular -->
+                        <div id="redeemFormSection" class="p-4 bg-creme rounded-xl border border-darkbrown/10 space-y-3">
+                            <span class="text-xs font-bold text-darkbrown block">💸 Teilbetrag oder Gesamtbetrag abbuchen</span>
+                            <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
+                                <div class="sm:col-span-4">
+                                    <label class="block text-[10px] uppercase font-bold text-darkbrown/60 mb-1">Betrag in CHF</label>
+                                    <input type="number" id="redeemAmountInput" step="0.5" min="0.5" placeholder="z. B. 25.00" 
+                                           class="w-full bg-white border border-darkbrown/20 rounded-lg px-3 py-2 text-xs font-bold text-darkbrown outline-none focus:ring-1 focus:ring-terracotta">
+                                </div>
+                                <div class="sm:col-span-8">
+                                    <label class="block text-[10px] uppercase font-bold text-darkbrown/60 mb-1">Notiz / Grund</label>
+                                    <input type="text" id="redeemNoteInput" placeholder="z. B. Einkauf Babynest im Atelier" 
+                                           class="w-full bg-white border border-darkbrown/20 rounded-lg px-3 py-2 text-xs text-darkbrown outline-none focus:ring-1 focus:ring-terracotta">
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between pt-1">
+                                <span id="newBalancePreview" class="text-[11px] text-darkbrown/70 italic font-medium"></span>
+                                <button type="button" onclick="executeRedeem()" class="bg-terracotta hover:bg-darkbrown text-white text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-xl transition shadow-xs">
+                                    Betrag jetzt abbuchen ➔
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Transaktions-Historie -->
+                        <div>
+                            <span class="text-[10px] uppercase font-bold tracking-wider text-darkbrown/60 block mb-1.5">Buchungshistorie dieses Gutscheins</span>
+                            <div id="transactionsList" class="space-y-1.5 text-xs">
+                                <!-- Dynamische Einträge -->
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- TABELLE ALLER GUTSCHEINE -->
+        <section class="bg-creme rounded-3xl p-5 md:p-7 border border-darkbrown/10 shadow-sm space-y-4">
+            <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+                <div>
+                    <span class="text-[10px] uppercase font-bold tracking-[0.2em] text-terracotta block">Übersicht &amp; Ledger</span>
+                    <h2 class="font-serif text-xl font-bold italic text-darkbrown">Alle Gutscheine im Überblick</h2>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="filterVouchersTable('all')" class="filter-tab px-3 py-1.5 rounded-lg text-xs font-bold transition bg-terracotta text-white">Alle</button>
+                    <button type="button" onclick="filterVouchersTable('active')" class="filter-tab px-3 py-1.5 rounded-lg text-xs font-bold transition bg-white border border-darkbrown/15 text-darkbrown">Noch Restwert</button>
+                    <button type="button" onclick="filterVouchersTable('fully_redeemed')" class="filter-tab px-3 py-1.5 rounded-lg text-xs font-bold transition bg-white border border-darkbrown/15 text-darkbrown">Aufgebraucht</button>
+                </div>
+            </div>
+
+            <!-- Tabelle -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-darkbrown">
+                    <thead class="border-b border-darkbrown/15 text-[10px] uppercase tracking-wider text-darkbrown/60 bg-sand/20">
+                        <tr>
+                            <th class="py-2.5 px-3">Gutscheincode</th>
+                            <th class="py-2.5 px-3">Ausgestellt</th>
+                            <th class="py-2.5 px-3">Für / Von</th>
+                            <th class="py-2.5 px-3">Originalwert</th>
+                            <th class="py-2.5 px-3">Restguthaben</th>
+                            <th class="py-2.5 px-3">Status</th>
+                            <th class="py-2.5 px-3 text-right">Aktion</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vouchersTableBody" class="divide-y divide-darkbrown/5">
+                        <!-- Wird per JS befüllt -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+    <!-- MODAL: NEUEN GUTSCHEIN MANUELL ERFASSEN -->
+    <div id="createModal" class="fixed inset-0 z-[1000] bg-darkbrown/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-creme rounded-3xl p-6 max-w-md w-full border border-darkbrown/15 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-darkbrown/10 pb-3">
+                <h3 class="font-serif text-lg font-bold text-darkbrown italic">Neuen Gutschein erfassen</h3>
+                <button type="button" onclick="closeCreateModal()" class="text-darkbrown/50 hover:text-darkbrown text-xl font-bold">&times;</button>
+            </div>
+            <form onsubmit="submitNewVoucher(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block uppercase font-bold text-[10px] text-darkbrown/70 mb-1">Gutscheincode *</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="newCodeInput" required placeholder="z. B. UNIQUE-2026-LIEBE" 
+                               class="flex-1 bg-white border border-darkbrown/20 rounded-xl px-3 py-2 font-mono uppercase tracking-wider outline-none focus:ring-1 focus:ring-terracotta">
+                        <button type="button" onclick="generateRandomNewCode()" class="bg-sand hover:bg-white text-darkbrown px-3 py-2 rounded-xl border border-darkbrown/15 font-bold transition">
+                            🎲 Zufall
+                        </button>
+                    </div>
+                </div>
+                <div>
+                    <label class="block uppercase font-bold text-[10px] text-darkbrown/70 mb-1">Betrag in CHF *</label>
+                    <input type="number" id="newAmountInput" required min="5" step="1" placeholder="50" 
+                           class="w-full bg-white border border-darkbrown/20 rounded-xl px-3 py-2 font-bold outline-none focus:ring-1 focus:ring-terracotta">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block uppercase font-bold text-[10px] text-darkbrown/70 mb-1">Für (Empfänger)</label>
+                        <input type="text" id="newFuerInput" placeholder="z. B. Anna" 
+                               class="w-full bg-white border border-darkbrown/20 rounded-xl px-3 py-2 outline-none focus:ring-1 focus:ring-terracotta">
+                    </div>
+                    <div>
+                        <label class="block uppercase font-bold text-[10px] text-darkbrown/70 mb-1">Von (Käufer/in)</label>
+                        <input type="text" id="newVonInput" placeholder="z. B. Sarah" 
+                               class="w-full bg-white border border-darkbrown/20 rounded-xl px-3 py-2 outline-none focus:ring-1 focus:ring-terracotta">
+                    </div>
+                </div>
+                <div>
+                    <label class="block uppercase font-bold text-[10px] text-darkbrown/70 mb-1">Notiz / Anlass</label>
+                    <input type="text" id="newNoteInput" placeholder="z. B. Geburt / Vor Ort im Atelier bezahlt" 
+                           class="w-full bg-white border border-darkbrown/20 rounded-xl px-3 py-2 outline-none focus:ring-1 focus:ring-terracotta">
+                </div>
+                <div class="pt-3 flex gap-2 justify-end">
+                    <button type="button" onclick="closeCreateModal()" class="px-4 py-2 rounded-xl bg-sand text-darkbrown font-bold hover:bg-white transition">Abbrechen</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-terracotta hover:bg-darkbrown text-white font-bold transition shadow-xs">Gutschein anlegen</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIK -->
+    <script>
+        const defaultVouchers = [
+            {
+                code: "UNIQUE-2026-LIEBE",
+                created_at: "2026-09-11",
+                original_amount: 50.0,
+                remaining_balance: 50.0,
+                for: "Liebe Anna & kleiner Noah",
+                from: "Gotti Sarah & Marco",
+                message: "Von Herzen alles Liebe zur Geburt eures kleinen Wunders! Möge jeder Tag voller Liebe, Geborgenheit und Sonnenschein sein. Viel Freude beim Aussuchen eines handgemachten Lieblingsstücks.",
+                theme: "Terracotta",
+                status: "active",
+                transactions: [
+                    { date: "2026-09-11", type: "issue", amount: 50.0, note: "Gutschein ausgestellt", new_balance: 50.0 }
+                ]
+            },
+            {
+                code: "UNIQUE-GLUECK-4891",
+                created_at: "2026-09-10",
+                original_amount: 100.0,
+                remaining_balance: 65.0,
+                for: "Familie Meier",
+                from: "Oma Brigitte",
+                message: "Für ein kuscheliges Babynest und süsse Accessoires für euren Liebling.",
+                theme: "Salbeigrün",
+                status: "partially_redeemed",
+                transactions: [
+                    { date: "2026-09-10", type: "issue", amount: 100.0, note: "Gutschein ausgestellt", new_balance: 100.0 },
+                    { date: "2026-09-11", type: "redeem", amount: 35.0, note: "Einkauf Baby-Mütze & Halstuch im Atelier", new_balance: 65.0 }
+                ]
+            }
+        ];
+        let allVouchers = JSON.parse(localStorage.getItem('uniquebylea_vouchers_cache') || 'null') || defaultVouchers;
+        let selectedVoucher = null;
+        let currentFilter = 'all';
+
+        // Auth
+        function checkAuth() {
+            const isSaved = localStorage.getItem('uniquebylea_admin_auth') === 'verified';
+            let hasCmsLogin = false;
+            try {
+                const s = JSON.parse(localStorage.getItem('sveltia-cms.user') || '{}');
+                if (s && s.token) hasCmsLogin = true;
+            } catch (e) {}
+
+            if (isSaved || hasCmsLogin) {
+                document.getElementById('authOverlay')?.classList.add('hidden');
+                return true;
+            }
+            return false;
+        }
+
+        window.verifyAdminAuth = function(e) {
+            e.preventDefault();
+            const input = document.getElementById('adminPinInput');
+            const val = input ? input.value.trim().toLowerCase() : '';
+            if (val === 'lea2026' || val === 'uniquebylea' || val === 'interlaken' || val === 'uniquebylea2026') {
+                localStorage.setItem('uniquebylea_admin_auth', 'verified');
+                document.getElementById('authOverlay')?.classList.add('hidden');
+                loadVouchers();
+            } else {
+                document.getElementById('authErrorMsg')?.classList.remove('hidden');
+            }
+        };
+
+        // Daten laden
+        async function loadVouchers() {
+            try {
+                let data = null;
+                try {
+                    const res = await fetch('/api/vouchers?t=' + Date.now());
+                    if (res.ok) data = await res.json();
+                } catch (e) {}
+
+                if (!data || !data.vouchers) {
+                    const res2 = await fetch('../content/vouchers.json?t=' + Date.now());
+                    if (res2.ok) data = await res2.json();
+                }
+
+                allVouchers = data?.vouchers || [];
+                if (allVouchers.length > 0) {
+                    localStorage.setItem('uniquebylea_vouchers_cache', JSON.stringify(allVouchers));
+                } else {
+                    allVouchers = JSON.parse(localStorage.getItem('uniquebylea_vouchers_cache') || '[]');
+                }
+                if (!allVouchers || allVouchers.length === 0) {
+                    allVouchers = [
+                        {
+                            code: "UNIQUE-2026-LIEBE",
+                            created_at: "2026-09-11",
+                            original_amount: 50.0,
+                            remaining_balance: 50.0,
+                            for: "Liebe Anna & kleiner Noah",
+                            from: "Gotti Sarah & Marco",
+                            message: "Von Herzen alles Liebe zur Geburt eures kleinen Wunders! Möge jeder Tag voller Liebe, Geborgenheit und Sonnenschein sein. Viel Freude beim Aussuchen eines handgemachten Lieblingsstücks.",
+                            theme: "Terracotta",
+                            status: "active",
+                            transactions: [
+                                { date: "2026-09-11", type: "issue", amount: 50.0, note: "Gutschein ausgestellt", new_balance: 50.0 }
+                            ]
+                        },
+                        {
+                            code: "UNIQUE-GLUECK-4891",
+                            created_at: "2026-09-10",
+                            original_amount: 100.0,
+                            remaining_balance: 65.0,
+                            for: "Familie Meier",
+                            from: "Oma Brigitte",
+                            message: "Für ein kuscheliges Babynest und süsse Accessoires für euren Liebling.",
+                            theme: "Salbeigrün",
+                            status: "partially_redeemed",
+                            transactions: [
+                                { date: "2026-09-10", type: "issue", amount: 100.0, note: "Gutschein ausgestellt", new_balance: 100.0 },
+                                { date: "2026-09-11", type: "redeem", amount: 35.0, note: "Einkauf Baby-Mütze & Halstuch im Atelier", new_balance: 65.0 }
+                            ]
+                        }
+                    ];
+                    localStorage.setItem('uniquebylea_vouchers_cache', JSON.stringify(allVouchers));
+                }
+
+                renderStats();
+                populateQuickSelect();
+                renderTable();
+
+                const urlParams = new URLSearchParams(window.location.search);
+                const queryCode = urlParams.get('code');
+                if (queryCode) {
+                    document.getElementById('lookupCodeInput').value = queryCode;
+                    selectVoucherByCode(queryCode);
+                }
+            } catch (err) {
+                console.error("Fehler beim Laden:", err);
+            }
+        }
+
+        function renderStats() {
+            const count = allVouchers.length;
+            const totalIssued = allVouchers.reduce((sum, v) => sum + (Number(v.original_amount) || 0), 0);
+            const openBalance = allVouchers.reduce((sum, v) => sum + (Number(v.remaining_balance) || 0), 0);
+            const redeemed = Math.max(0, totalIssued - openBalance);
+
+            document.getElementById('statCount').textContent = count;
+            document.getElementById('statTotalIssued').textContent = `CHF ${totalIssued.toFixed(2)}`;
+            document.getElementById('statOpenBalance').textContent = `CHF ${openBalance.toFixed(2)}`;
+            document.getElementById('statRedeemed').textContent = `CHF ${redeemed.toFixed(2)}`;
+        }
+
+        function populateQuickSelect() {
+            const select = document.getElementById('quickSelectVoucher');
+            select.innerHTML = '<option value="">-- Gutschein auswählen --</option>';
+            allVouchers.forEach(v => {
+                const opt = document.createElement('option');
+                opt.value = v.code;
+                const bal = Number(v.remaining_balance) || 0;
+                opt.textContent = `${v.code} (Rest: CHF ${bal.toFixed(2)}) - ${v.for || 'Kunde'}`;
+                select.appendChild(opt);
+            });
+        }
+
+        function selectVoucherByCode(code) {
+            if (!code) {
+                selectedVoucher = null;
+                document.getElementById('voucherDetailEmpty').classList.remove('hidden');
+                document.getElementById('voucherDetailCard').classList.add('hidden');
+                return;
+            }
+
+            const found = allVouchers.find(v => (v.code || '').trim().toUpperCase() === code.trim().toUpperCase());
+            if (!found) {
+                alert(`Gutschein «${code}» wurde nicht gefunden.`);
+                return;
+            }
+
+            selectedVoucher = found;
+            document.getElementById('voucherDetailEmpty').classList.add('hidden');
+            document.getElementById('voucherDetailCard').classList.remove('hidden');
+
+            document.getElementById('cardCode').textContent = found.code;
+            document.getElementById('cardMeta').innerHTML = `Ausgestellt für: <strong>${found.for || 'Unbekannt'}</strong> &bull; Von: <strong>${found.from || 'Unbekannt'}</strong> &bull; Datum: ${found.created_at || '-'}`;
+
+            const orig = Number(found.original_amount) || 0;
+            const rem = Number(found.remaining_balance) || 0;
+            const used = Math.max(0, orig - rem);
+
+            document.getElementById('cardRemaining').textContent = `CHF ${rem.toFixed(2)}`;
+            document.getElementById('cardOriginal').textContent = `CHF ${orig.toFixed(2)}`;
+            document.getElementById('cardUsed').textContent = `CHF ${used.toFixed(2)}`;
+
+            const badge = document.getElementById('cardStatusBadge');
+            if (rem === 0) {
+                badge.className = "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-gray-100 text-gray-700 border border-gray-300";
+                badge.textContent = "Vollständig eingelöst";
+                document.getElementById('redeemFormSection').classList.add('hidden');
+            } else if (rem < orig) {
+                badge.className = "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-300";
+                badge.textContent = "Teil-eingelöst";
+                document.getElementById('redeemFormSection').classList.remove('hidden');
+            } else {
+                badge.className = "px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-300";
+                badge.textContent = "Aktiv (Voller Betrag)";
+                document.getElementById('redeemFormSection').classList.remove('hidden');
+            }
+
+            document.getElementById('redeemAmountInput').value = '';
+            document.getElementById('redeemAmountInput').max = rem;
+            document.getElementById('redeemNoteInput').value = '';
+            document.getElementById('newBalancePreview').textContent = `Maximal abziehbar: CHF ${rem.toFixed(2)}`;
+
+            document.getElementById('redeemAmountInput').oninput = function() {
+                const val = parseFloat(this.value) || 0;
+                if (val > rem) {
+                    document.getElementById('newBalancePreview').innerHTML = `<span class="text-red-600 font-bold">⚠️ Betrag übersteigt Restguthaben (max. CHF ${rem.toFixed(2)})</span>`;
+                } else if (val > 0) {
+                    const after = rem - val;
+                    document.getElementById('newBalancePreview').innerHTML = `Neues Restguthaben nach Abbuchung: <strong class="text-terracotta">CHF ${after.toFixed(2)}</strong>`;
+                } else {
+                    document.getElementById('newBalancePreview').textContent = `Maximal abziehbar: CHF ${rem.toFixed(2)}`;
+                }
+            };
+
+            const txContainer = document.getElementById('transactionsList');
+            txContainer.innerHTML = '';
+            const txs = found.transactions || [];
+            if (txs.length === 0) {
+                txContainer.innerHTML = '<div class="text-darkbrown/50 italic py-1">Keine Buchungen vorhanden.</div>';
+            } else {
+                txs.forEach(tx => {
+                    const isIssue = tx.type === 'issue';
+                    const row = document.createElement('div');
+                    row.className = "flex items-center justify-between p-2 rounded-lg bg-sand/30 border border-darkbrown/5";
+                    row.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <span class="${isIssue ? 'text-emerald-600' : 'text-terracotta'} font-bold">${isIssue ? '➕' : '➖'}</span>
+                            <div>
+                                <span class="font-medium">${tx.note || (isIssue ? 'Ausgestellt' : 'Eingelöst')}</span>
+                                <span class="text-[10px] text-darkbrown/50 block">${tx.date}</span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <strong class="${isIssue ? 'text-emerald-700' : 'text-terracotta'}">${isIssue ? '+' : '-'} CHF ${Number(tx.amount).toFixed(2)}</strong>
+                            <span class="text-[10px] text-darkbrown/60 block">Saldo: CHF ${Number(tx.new_balance || 0).toFixed(2)}</span>
+                        </div>
+                    `;
+                    txContainer.appendChild(row);
+                });
+            }
+        }
+
+        function handleCodeSearchInput(val) {
+            const clean = (val || '').trim().toUpperCase();
+            if (!clean) return;
+            const match = allVouchers.find(v => (v.code || '').toUpperCase() === clean);
+            if (match) {
+                selectVoucherByCode(match.code);
+            }
+        }
+
+        function searchEnteredCode() {
+            const val = document.getElementById('lookupCodeInput').value.trim();
+            if (val) selectVoucherByCode(val);
+        }
+
+        async function executeRedeem() {
+            if (!selectedVoucher) return;
+            const amountInput = document.getElementById('redeemAmountInput');
+            const noteInput = document.getElementById('redeemNoteInput');
+            const amount = parseFloat(amountInput.value);
+            const note = noteInput.value.trim() || 'Einkauf im Atelier';
+
+            const currentBal = Number(selectedVoucher.remaining_balance) || 0;
+            if (isNaN(amount) || amount <= 0) {
+                alert('Bitte gib einen gültigen Betrag größer als 0 ein.');
+                return;
+            }
+            if (amount > currentBal) {
+                alert(`Der Betrag von CHF ${amount.toFixed(2)} ist höher als das aktuelle Restguthaben von CHF ${currentBal.toFixed(2)}!`);
+                return;
+            }
+
+            if (!confirm(`Soll der Betrag von CHF ${amount.toFixed(2)} wirklich vom Gutschein ${selectedVoucher.code} abgebucht werden?\n\nNeues Restguthaben: CHF ${(currentBal - amount).toFixed(2)}`)) {
+                return;
+            }
+
+            try {
+                let updatedVoucher = null;
+                try {
+                    const res = await fetch('/api/vouchers', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'redeem',
+                            code: selectedVoucher.code,
+                            amount: amount,
+                            note: note
+                        })
+                    });
+                    if (res.ok) {
+                        const json = await res.json();
+                        if (json.success) updatedVoucher = json.voucher;
+                    }
+                } catch (e) {}
+
+                if (!updatedVoucher) {
+                    selectedVoucher.remaining_balance = Math.max(0, currentBal - amount);
+                    selectedVoucher.status = selectedVoucher.remaining_balance === 0 ? 'fully_redeemed' : 'partially_redeemed';
+                    if (!selectedVoucher.transactions) selectedVoucher.transactions = [];
+                    selectedVoucher.transactions.push({
+                        date: new Date().toISOString().slice(0, 10),
+                        type: 'redeem',
+                        amount: amount,
+                        note: note,
+                        new_balance: selectedVoucher.remaining_balance
+                    });
+                    updatedVoucher = selectedVoucher;
+                }
+
+                const idx = allVouchers.findIndex(v => v.code === selectedVoucher.code);
+                if (idx !== -1) allVouchers[idx] = updatedVoucher;
+                localStorage.setItem('uniquebylea_vouchers_cache', JSON.stringify(allVouchers));
+
+                alert(`🎉 Betrag von CHF ${amount.toFixed(2)} erfolgreich abgebucht!\nAktuelles Restguthaben: CHF ${updatedVoucher.remaining_balance.toFixed(2)}`);
+                renderStats();
+                populateQuickSelect();
+                selectVoucherByCode(updatedVoucher.code);
+                renderTable();
+            } catch (err) {
+                alert("Fehler beim Abbuchen: " + err.message);
+            }
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('vouchersTableBody');
+            tbody.innerHTML = '';
+
+            let list = allVouchers;
+            if (currentFilter === 'active') {
+                list = list.filter(v => (Number(v.remaining_balance) || 0) > 0);
+            } else if (currentFilter === 'fully_redeemed') {
+                list = list.filter(v => (Number(v.remaining_balance) || 0) <= 0);
+            }
+
+            if (list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-darkbrown/50 italic">Keine Gutscheine für diesen Filter gefunden.</td></tr>';
+                return;
+            }
+
+            list.forEach(v => {
+                const orig = Number(v.original_amount) || 0;
+                const rem = Number(v.remaining_balance) || 0;
+                const isFullyUsed = rem <= 0;
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-sand/30 transition cursor-pointer " + (selectedVoucher && selectedVoucher.code === v.code ? 'bg-terracotta/10' : '');
+                tr.onclick = function() { selectVoucherByCode(v.code); window.scrollTo({ top: 150, behavior: 'smooth' }); };
+
+                tr.innerHTML = `
+                    <td class="py-3 px-3 font-mono font-bold text-darkbrown">${v.code}</td>
+                    <td class="py-3 px-3 text-darkbrown/70">${v.created_at || '-'}</td>
+                    <td class="py-3 px-3">
+                        <div class="font-medium">${v.for || 'Kunde'}</div>
+                        <div class="text-[10px] text-darkbrown/50">Von: ${v.from || '-'}</div>
+                    </td>
+                    <td class="py-3 px-3 font-medium">CHF ${orig.toFixed(2)}</td>
+                    <td class="py-3 px-3">
+                        <strong class="${isFullyUsed ? 'text-gray-400 line-through' : 'text-terracotta text-sm'}">CHF ${rem.toFixed(2)}</strong>
+                    </td>
+                    <td class="py-3 px-3">
+                        <span class="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${isFullyUsed ? 'bg-gray-100 text-gray-600' : (rem < orig ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800')}">
+                            ${isFullyUsed ? 'Aufgebraucht' : (rem < orig ? 'Teil-Restwert' : 'Aktiv')}
+                        </span>
+                    </td>
+                    <td class="py-3 px-3 text-right">
+                        <button type="button" class="text-terracotta hover:text-darkbrown font-bold text-xs underline">
+                            Prüfen &amp; Abbuchen ➔
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterVouchersTable(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-tab').forEach(b => {
+                b.className = "filter-tab px-3 py-1.5 rounded-lg text-xs font-bold transition bg-white border border-darkbrown/15 text-darkbrown";
+            });
+            event.target.className = "filter-tab px-3 py-1.5 rounded-lg text-xs font-bold transition bg-terracotta text-white";
+            renderTable();
+        }
+
+        function openCreateModal() {
+            document.getElementById('createModal').classList.remove('hidden');
+            generateRandomNewCode();
+        }
+        function closeCreateModal() {
+            document.getElementById('createModal').classList.add('hidden');
+        }
+        function generateRandomNewCode() {
+            const words = ['GLUECK', 'LIEBE', 'WUNDER', 'BABY', 'MINI', 'HERZ', 'UNIQUE'];
+            const word = words[Math.floor(Math.random() * words.length)];
+            const num = Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('newCodeInput').value = `UNIQUE-${word}-${num}`;
+        }
+
+        async function submitNewVoucher(e) {
+            e.preventDefault();
+            const code = document.getElementById('newCodeInput').value.trim().toUpperCase();
+            const amount = parseFloat(document.getElementById('newAmountInput').value) || 50;
+            const fuer = document.getElementById('newFuerInput').value.trim();
+            const von = document.getElementById('newVonInput').value.trim();
+            const note = document.getElementById('newNoteInput').value.trim() || 'Im Atelier erfasst';
+
+            try {
+                let createdVoucher = null;
+                try {
+                    const res = await fetch('/api/vouchers', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'create',
+                            voucher: { code, amount, fuer, von, message: note }
+                        })
+                    });
+                    if (res.ok) {
+                        const json = await res.json();
+                        if (json.success) createdVoucher = json.voucher;
+                    }
+                } catch (e) {}
+
+                if (!createdVoucher) {
+                    createdVoucher = {
+                        code: code,
+                        created_at: new Date().toISOString().slice(0, 10),
+                        original_amount: amount,
+                        remaining_balance: amount,
+                        for: fuer,
+                        from: von,
+                        message: note,
+                        theme: 'Terracotta',
+                        status: 'active',
+                        transactions: [
+                            { date: new Date().toISOString().slice(0, 10), type: 'issue', amount: amount, note: note, new_balance: amount }
+                        ]
+                    };
+                }
+
+                allVouchers.unshift(createdVoucher);
+                localStorage.setItem('uniquebylea_vouchers_cache', JSON.stringify(allVouchers));
+
+                closeCreateModal();
+                alert(`✨ Gutschein «${code}» (CHF ${amount.toFixed(2)}) erfolgreich angelegt!`);
+                renderStats();
+                populateQuickSelect();
+                selectVoucherByCode(code);
+                renderTable();
+            } catch (err) {
+                alert("Fehler beim Anlegen: " + err.message);
+            }
+        }
+
+        renderStats();
+        populateQuickSelect();
+        renderTable();
+
+        if (checkAuth()) {
+            loadVouchers();
+        }
+    </script>
+</body>
+</html>
