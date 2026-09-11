@@ -1716,7 +1716,7 @@ let currentGalleryImages = [];
                 else mobWrapper.classList.add('hidden');
             }
             const drawerCount = document.getElementById('wishlistDrawerCount');
-            if (drawerCount) drawerCount.textContent = count > 0 ? () : '';
+            if (drawerCount) drawerCount.textContent = count > 0 ? '(' + count + ')' : '';
         }
 
         window.openWishlist = function() {
