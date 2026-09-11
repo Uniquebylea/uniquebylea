@@ -551,7 +551,9 @@
                         const fuer = vc.fuer || '';
                         const von = vc.von || '';
                         const text = vc.text || '';
-                        voucherDownloadUrl = `/gutschein?paid=true&wert=${val}&code=${randomCode}&fuer=${encodeURIComponent(fuer)}&von=${encodeURIComponent(von)}&text=${encodeURIComponent(text)}`;
+                        const theme = vc.theme || 'Schwarz';
+                        const font = vc.font || 'serif';
+                        voucherDownloadUrl = `/gutschein?paid=true&wert=${val}&code=${randomCode}&fuer=${encodeURIComponent(fuer)}&von=${encodeURIComponent(von)}&text=${encodeURIComponent(text)}&theme=${encodeURIComponent(theme)}&font=${encodeURIComponent(font)}`;
                     }
 
                     try {
