@@ -3,6 +3,10 @@
     { "source": "/ai", "destination": "/admin/ai.html" },
     { "source": "/ai.html", "destination": "/admin/ai.html" },
     { "source": "/admin/stoffe", "destination": "/admin/stoffe.html" },
-    { "source": "/stoffe-upload", "destination": "/admin/stoffe.html" }
+    { "source": "/stoffe-upload", "destination": "/admin/stoffe.html" },
+    { "source": "/gutschein", "destination": "/gutschein.html" },
+    { "source": "/gutschein-generator", "destination": "/gutschein.html" },
+    { "source": "/admin/gutschein", "destination": "/gutschein.html" },
+    { "source": "/admin/gutschein-generator", "destination": "/gutschein.html" }
   ]
 }
