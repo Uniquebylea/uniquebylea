@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gutschein-Generator DIN A4 – UNIQUE by Lea Limburg</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Cormorant Garamond (luxuriöse Serifenschrift) & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Alex+Brush&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            sand: {
+              50: '#FAF8F5',
+              100: '#F4EFEA',
+              200: '#E8DFD5',
+              300: '#D9CCC0',
+              800: '#52463E',
+              900: '#342B25',
+            },
+            terracotta: {
+              DEFAULT: '#9C7D6B',
+              dark: '#7D6151',
+              light: '#BFA493'
+            },
+            charcoal: '#2D2724',
+            sage: '#7C8A79'
+          },
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'Arial', 'sans-serif'],
+            script: ['"Alex Brush"', 'cursive']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Druckspezifische Einstellungen für exaktes DIN A4 */
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+
+    @media print {
+      body {
+        background-color: #FFFFFF !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-page-wrapper {
+        padding: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        display: block !important;
+      }
+      .a4-sheet {
+        margin: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        width: 210mm !important;
+        height: 297mm !important;
+        max-height: 297mm !important;
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
+      }
+      .content-editable-active {
+        outline: none !important;
+        background: transparent !important;
+      }
+    }
+
+    /* Screen Preview Styling */
+    .a4-sheet {
+      width: 210mm;
+      height: 297mm;
+      min-height: 297mm;
+      max-height: 297mm;
+      position: relative;
+      box-sizing: border-box;
+      background: #FFFFFF;
+      overflow: hidden;
+    }
+
+    /* Inline editable visual highlight */
+    [contenteditable="true"] {
+      outline: 1px dashed rgba(156, 125, 107, 0.3);
+      padding: 1px 4px;
+      border-radius: 3px;
+      transition: all 0.2s ease;
+    }
+    [contenteditable="true"]:hover {
+      outline: 1px dashed #9C7D6B;
+      background-color: rgba(244, 239, 234, 0.4);
+    }
+    [contenteditable="true"]:focus {
+      outline: 2px solid #9C7D6B;
+      background-color: rgba(244, 239, 234, 0.7);
+    }
+    
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F4EFEA;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #D9CCC0;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #9C7D6B;
+    }
+  </style>
+</head>
+
+<body class="bg-[#F2ECE4] text-charcoal font-sans min-h-screen flex flex-col antialiased selection:bg-terracotta/20">
+
+  <header class="no-print bg-white/90 backdrop-blur border-b border-sand-200 sticky top-0 z-30 px-6 py-3.5 shadow-sm flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <div class="w-9 h-9 rounded-full bg-sand-100 flex items-center justify-center text-terracotta border border-sand-200">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"></path>
+          <path d="M4 6v12c0 1.1.9 2 2 2h14v-4"></path>
+          <path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path>
+        </svg>
+      </div>
+      <div>
+        <h1 class="font-serif text-xl font-bold tracking-wider uppercase text-charcoal">UNIQUE by Lea Limburg</h1>
+        <p class="text-xs text-sand-800 tracking-wide">DIN A4 Gutschein-Studio &bull; Druck- &amp; PDF-Vorlage</p>
+      </div>
+    </div>
+
+    <!-- Quick action buttons -->
+    <div class="flex items-center space-x-3">
+      <a href="/shop.html" class="px-3.5 py-2 text-xs font-medium text-charcoal bg-sand-100 hover:bg-sand-200 rounded-lg transition-colors border border-sand-200 flex items-center space-x-1.5">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        <span>Zum Shop</span>
+      </a>
+      <button onclick="resetDefaults()" class="px-3.5 py-2 text-xs font-medium text-sand-800 bg-sand-100 hover:bg-sand-200 rounded-lg transition-colors border border-sand-200 flex items-center space-x-1.5">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        <span>Zurücksetzen</span>
+      </button>
+
+      <button onclick="saveToStorage()" class="px-3.5 py-2 text-xs font-medium text-terracotta bg-white hover:bg-sand-50 rounded-lg transition-colors border border-terracotta/30 flex items-center space-x-1.5">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+        <span>Entwurf merken</span>
+      </button>
+
+      <button onclick="triggerPrint()" class="px-5 py-2 text-xs font-semibold tracking-wider uppercase text-white bg-terracotta hover:bg-terracotta-dark rounded-lg shadow-md hover:shadow-lg transition-all flex items-center space-x-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H7v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+        <span>Als PDF speichern / Drucken</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="flex-1 flex flex-col lg:flex-row overflow-hidden">
+
+    <!-- LEFT SIDEBAR: Kontroll- & Eingabefelder -->
+    <aside class="no-print w-full lg:w-96 bg-white border-r border-sand-200 overflow-y-auto p-5 space-y-6 shadow-sm">
+      
+      <!-- Info Badge -->
+      <div class="bg-sand-50 rounded-xl p-3.5 border border-sand-200 text-xs text-sand-800 space-y-1">
+        <div class="font-semibold text-terracotta flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+          Direktes Live-Editing möglich
+        </div>
+        <p>Du kannst die Felder hier links ausfüllen <strong>oder</strong> einfach direkt rechts auf den Gutschein klicken, um jeden Text zu verändern.</p>
+      </div>
+
+      <!-- Textvorlagen Schnell-Auswahl -->
+      <div>
+        <label class="block text-xs font-bold uppercase tracking-wider text-sand-800 mb-2">Schnell-Textvorlagen</label>
+        <div class="grid grid-cols-2 gap-2">
+          <button type="button" onclick="applyPreset('geburt')" class="px-2.5 py-1.5 text-xs text-charcoal bg-sand-100 hover:bg-sand-200 rounded-md text-left transition truncate border border-sand-200">
+            🍼 Zur Geburt
+          </button>
+          <button type="button" onclick="applyPreset('taufe')" class="px-2.5 py-1.5 text-xs text-charcoal bg-sand-100 hover:bg-sand-200 rounded-md text-left transition truncate border border-sand-200">
+            🕊️ Zur Taufe
+          </button>
+          <button type="button" onclick="applyPreset('geburtstag')" class="px-2.5 py-1.5 text-xs text-charcoal bg-sand-100 hover:bg-sand-200 rounded-md text-left transition truncate border border-sand-200">
+            🎂 Geburtstag
+          </button>
+          <button type="button" onclick="applyPreset('danke')" class="px-2.5 py-1.5 text-xs text-charcoal bg-sand-100 hover:bg-sand-200 rounded-md text-left transition truncate border border-sand-200">
+            🌿 Von Herzen Danke
+          </button>
+        </div>
+      </div>
+
+      <!-- Eingabe-Formular -->
+      <div class="space-y-4">
+        
+        <!-- Wert / Betrag -->
+        <div>
+          <label class="block text-xs font-semibold text-sand-800 uppercase tracking-wider mb-1">Gutscheinwert</label>
+          <div class="relative">
+            <input type="text" id="input-wert" oninput="syncField('wert', this.value)" value="CHF 50.–" class="w-full px-3 py-2 bg-sand-50 border border-sand-200 rounded-lg text-sm font-serif font-bold text-charcoal focus:ring-1 focus:ring-terracotta focus:border-terracotta outline-none">
+            <div class="absolute right-2 top-2 text-xs text-sand-800 flex gap-1">
+              <button type="button" onclick="setWert('CHF 25.–')" class="px-1.5 py-0.5 bg-white border border-sand-200 rounded text-[10px] hover:border-terracotta">25</button>
+              <button type="button" onclick="setWert('CHF 50.–')" class="px-1.5 py-0.5 bg-white border border-sand-200 rounded text-[10px] hover:border-terracotta">50</button>
+              <button type="button" onclick="setWert('CHF 100.–')" class="px-1.5 py-0.5 bg-white border border-sand-200 rounded text-[10px] hover:border-terracotta">100</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gutscheincode -->
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="text-xs font-semibold text-sand-800 uppercase tracking-wider">Gutscheincode</label>
+            <button type="button" onclick="generateRandomCode()" class="text-[10px] text-terracotta hover:underline">Zufallscode</button>
+          </div>
+          <input type="text" id="input-code" oninput="syncField('code', this.value)" value="UNIQUE-2026-LIEBE" class="w-full px-3 py-2 bg-sand-50 border border-sand-200 rounded-lg text-xs font-mono font-bold tracking-wider text-charcoal focus:ring-1 focus:ring-terracotta focus:border-terracotta outline-none uppercase">
+        </div>
+
+        <!-- Empfänger & Schenkende -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-sand-800 uppercase tracking-wider mb-1">Für (Empfänger)</label>
+            <input type="text" id="input-fuer" oninput="syncField('fuer', this.value)" value="Liebe Anna &amp; kleiner Noah" class="w-full px-3 py-2 bg-sand-50 border border-sand-200 rounded-lg text-xs text-charcoal focus:ring-1 focus:ring-terracotta focus:border-terracotta outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-sand-800 uppercase tracking-wider mb-1">Von (Absender)</label>
+            <input type="text" id="input-von" oninput="syncField('von', this.value)" value="Gotti Sarah &amp; Marco" class="w-full px-3 py-2 bg-sand-50 border border-sand-200 rounded-lg text-xs text-charcoal focus:ring-1 focus:ring-terracotta focus:border-terracotta outline-none">
+          </div>
+        </div>
+
+        <!-- Persönlicher Text -->
+        <div>
+          <label class="block text-xs font-semibold text-sand-800 uppercase tracking-wider mb-1">Persönlicher Grusstext</label>
+          <textarea id="input-text" rows="4" oninput="syncField('text', this.value)" class="w-full px-3 py-2 bg-sand-50 border border-sand-200 rounded-lg text-xs text-charcoal leading-relaxed focus:ring-1 focus:ring-terracotta focus:border-terracotta outline-none">Von Herzen alles Liebe zur Geburt eures kleinen Wunders! Möge jeder Tag voller Liebe, Geborgenheit und Sonnenschein sein. Viel Freude beim Aussuchen eines liebevoll handgefertigten Unikats.</textarea>
+        </div>
+
+        <!-- Gültigkeit & Datum -->
+        <div>
+          <label class="block text-xs font-semibold text-sand-800 uppercase tracking-wider mb-1">Gültigkeit / Datum</label>
+          <input type="text" id="input-gueltig" oninput="syncField('gueltig', this.value)" value="Gültig bis: 31. Dezember 2028" class="w-full px-3 py-2 bg-sand-50 border border-sand-200 rounded-lg text-xs text-charcoal focus:ring-1 focus:ring-terracotta focus:border-terracotta outline-none">
+        </div>
+
+        <!-- Akzentfarbe wählen -->
+        <div>
+          <label class="block text-xs font-semibold text-sand-800 uppercase tracking-wider mb-2">Farbakzent Gutschein</label>
+          <div class="flex items-center space-x-3">
+            <button type="button" onclick="setAccentTheme('#9C7D6B', '#FDFBF8', 'Terracotta')" class="w-7 h-7 rounded-full bg-[#9C7D6B] border-2 border-white shadow-sm ring-1 ring-sand-300 hover:scale-105 transition" title="Warmes Terracotta / Mütze"></button>
+            <button type="button" onclick="setAccentTheme('#7C8A79', '#FAFBF9', 'Salbeigrün')" class="w-7 h-7 rounded-full bg-[#7C8A79] border-2 border-white shadow-sm ring-1 ring-sand-300 hover:scale-105 transition" title="Salbeigrün / Poncho"></button>
+            <button type="button" onclick="setAccentTheme('#A88D77', '#FDFBF9', 'Sandbraun')" class="w-7 h-7 rounded-full bg-[#A88D77] border-2 border-white shadow-sm ring-1 ring-sand-300 hover:scale-105 transition" title="Warmes Sandbraun / Shop"></button>
+            <button type="button" onclick="setAccentTheme('#4A403A', '#FAF8F6', 'Anthrazit')" class="w-7 h-7 rounded-full bg-[#4A403A] border-2 border-white shadow-sm ring-1 ring-sand-300 hover:scale-105 transition" title="Klassisch Dunkelbraun"></button>
+            <span id="theme-label" class="text-xs text-sand-800 italic">Terracotta</span>
+          </div>
+        </div>
+
+        <!-- Falt- / Schnittmarken Option -->
+        <div class="pt-2 border-t border-sand-200">
+          <label class="flex items-center space-x-2 cursor-pointer">
+            <input type="checkbox" id="check-cutmarks" onchange="toggleCutMarks(this.checked)" checked class="rounded text-terracotta focus:ring-terracotta">
+            <span class="text-xs text-sand-800">Dezente Schnitt-/Faltlinien anzeigen</span>
+          </label>
+        </div>
+
+      </div>
+
+    </aside>
+
+
+    <!-- RIGHT MAIN WORKSPACE: A4 Blatt Live Preview -->
+    <main class="flex-1 overflow-auto p-4 sm:p-8 flex justify-center items-start bg-[#E8E1D7] print-page-wrapper">
+      
+      <!-- DAS DIN A4 BLATT (210mm x 297mm) -->
+      <div id="a4-voucher-page" class="a4-sheet bg-white shadow-2xl transition-all duration-300 relative flex flex-col justify-between p-[14mm]">
+        
+        <!-- ÄUSSERER FEINER RAHMEN -->
+        <div id="voucher-outer-frame" class="w-full h-full border-[1.5px] border-[#D9CCC0] p-[6mm] relative flex flex-col justify-between bg-[#FCFAF7] transition-colors duration-300">
+          
+          <!-- INNERE ELEGANTE DOPPELLINIE -->
+          <div id="voucher-inner-frame" class="w-full h-full border border-[#E8DFD5] p-[8mm] relative flex flex-col justify-between bg-white shadow-sm transition-colors duration-300">
+
+            <!-- VIER EDLE ECKEN-ORNAMENTE -->
+            <div class="absolute top-2 left-2 w-4 h-4 border-t border-l border-[#9C7D6B] pointer-events-none"></div>
+            <div class="absolute top-2 right-2 w-4 h-4 border-t border-r border-[#9C7D6B] pointer-events-none"></div>
+            <div class="absolute bottom-2 left-2 w-4 h-4 border-b border-l border-[#9C7D6B] pointer-events-none"></div>
+            <div class="absolute bottom-2 right-2 w-4 h-4 border-b border-r border-[#9C7D6B] pointer-events-none"></div>
+
+            <!-- 1. KOPFBEREICH: LOGO & TITEL -->
+            <div class="text-center pt-2">
+              
+              <!-- Schneiderpuppen-Logo SVG (Exakt passend zum originalen UNIQUE Logo) -->
+              <div class="mx-auto mb-3 flex flex-col items-center justify-center">
+                <svg class="w-14 h-16 text-charcoal" viewBox="0 0 100 120" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+                  <!-- Halsansatz & Knauf -->
+                  <path d="M47 8 C47 5, 53 5, 53 8 C53 11, 47 11, 47 8 Z" fill="currentColor"/>
+                  <path d="M46 12 L54 12" />
+                  <!-- Mannequin Torso Linienführung -->
+                  <path d="M42 16 C38 18, 30 26, 32 38 C33 46, 38 52, 40 60 C42 67, 40 76, 37 86 C34 94, 38 98, 50 98 C62 98, 66 94, 63 86 C60 76, 58 67, 60 60 C62 52, 67 46, 68 38 C70 26, 62 18, 58 16 Z" />
+                  <!-- Elegantes Band / Tuch um die Schulter -->
+                  <path d="M34 28 C42 36, 58 42, 67 36 C70 42, 69 49, 68 53" stroke-width="2" />
+                  <path d="M68 53 C67 58, 66 65, 68 70" stroke-width="1.8" />
+                  <!-- Standfuss unten (minimalistisch) -->
+                  <path d="M41 98 C46 102, 54 102, 59 98" />
+                </svg>
+
+                <div class="font-sans text-[18px] tracking-[6px] font-medium uppercase text-charcoal mt-1 ml-1.5">UNIQUE</div>
+                <div class="font-sans text-[9px] tracking-[3px] uppercase text-[#7D6B60]">by Lea Limburg</div>
+              </div>
+
+              <!-- Untertitel / Slogan -->
+              <div class="flex items-center justify-center gap-3 my-2">
+                <div class="h-[0.5px] w-12 bg-[#D9CCC0]"></div>
+                <span class="text-[10.5px] tracking-[3px] uppercase text-terracotta font-semibold font-sans">
+                  Einzigartige Handarbeit aus Interlaken
+                </span>
+                <div class="h-[0.5px] w-12 bg-[#D9CCC0]"></div>
+              </div>
+
+              <!-- Hauptüberschrift GUTSCHEIN -->
+              <h2 id="voucher-title" contenteditable="true" oninput="reverseSync('title', this.innerText)" class="font-serif text-[42px] sm:text-[46px] font-normal tracking-[8px] uppercase text-charcoal mt-1 leading-tight">
+                Gutschein
+              </h2>
+
+              <p class="font-serif italic text-sand-800 text-sm tracking-wide mt-0.5">
+                für handgefertigte Lieblingsstücke &amp; persönliche Unikate
+              </p>
+            </div>
+
+            <!-- 2. MITTELTEIL: WERT, EMPFÄNGER, CODE & NACHRICHT -->
+            <div class="my-4 space-y-6 max-w-xl mx-auto w-full">
+              
+              <!-- GROSSER BETRAG / WERT -->
+              <div class="text-center">
+                <span class="text-[10px] tracking-[2.5px] uppercase text-[#9C7D6B] font-bold block mb-1">
+                  Im Wert von
+                </span>
+                <div id="voucher-wert" contenteditable="true" oninput="reverseSync('wert', this.innerText)" class="font-serif text-[48px] sm:text-[54px] font-normal leading-none tracking-tight text-charcoal">
+                  CHF 50.–
+                </div>
+              </div>
+
+              <!-- FÜR & VON ZEILE -->
+              <div class="grid grid-cols-2 gap-4 py-2 border-y border-[#EFE8DF]">
+                <div class="text-left px-4">
+                  <span class="text-[9px] tracking-[2px] uppercase text-[#9C7D6B] font-bold block">Für</span>
+                  <div id="voucher-fuer" contenteditable="true" oninput="reverseSync('fuer', this.innerText)" class="font-serif text-lg text-charcoal font-medium">
+                    Liebe Anna &amp; kleiner Noah
+                  </div>
+                </div>
+                <div class="text-right px-4 border-l border-[#EFE8DF]">
+                  <span class="text-[9px] tracking-[2px] uppercase text-[#9C7D6B] font-bold block">Von</span>
+                  <div id="voucher-von" contenteditable="true" oninput="reverseSync('von', this.innerText)" class="font-serif text-lg text-charcoal font-medium">
+                    Gotti Sarah &amp; Marco
+                  </div>
+                </div>
+              </div>
+
+              <!-- PERSÖNLICHE WIDMUNG -->
+              <div class="bg-[#FAF7F2] p-5 rounded-lg border border-[#EFE8DE] relative text-center">
+                <span class="text-2xl text-terracotta/40 font-serif absolute top-2 left-3">«</span>
+                <p id="voucher-text" contenteditable="true" oninput="reverseSync('text', this.innerText)" class="font-serif italic text-[16px] sm:text-[17px] leading-[1.7] text-[#4A423D] px-4 my-1">
+                  Von Herzen alles Liebe zur Geburt eures kleinen Wunders! Möge jeder Tag voller Liebe, Geborgenheit und Sonnenschein sein. Viel Freude beim Aussuchen eines liebevoll handgefertigten Unikats.
+                </p>
+                <span class="text-2xl text-terracotta/40 font-serif absolute bottom-1 right-3 leading-none">»</span>
+              </div>
+
+              <!-- GUTSCHEINCODE KASTEN -->
+              <div class="flex flex-col sm:flex-row items-center justify-between p-3.5 bg-white border border-dashed border-[#C8B9AA] rounded-md gap-2">
+                <div class="text-left">
+                  <span class="text-[9px] tracking-[2px] uppercase text-sand-800 font-bold block">Gutscheincode</span>
+                  <span class="text-[11px] text-sand-800 font-sans">Einzulösen im Bestellprozess</span>
+                </div>
+                <div id="voucher-code" contenteditable="true" oninput="reverseSync('code', this.innerText)" class="font-mono text-[19px] font-bold tracking-[3px] text-charcoal bg-[#F7F4EE] px-4 py-1.5 rounded border border-[#E2D9CC] uppercase">
+                  UNIQUE-2026-LIEBE
+                </div>
+              </div>
+
+            </div>
+
+            <!-- 3. FUSSZEILE: SHOP-INFOS, EINLÖSEHINWEIS & CLAIM -->
+            <div class="pt-3 border-t border-[#EFE8DF] flex items-end justify-between text-xs text-[#7A6E67]">
+              
+              <!-- Shop & Kontakt -->
+              <div class="space-y-0.5 text-left">
+                <div class="font-serif font-bold text-[13px] tracking-wider uppercase text-charcoal">
+                  UNIQUE by Lea Limburg
+                </div>
+                <div class="font-sans text-[10.5px]">
+                  Onlineshop: <strong class="text-terracotta font-semibold underline">uniquebylea.com</strong>
+                </div>
+                <div id="voucher-gueltig" contenteditable="true" oninput="reverseSync('gueltig', this.innerText)" class="text-[10px] text-sand-800">
+                  Gültig bis: 31. Dezember 2028
+                </div>
+              </div>
+
+              <!-- Mit Liebe genäht Badge -->
+              <div class="text-right">
+                <div class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#F4EFEA] border border-[#E2D9CC] text-[10px] uppercase tracking-wider font-semibold text-terracotta">
+                  <svg class="w-3 h-3 fill-current text-terracotta" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                  <span>Mit Liebe genäht in Interlaken</span>
+                </div>
+                <div class="text-[9.5px] text-sand-800/80 mt-1">
+                  uniquebylea@outlook.com &bull; +41 76 564 25 02
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+        <!-- SCHNITT- UND FALTLINIEN (A4 OPTIONAL) -->
+        <div id="cut-marks-container" class="absolute inset-0 pointer-events-none">
+          <!-- Oben links -->
+          <div class="absolute top-[8mm] left-[8mm] w-[5mm] h-[0.5px] bg-[#C8B9AA]"></div>
+          <div class="absolute top-[8mm] left-[8mm] w-[0.5px] h-[5mm] bg-[#C8B9AA]"></div>
+          <!-- Oben rechts -->
+          <div class="absolute top-[8mm] right-[8mm] w-[5mm] h-[0.5px] bg-[#C8B9AA]"></div>
+          <div class="absolute top-[8mm] right-[8mm] w-[0.5px] h-[5mm] bg-[#C8B9AA]"></div>
+          <!-- Unten links -->
+          <div class="absolute bottom-[8mm] left-[8mm] w-[5mm] h-[0.5px] bg-[#C8B9AA]"></div>
+          <div class="absolute bottom-[8mm] left-[8mm] w-[0.5px] h-[5mm] bg-[#C8B9AA]"></div>
+          <!-- Unten rechts -->
+          <div class="absolute bottom-[8mm] right-[8mm] w-[5mm] h-[0.5px] bg-[#C8B9AA]"></div>
+          <div class="absolute bottom-[8mm] right-[8mm] w-[0.5px] h-[5mm] bg-[#C8B9AA]"></div>
+          <!-- Text Schnittkante -->
+          <div class="absolute bottom-[4mm] left-0 right-0 text-center text-[8.5px] tracking-widest text-[#B5A89C] uppercase font-sans">
+            DIN A4 Gutschein &bull; Bei Bedarf an den Markierungen zuschneiden
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- TOAST BENACHRICHTIGUNG -->
+  <div id="toast" class="fixed bottom-5 right-5 bg-charcoal text-white px-4 py-3 rounded-xl shadow-xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 text-xs flex items-center space-x-2 border border-sand-800">
+    <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+    <span id="toast-msg">Erfolgreich gespeichert!</span>
+  </div>
+
+  <script>
+    // Zwei-Wege-Synchronisation: Formularfelder -> Gutscheinblatt
+    function syncField(fieldId, value) {
+      const target = document.getElementById('voucher-' + fieldId);
+      if (target) {
+        target.innerText = value;
+      }
+    }
+
+    // Zwei-Wege-Synchronisation: Direkte Bearbeitung im Gutscheinblatt -> Formularfeld links
+    function reverseSync(fieldId, text) {
+      const input = document.getElementById('input-' + fieldId);
+      if (input) {
+        input.value = text;
+      }
+    }
+
+    // Schnellauswahl für Gutscheinwerte
+    function setWert(val) {
+      document.getElementById('input-wert').value = val;
+      syncField('wert', val);
+      showToast(`Wert auf ${val} gesetzt`);
+    }
+
+    // Zufalls-Gutscheincode erzeugen
+    function generateRandomCode() {
+      const words = ['GLUECK', 'LIEBE', 'WUNDER', 'BABY', 'MINI', 'HERZ', 'UNIQUE'];
+      const randomWord = words[Math.floor(Math.random() * words.length)];
+      const randomNum = Math.floor(1000 + Math.random() * 9000);
+      const code = `UNIQUE-${randomWord}-${randomNum}`;
+      document.getElementById('input-code').value = code;
+      syncField('code', code);
+      showToast('Neuer Gutscheincode generiert!');
+    }
+
+    // Vorlagen-Texte für verschiedene Anlässe
+    const presets = {
+      geburt: {
+        fuer: "Liebe Neu-Mama & kleiner Schatz",
+        text: "Von Herzen alles Liebe zur Geburt eures kleinen Wunders! Möge euer gemeinsamer Lebensweg voller Zauber, Gesundheit und Lachen sein. Viel Freude beim Aussuchen eines handgemachten Lieblingsstücks."
+      },
+      taufe: {
+        fuer: "Liebes Taufkind",
+        text: "Zur heiligen Taufe wünschen wir dir von ganzem Herzen Gottes reichen Segen, Liebe und Geborgenheit auf all deinen Wegen. Ein kuscheliges Unikat soll dich dabei stets begleiten."
+      },
+      geburtstag: {
+        fuer: "Liebes Geburtstagskind",
+        text: "Happy Birthday zum Geburtstag! Wir wünschen dir einen sonnigen Tag voller Spiel, Spass und bunter Überraschungen. Such dir etwas ganz Besonderes in Leas Shop aus!"
+      },
+      danke: {
+        fuer: "Von Herzen für dich",
+        text: "Ein kleines Dankeschön für deine wunderbare Unterstützung und dein grosses Herz! Gönn dir ein mit Liebe genähtes Lieblingsstück aus Interlaken."
+      }
+    };
+
+    function applyPreset(key) {
+      const preset = presets[key];
+      if (!preset) return;
+      
+      document.getElementById('input-fuer').value = preset.fuer;
+      syncField('fuer', preset.fuer);
+
+      document.getElementById('input-text').value = preset.text;
+      syncField('text', preset.text);
+
+      showToast(`Vorlage "${key.toUpperCase()}" eingefügt`);
+    }
+
+    // Farbthema anpassen
+    function setAccentTheme(colorHex, bgTint, label) {
+      document.getElementById('voucher-wert').style.color = colorHex;
+      document.getElementById('theme-label').innerText = label;
+      
+      // Akzentuierungen anpassen
+      const title = document.getElementById('voucher-title');
+      if (title) title.style.color = colorHex === '#4A403A' ? '#2D2724' : '#2D2724';
+      
+      const outer = document.getElementById('voucher-outer-frame');
+      if (outer) outer.style.backgroundColor = bgTint;
+
+      showToast(`Farbschema auf ${label} geändert`);
+    }
+
+    // Schnittmarken Ein-/Ausblenden
+    function toggleCutMarks(show) {
+      const container = document.getElementById('cut-marks-container');
+      if (container) {
+        container.style.display = show ? 'block' : 'none';
+      }
+    }
+
+    // Druckbefehl / PDF erzeugen
+    function triggerPrint() {
+      // Fokus von allen Feldern entfernen, damit keine blauen Cursor gedruckt werden
+      if (document.activeElement) {
+        document.activeElement.blur();
+      }
+      window.print();
+    }
+
+    // Entwurf im Browser-Speicher merken
+    function saveToStorage() {
+      const data = {
+        wert: document.getElementById('input-wert').value,
+        code: document.getElementById('input-code').value,
+        fuer: document.getElementById('input-fuer').value,
+        von: document.getElementById('input-von').value,
+        text: document.getElementById('input-text').value,
+        gueltig: document.getElementById('input-gueltig').value
+      };
+      
+      try {
+        sessionStorage.setItem('unique_gutschein_draft', JSON.stringify(data));
+        showToast('Entwurf erfolgreich gemerkt!');
+      } catch (e) {
+        showToast('Entwurf ist bereit zum Drucken!');
+      }
+    }
+
+    // Auf Standardwerte zurücksetzen
+    function resetDefaults() {
+      document.getElementById('input-wert').value = 'CHF 50.–';
+      syncField('wert', 'CHF 50.–');
+      
+      document.getElementById('input-code').value = 'UNIQUE-2026-LIEBE';
+      syncField('code', 'UNIQUE-2026-LIEBE');
+
+      document.getElementById('input-fuer').value = 'Liebe Anna & kleiner Noah';
+      syncField('fuer', 'Liebe Anna & kleiner Noah');
+
+      document.getElementById('input-von').value = 'Gotti Sarah & Marco';
+      syncField('von', 'Gotti Sarah & Marco');
+
+      document.getElementById('input-text').value = 'Von Herzen alles Liebe zur Geburt eures kleinen Wunders! Möge jeder Tag voller Liebe, Geborgenheit und Sonnenschein sein. Viel Freude beim Aussuchen eines liebevoll handgefertigten Unikats.';
+      syncField('text', document.getElementById('input-text').value);
+
+      document.getElementById('input-gueltig').value = 'Gültig bis: 31. Dezember 2028';
+      syncField('gueltig', 'Gültig bis: 31. Dezember 2028');
+
+      showToast('Standardwerte wiederhergestellt');
+    }
+
+    // Toast Popup anzeigen
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-msg');
+      if (toast && toastMsg) {
+        toastMsg.innerText = message;
+        toast.classList.remove('translate-y-20', 'opacity-0');
+        setTimeout(() => {
+          toast.classList.add('translate-y-20', 'opacity-0');
+        }, 2600);
+      }
+    }
+
+    // Gespeicherten Entwurf beim Start wiederherstellen oder URL-Parameter übernehmen
+    window.addEventListener('DOMContentLoaded', () => {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        let hasUrlParams = false;
+
+        const pWert = urlParams.get('wert');
+        const pCode = urlParams.get('code');
+        const pFuer = urlParams.get('fuer');
+        const pVon = urlParams.get('von');
+        const pText = urlParams.get('text');
+        const pGueltig = urlParams.get('gueltig');
+
+        if (pWert || pCode || pFuer || pVon || pText || pGueltig) {
+          hasUrlParams = true;
+          if (pWert) { document.getElementById('input-wert').value = pWert.startsWith('CHF') ? pWert : 'CHF ' + pWert + '.–'; syncField('wert', document.getElementById('input-wert').value); }
+          if (pCode) { document.getElementById('input-code').value = pCode; syncField('code', pCode); }
+          if (pFuer) { document.getElementById('input-fuer').value = pFuer; syncField('fuer', pFuer); }
+          if (pVon) { document.getElementById('input-von').value = pVon; syncField('von', pVon); }
+          if (pText) { document.getElementById('input-text').value = pText; syncField('text', pText); }
+          if (pGueltig) { document.getElementById('input-gueltig').value = pGueltig; syncField('gueltig', pGueltig); }
+        }
+
+        if (!hasUrlParams) {
+          const saved = sessionStorage.getItem('unique_gutschein_draft');
+          if (saved) {
+            const d = JSON.parse(saved);
+            if (d.wert) { document.getElementById('input-wert').value = d.wert; syncField('wert', d.wert); }
+            if (d.code) { document.getElementById('input-code').value = d.code; syncField('code', d.code); }
+            if (d.fuer) { document.getElementById('input-fuer').value = d.fuer; syncField('fuer', d.fuer); }
+            if (d.von) { document.getElementById('input-von').value = d.von; syncField('von', d.von); }
+            if (d.text) { document.getElementById('input-text').value = d.text; syncField('text', d.text); }
+            if (d.gueltig) { document.getElementById('input-gueltig').value = d.gueltig; syncField('gueltig', d.gueltig); }
+          }
+        }
+      } catch(e) {}
+    });
+  </script>
+</body>
+</html>
