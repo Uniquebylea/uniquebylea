@@ -1,11 +1,12 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KI Produkt-Assistent | Unique by Lea</title>
+    <link rel="icon" type="image/png" href="../images/logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
@@ -17,142 +18,151 @@
         }
     </script>
 </head>
-<body class="bg-sand text-darkbrown font-sans min-h-screen flex flex-col p-4 md:p-8">
+<body class="bg-sand text-darkbrown font-sans min-h-screen flex flex-col p-3 md:p-8">
 
-    <div class="max-w-2xl mx-auto w-full bg-creme rounded-3xl p-6 md:p-10 shadow-xl border border-white/60">
+    <div class="max-w-3xl mx-auto w-full bg-creme rounded-3xl p-5 md:p-10 shadow-xl border border-white/60">
         
-        <!-- Kopfzeile mit Zurück-Link -->
-        <div class="flex justify-between items-center mb-6 pb-4 border-b border-darkbrown/10">
+        <!-- Kopfzeile mit Navigation -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 pb-4 border-b border-darkbrown/10">
             <div>
-                <h1 class="font-serif text-xl md:text-2xl font-bold italic">✨ KI Produkt-Assistent</h1>
-                <p class="text-[11px] text-darkbrown/70">Foto hochladen ➔ KI füllt alles automatisch aus</p>
+                <span class="text-[10px] uppercase tracking-[0.2em] font-bold text-terracotta block">Atelier Interlaken</span>
+                <h1 class="font-serif text-xl md:text-2xl font-bold italic">✨ KI Produkt- &amp; Varianten-Assistent</h1>
+                <p class="text-[11px] text-darkbrown/70 mt-0.5">Mehrere Fotos hochladen (z. B. 3 Ponchos) ➔ Gemeinsame Beschreibung &amp; eigene Eigenschaften pro Bild</p>
             </div>
-            <a href="/admin/" class="text-[10px] uppercase tracking-widest font-bold text-darkbrown/60 hover:text-terracotta border border-darkbrown/15 px-3 py-1.5 rounded-full transition">
-                Zum CMS ➔
-            </a>
+            <div class="flex items-center gap-2">
+                <a href="/shop.html" target="_blank" class="text-[10px] uppercase tracking-wider font-bold text-darkbrown/70 hover:text-terracotta border border-darkbrown/15 bg-white/60 px-3 py-1.5 rounded-full transition">
+                    Zum Shop ↗
+                </a>
+                <a href="/admin/" class="text-[10px] uppercase tracking-wider font-bold text-white bg-darkbrown hover:bg-terracotta px-3.5 py-1.5 rounded-full transition shadow-xs">
+                    CMS ➔
+                </a>
+            </div>
         </div>
 
-        <!-- 1. Foto Upload Box -->
+        <!-- 1. Foto Upload Box (Mehrfachauswahl) -->
         <div class="mb-6">
-            <label class="block text-xs font-bold uppercase tracking-wider text-darkbrown/80 mb-2">1. Produktfoto auswählen oder reinziehen:</label>
-            <div id="dropzone" onclick="document.getElementById('fileInput').click()" 
-                 class="border-2 border-dashed border-darkbrown/20 hover:border-terracotta rounded-2xl p-6 text-center cursor-pointer bg-white/50 hover:bg-white transition flex flex-col items-center justify-center min-h-[160px]">
-                <img id="imagePreview" class="max-h-48 rounded-xl mb-3 hidden object-contain shadow-sm">
-                <div id="uploadPrompt" class="space-y-1">
-                    <svg class="w-8 h-8 mx-auto text-darkbrown/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                    <p class="text-xs font-bold text-darkbrown">Foto hier ablegen oder klicken</p>
-                    <p class="text-[10px] text-darkbrown/60">PNG, JPG, JPEG (vom Smartphone oder PC)</p>
-                </div>
+            <div class="flex justify-between items-baseline mb-2">
+                <label class="block text-xs font-bold uppercase tracking-wider text-darkbrown/85">
+                    1. Fotos auswählen oder reinziehen (Mehrfachauswahl möglich):
+                </label>
+                <span id="photoCountBadge" class="text-[10px] font-bold text-terracotta hidden">0 Fotos ausgewählt</span>
             </div>
-            <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleFileSelect(event)">
+
+            <!-- Drag & Drop Zone -->
+            <div id="dropzone" onclick="document.getElementById('fileInput').click()" 
+                 class="border-2 border-dashed border-darkbrown/20 hover:border-terracotta rounded-2xl p-6 text-center cursor-pointer bg-white/50 hover:bg-white transition flex flex-col items-center justify-center min-h-[140px]">
+                
+                <div id="uploadPrompt" class="space-y-1.5">
+                    <svg class="w-9 h-9 mx-auto text-terracotta/70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                    <p class="text-xs font-bold text-darkbrown">Fotos hier ablegen oder klicken</p>
+                    <p class="text-[11px] text-darkbrown/60">Wähle 1 oder mehrere Bilder (z. B. von verschiedenen Farben/Grössen desselben Modells)</p>
+                </div>
+
+                <!-- Vorschau-Galerie der ausgewählten Fotos -->
+                <div id="imageGalleryGrid" class="hidden w-full flex flex-wrap gap-3 justify-center items-center pt-2"></div>
+            </div>
+
+            <!-- Unsichtbarer Datei-Input mit multiple -->
+            <input type="file" id="fileInput" accept="image/*" multiple class="hidden" onchange="handleFileSelect(event)">
             
-            <button id="analyzeBtn" onclick="analyzeImage()" disabled 
-                    class="w-full mt-3 bg-terracotta hover:bg-darkbrown disabled:opacity-40 disabled:cursor-not-allowed text-white py-3 rounded-xl text-xs uppercase font-bold tracking-widest shadow transition flex items-center justify-center gap-2">
-                <span>✨ Foto jetzt mit KI analysieren</span>
+            <!-- Weiteres Foto Button (erscheint sobald mind. 1 Bild hochgeladen ist) -->
+            <div class="flex items-center justify-between gap-3 mt-3">
+                <button type="button" id="addMoreBtn" onclick="document.getElementById('fileInput').click()" class="hidden text-[11px] font-bold text-terracotta hover:text-darkbrown px-3 py-1.5 rounded-xl border border-terracotta/30 bg-white/70 transition flex items-center gap-1.5">
+                    <span>➕ Weitere Fotos hinzufügen</span>
+                </button>
+                <button type="button" id="clearAllBtn" onclick="clearAllPhotos()" class="hidden text-[10px] text-darkbrown/50 hover:text-red-500 transition">
+                    Alle Fotos entfernen
+                </button>
+            </div>
+
+            <!-- KI Analyse Button -->
+            <button id="analyzeBtn" onclick="analyzeImagesWithAI()" disabled 
+                    class="w-full mt-3 bg-terracotta hover:bg-darkbrown disabled:opacity-40 disabled:cursor-not-allowed text-white py-3.5 rounded-xl text-xs uppercase font-bold tracking-widest shadow-md transition flex items-center justify-center gap-2">
+                <span id="analyzeBtnText">✨ Fotos mit KI analysieren</span>
             </button>
         </div>
 
         <!-- Status / Ladeanimation -->
-        <div id="statusMessage" class="hidden text-center py-4 text-xs font-bold text-terracotta animate-pulse"></div>
+        <div id="statusMessage" class="hidden text-center py-4 px-4 rounded-2xl bg-white/60 border border-darkbrown/10 text-xs font-bold text-terracotta animate-pulse"></div>
 
-        <!-- 2. Automatisch befüllte Felder -->
-        <form id="productForm" onsubmit="saveProduct(event)" class="space-y-4 border-t border-darkbrown/10 pt-6">
+        <!-- 2. Automatisch befüllte Felder & Varianten -->
+        <form id="productForm" onsubmit="saveProductWithVariants(event)" class="space-y-5 border-t border-darkbrown/10 pt-6">
             
-            <div>
-                <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Produktname:</label>
-                <input type="text" id="nameInput" required placeholder="Wird von der KI generiert..." 
-                       class="w-full bg-white border border-darkbrown/15 rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 focus:ring-terracotta">
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Kategorie:</label>
-                    <select id="catInput" required class="w-full bg-white border border-darkbrown/15 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-1 focus:ring-terracotta cursor-pointer">
-                        <option value="Baby">Baby</option>
-                        <option value="Kinder">Kinder</option>
-                        <option value="Erwachsene">Erwachsene</option>
-                        <option value="Makramee">Makramee</option>
-                        <option value="Taschen">Taschen</option>
-                        <option value="Gutscheine">Gutscheine</option>
-                        <option value="Accessoires">Accessoires</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Preis (CHF):</label>
-                    <input type="text" id="priceInput" required placeholder="z. B. 79.00 CHF" 
-                           class="w-full bg-white border border-darkbrown/15 rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 focus:ring-terracotta font-bold text-terracotta">
-                </div>
-            </div>
-
-            <!-- Grösse & Einzelstück-Option -->
-            <div class="bg-sand/35 p-4 rounded-2xl border border-darkbrown/15 space-y-3">
+            <!-- Allgemeine Produktdaten -->
+            <div class="space-y-4">
                 <div class="flex items-center justify-between">
-                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/80">
-                        📏 Grösse des Einzelstücks:
-                    </label>
-                    <span class="text-[10px] text-terracotta font-semibold">Tippen oder Schnellauswahl</span>
+                    <span class="text-[11px] uppercase tracking-wider font-bold text-terracotta">A. Allgemeine Produktdaten</span>
+                    <span class="text-[10px] text-darkbrown/60">Gilt für alle Varianten</span>
                 </div>
 
-                <div class="flex gap-2">
-                    <input type="text" id="sizeInput" placeholder="z. B. 62/68, 74/80 oder Einheitsgrösse" 
-                           class="flex-1 bg-white border border-darkbrown/20 rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 focus:ring-terracotta font-bold text-darkbrown"
-                           oninput="onSizeManualInput(this.value)">
-                    <button type="button" onclick="clearSize()" class="text-[10px] text-darkbrown/60 hover:text-darkbrown px-2.5 py-1 rounded-xl border border-darkbrown/15 bg-white transition">✕ Leeren</button>
-                </div>
-
-                <!-- Häufige Grössen als Klick-Buttons -->
                 <div>
-                    <span class="text-[9px] uppercase tracking-wider font-bold text-darkbrown/60 block mb-1.5">Häufige Grössen (zum Auswählen klicken):</span>
-                    <div class="flex flex-wrap gap-1.5" id="sizePillContainer">
-                        <button type="button" onclick="selectSizePill('50/56')" class="size-pill text-[10px] px-2.5 py-1.5 bg-white hover:bg-terracotta hover:text-white border border-darkbrown/15 rounded-xl transition font-medium">50/56 (0–2M)</button>
-                        <button type="button" onclick="selectSizePill('62/68')" class="size-pill text-[10px] px-2.5 py-1.5 bg-white hover:bg-terracotta hover:text-white border border-darkbrown/15 rounded-xl transition font-medium">62/68 (3–6M)</button>
-                        <button type="button" onclick="selectSizePill('74/80')" class="size-pill text-[10px] px-2.5 py-1.5 bg-white hover:bg-terracotta hover:text-white border border-darkbrown/15 rounded-xl transition font-medium">74/80 (6–12M)</button>
-                        <button type="button" onclick="selectSizePill('86/92')" class="size-pill text-[10px] px-2.5 py-1.5 bg-white hover:bg-terracotta hover:text-white border border-darkbrown/15 rounded-xl transition font-medium">86/92 (1–2J)</button>
-                        <button type="button" onclick="selectSizePill('98/104')" class="size-pill text-[10px] px-2.5 py-1.5 bg-white hover:bg-terracotta hover:text-white border border-darkbrown/15 rounded-xl transition font-medium">98/104 (3–4J)</button>
-                        <button type="button" onclick="selectSizePill('110/116')" class="size-pill text-[10px] px-2.5 py-1.5 bg-white hover:bg-terracotta hover:text-white border border-darkbrown/15 rounded-xl transition font-medium">110/116 (5–6J)</button>
-                        <button type="button" onclick="selectSizePill('Einheitsgrösse')" class="size-pill text-[10px] px-2.5 py-1.5 bg-white hover:bg-terracotta hover:text-white border border-darkbrown/15 rounded-xl transition font-medium">Einheitsgrösse</button>
+                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Produktname (Übergeordnet):</label>
+                    <input type="text" id="nameInput" required placeholder="z. B. Kuschel-Badeponcho mit Öhrchen" 
+                           class="w-full bg-white border border-darkbrown/15 rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 focus:ring-terracotta font-medium">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Kategorie:</label>
+                        <select id="catInput" required class="w-full bg-white border border-darkbrown/15 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-1 focus:ring-terracotta cursor-pointer font-medium">
+                            <option value="Baby">Baby</option>
+                            <option value="Kinder">Kinder</option>
+                            <option value="Erwachsene">Erwachsene</option>
+                            <option value="Makramee">Makramee</option>
+                            <option value="Taschen">Taschen</option>
+                            <option value="Gutscheine">Gutscheine</option>
+                            <option value="Accessoires">Accessoires</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Basispreis (CHF):</label>
+                        <input type="text" id="priceInput" required placeholder="z. B. 55.00 CHF" 
+                               class="w-full bg-white border border-darkbrown/15 rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 focus:ring-terracotta font-bold text-terracotta">
                     </div>
                 </div>
 
-                <!-- Einzelstück-Option Toggle -->
-                <div class="pt-2 border-t border-darkbrown/10 space-y-1">
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" id="isUniqueToggle" checked class="accent-terracotta w-4 h-4 rounded">
-                        <span class="text-[11px] text-darkbrown font-medium">
-                            ✨ <strong>Einzelstück / Unikat:</strong> Nur 1x vorhanden, feste Grösse, sofort versandbereit.
-                        </span>
-                    </label>
-                    <p class="text-[10px] text-darkbrown/65 pl-6 font-light">
-                        Kunden können direkt auf „In den Warenkorb“ klicken – keine verwirrenden, leeren Options-Dropdowns!
-                    </p>
+                <div>
+                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Allgemeine Beschreibung (für alle Farben passend):</label>
+                    <textarea id="descInput" rows="3" placeholder="Wird von der KI formuliert (Schnitt, Funktion, weicher Stoff, Besonderheiten)..." 
+                              class="w-full bg-white border border-darkbrown/15 rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 focus:ring-terracotta leading-relaxed"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Badge (Aufkleber im Shop):</label>
+                        <input type="text" id="badgeInput" value="Unikate" 
+                               class="w-full bg-white border border-darkbrown/15 rounded-xl px-4 py-2 text-xs outline-none focus:ring-1 focus:ring-terracotta">
+                    </div>
+                    <div class="flex items-center pt-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="singleUniqueToggle" class="accent-terracotta w-4 h-4 rounded">
+                            <span class="text-[11px] text-darkbrown font-medium">
+                                Reine 1-Stück-Option (keine Auswahldropdowns)
+                            </span>
+                        </label>
+                    </div>
                 </div>
             </div>
 
-            <div>
-                <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Liebevolle Beschreibung:</label>
-                <textarea id="descInput" rows="3" placeholder="Wird von der KI geschrieben..." 
-                          class="w-full bg-white border border-darkbrown/15 rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 focus:ring-terracotta leading-relaxed"></textarea>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Erkannte Farbtöne:</label>
-                    <input type="text" id="colorsInput" placeholder="z. B. Salbei, Naturweiss" 
-                           class="w-full bg-white border border-darkbrown/15 rounded-xl px-4 py-2 text-xs outline-none focus:ring-1 focus:ring-terracotta">
-                    <p class="text-[9px] text-darkbrown/50 mt-0.5">Dient der Produktbeschreibung und Suchfunktion im Shop.</p>
+            <!-- Individuelle Eigenschaften pro Bild / Varianten-Karten -->
+            <div id="variantsSection" class="border-t border-darkbrown/10 pt-5 space-y-4">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-1">
+                    <div>
+                        <span class="text-[11px] uppercase tracking-wider font-bold text-terracotta">B. Individuelle Eigenschaften zu jedem Foto</span>
+                        <p class="text-[10px] text-darkbrown/65">Jedes Bild erhält seine eigene Farbe, Grösse und Bestand. Kunden sehen genau dieses Foto, wenn sie die Variante anklicken!</p>
+                    </div>
                 </div>
 
-                <div>
-                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Badge (Aufkleber):</label>
-                    <input type="text" id="badgeInput" value="Unikat" 
-                           class="w-full bg-white border border-darkbrown/15 rounded-xl px-4 py-2 text-xs outline-none focus:ring-1 focus:ring-terracotta">
+                <!-- Container für die Varianten-Karten -->
+                <div id="variantsContainer" class="space-y-3">
+                    <p class="text-xs text-darkbrown/50 italic py-3 text-center">Lade oben Fotos hoch, um die einzelnen Eigenschaften zu bearbeiten.</p>
                 </div>
             </div>
 
             <button type="submit" id="saveBtn" 
-                    class="w-full bg-darkbrown hover:bg-terracotta text-white py-3.5 rounded-xl text-xs uppercase font-bold tracking-widest shadow-md transition flex items-center justify-center gap-2 mt-4">
-                <span>🚀 Produkt jetzt veröffentlichen</span>
+                    class="w-full bg-darkbrown hover:bg-terracotta text-white py-4 rounded-xl text-xs uppercase font-bold tracking-widest shadow-md transition flex items-center justify-center gap-2 mt-6">
+                <span id="saveBtnText">🚀 Produkt jetzt im Shop veröffentlichen</span>
             </button>
         </form>
 
@@ -160,79 +170,278 @@
 
     <!-- JavaScript Logik -->
     <script>
-        let currentBase64 = '';
-        let currentMimeType = '';
-        let currentFileName = '';
+        // Array aller hochgeladenen Bilder mit ihren Eigenschaften
+        // Schema: { id, file, fileName, imageBase64, mimeType, color, size, title, stock, price_add }
+        let uploadedPhotos = [];
 
-        function selectSizePill(val) {
-            const input = document.getElementById('sizeInput');
-            input.value = val;
-            highlightPill(val);
-            updateBadgeWithSize(val);
-        }
+        // Schnellauswahl-Grössen
+        const COMMON_SIZES = ['50/56', '62/68', '74/80', '86/92', '98/104', '110/116', '1–3 Jahre', 'Einheitsgrösse'];
 
-        function clearSize() {
-            const input = document.getElementById('sizeInput');
-            input.value = '';
-            highlightPill('');
-            updateBadgeWithSize('');
-        }
-
-        function onSizeManualInput(val) {
-            highlightPill(val.trim());
-            updateBadgeWithSize(val.trim());
-        }
-
-        function highlightPill(val) {
-            document.querySelectorAll('.size-pill').forEach(btn => {
-                const text = btn.textContent.trim();
-                if (val && (text === val || text.startsWith(val + ' ') || text.includes('(' + val + ')'))) {
-                    btn.classList.add('bg-terracotta', 'text-white', 'border-terracotta');
-                    btn.classList.remove('bg-white', 'hover:bg-terracotta', 'border-darkbrown/15');
-                } else {
-                    btn.classList.remove('bg-terracotta', 'text-white', 'border-terracotta');
-                    btn.classList.add('bg-white', 'border-darkbrown/15');
-                }
+        // Bild-Komprimierung im Browser (max 1200px, schont Bandbreite und bleibt unter Vercel 4.5MB Limit)
+        function compressImageFile(file, maxDim = 1200, quality = 0.82) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        let w = img.width;
+                        let h = img.height;
+                        if (w > maxDim || h > maxDim) {
+                            if (w > h) {
+                                h = Math.round((h * maxDim) / w);
+                                w = maxDim;
+                            } else {
+                                w = Math.round((w * maxDim) / h);
+                                h = maxDim;
+                            }
+                        }
+                        const canvas = document.createElement('canvas');
+                        canvas.width = w;
+                        canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
+                        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+                        resolve({
+                            base64: dataUrl,
+                            mimeType: 'image/jpeg'
+                        });
+                    };
+                    img.onerror = reject;
+                    img.src = e.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
             });
         }
 
-        function updateBadgeWithSize(sizeVal) {
-            const badge = document.getElementById('badgeInput');
-            if (!badge) return;
-            const current = badge.value.trim();
-            if (!current || current === 'Unikat' || current.startsWith('Unikat · Gr.')) {
-                if (sizeVal && sizeVal !== 'Einheitsgrösse') {
-                    badge.value = `Unikat · Gr. ${sizeVal}`;
-                } else {
-                    badge.value = 'Unikat';
+        async function handleFileSelect(event) {
+            const files = Array.from(event.target.files || []);
+            if (files.length === 0) return;
+
+            const status = document.getElementById('statusMessage');
+            status.textContent = `📸 Optimiere ${files.length} Foto(s)...`;
+            status.classList.remove('hidden');
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                try {
+                    const compressed = await compressImageFile(file);
+                    const cleanName = file.name.toLowerCase().replace(/[^a-z0-9.]/g, '-');
+                    
+                    uploadedPhotos.push({
+                        id: 'photo_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+                        file: file,
+                        fileName: cleanName,
+                        imageBase64: compressed.base64,
+                        mimeType: compressed.mimeType,
+                        color: '',
+                        size: '',
+                        title: '',
+                        stock: 1,
+                        price_add: 0
+                    });
+                } catch (err) {
+                    console.error("Fehler beim Komprimieren:", err);
                 }
+            }
+
+            status.classList.add('hidden');
+            event.target.value = '';
+
+            renderUploadGallery();
+            renderVariantCards();
+            updateUIState();
+        }
+
+        function updateUIState() {
+            const count = uploadedPhotos.length;
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            const analyzeBtnText = document.getElementById('analyzeBtnText');
+            const addMoreBtn = document.getElementById('addMoreBtn');
+            const clearAllBtn = document.getElementById('clearAllBtn');
+            const photoCountBadge = document.getElementById('photoCountBadge');
+            const saveBtnText = document.getElementById('saveBtnText');
+            const singleToggle = document.getElementById('singleUniqueToggle');
+
+            if (count > 0) {
+                analyzeBtn.disabled = false;
+                analyzeBtnText.textContent = `✨ ${count} Foto${count > 1 ? 's' : ''} jetzt mit KI analysieren`;
+                addMoreBtn.classList.remove('hidden');
+                clearAllBtn.classList.remove('hidden');
+                photoCountBadge.textContent = `${count} Foto${count > 1 ? 's' : ''} ausgewählt`;
+                photoCountBadge.classList.remove('hidden');
+                saveBtnText.textContent = `🚀 Produkt mit ${count} Variante${count > 1 ? 'n' : ''} veröffentlichen`;
+                
+                if (count === 1) {
+                    singleToggle.checked = true;
+                } else {
+                    singleToggle.checked = false;
+                }
+            } else {
+                analyzeBtn.disabled = true;
+                analyzeBtnText.textContent = '✨ Fotos mit KI analysieren';
+                addMoreBtn.classList.add('hidden');
+                clearAllBtn.classList.add('hidden');
+                photoCountBadge.classList.add('hidden');
+                saveBtnText.textContent = '🚀 Produkt jetzt im Shop veröffentlichen';
             }
         }
 
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+        function renderUploadGallery() {
+            const container = document.getElementById('imageGalleryGrid');
+            const prompt = document.getElementById('uploadPrompt');
 
-            currentMimeType = file.type;
-            currentFileName = file.name.toLowerCase().replace(/[^a-z0-9.]/g, '-');
+            if (uploadedPhotos.length === 0) {
+                container.innerHTML = '';
+                container.classList.add('hidden');
+                prompt.classList.remove('hidden');
+                return;
+            }
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                currentBase64 = e.target.result;
-                const img = document.getElementById('imagePreview');
-                img.src = currentBase64;
-                img.classList.remove('hidden');
-                document.getElementById('uploadPrompt').classList.add('hidden');
-                document.getElementById('analyzeBtn').disabled = false;
-            };
-            reader.readAsDataURL(file);
+            prompt.classList.add('hidden');
+            container.classList.remove('hidden');
+            container.innerHTML = '';
+
+            uploadedPhotos.forEach((photo, idx) => {
+                const card = document.createElement('div');
+                card.className = 'relative group w-24 h-28 rounded-2xl overflow-hidden border-2 shadow-sm bg-white ' + 
+                                (idx === 0 ? 'border-terracotta ring-2 ring-terracotta/30' : 'border-darkbrown/15');
+                card.innerHTML = `
+                    <img src="${photo.imageBase64}" alt="Foto ${idx + 1}" class="w-full h-full object-cover">
+                    <span class="absolute top-1 left-1 ${idx === 0 ? 'bg-terracotta text-white' : 'bg-darkbrown/80 text-white'} text-[9px] px-1.5 py-0.5 rounded font-bold shadow-xs">
+                        ${idx === 0 ? 'Cover' : '#' + (idx + 1)}
+                    </span>
+                    <button type="button" onclick="event.stopPropagation(); removePhoto(${idx})" 
+                            title="Foto entfernen"
+                            class="absolute top-1 right-1 w-5 h-5 bg-white/90 hover:bg-red-500 hover:text-white rounded-full flex items-center justify-center text-[10px] font-bold shadow-xs transition">
+                        ✕
+                    </button>
+                `;
+                container.appendChild(card);
+            });
         }
 
-        async function analyzeImage() {
+        function removePhoto(index) {
+            uploadedPhotos.splice(index, 1);
+            renderUploadGallery();
+            renderVariantCards();
+            updateUIState();
+        }
+
+        function clearAllPhotos() {
+            if (confirm("Möchtest du wirklich alle ausgewählten Fotos entfernen?")) {
+                uploadedPhotos = [];
+                renderUploadGallery();
+                renderVariantCards();
+                updateUIState();
+            }
+        }
+
+        function renderVariantCards() {
+            const container = document.getElementById('variantsContainer');
+            if (uploadedPhotos.length === 0) {
+                container.innerHTML = '<p class="text-xs text-darkbrown/50 italic py-3 text-center">Lade oben Fotos hoch, um die einzelnen Eigenschaften zu bearbeiten.</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+
+            uploadedPhotos.forEach((p, idx) => {
+                const card = document.createElement('div');
+                card.className = 'bg-white/80 p-4 rounded-2xl border border-darkbrown/15 shadow-xs flex flex-col md:flex-row gap-4 items-start md:items-center justify-between transition hover:border-terracotta/40';
+
+                const displayTitle = p.title || (p.color ? `${p.color}${p.size ? ` (Gr. ${p.size})` : ''}` : `Variante #${idx + 1}`);
+
+                card.innerHTML = `
+                    <div class="relative shrink-0 w-20 h-24 rounded-xl overflow-hidden bg-sand/30 border border-darkbrown/10 shadow-xs">
+                        <img src="${p.imageBase64}" alt="Foto ${idx + 1}" class="w-full h-full object-cover">
+                        <span class="absolute bottom-1 left-1 bg-darkbrown/85 text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow-xs">
+                            ${idx === 0 ? 'Foto 1 (Hauptbild)' : 'Foto ' + (idx + 1)}
+                        </span>
+                    </div>
+
+                    <div class="flex-1 w-full space-y-2.5">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            <div>
+                                <label class="block text-[9px] uppercase font-bold tracking-wider text-darkbrown/70 mb-0.5">Farbe / Ausführung:</label>
+                                <input type="text" value="${p.color || ''}" placeholder="z. B. Beere, Senfgelb, Salbei" 
+                                       oninput="updatePhotoProp(${idx}, 'color', this.value)"
+                                       class="w-full bg-white border border-darkbrown/20 rounded-xl px-3 py-1.5 text-xs outline-none focus:ring-1 focus:ring-terracotta font-medium">
+                            </div>
+
+                            <div>
+                                <label class="block text-[9px] uppercase font-bold tracking-wider text-darkbrown/70 mb-0.5">Grösse:</label>
+                                <input type="text" id="size_input_${idx}" value="${p.size || ''}" placeholder="z. B. 62/68 oder 1–3 Jahre" 
+                                       oninput="updatePhotoProp(${idx}, 'size', this.value)"
+                                       class="w-full bg-white border border-darkbrown/20 rounded-xl px-3 py-1.5 text-xs outline-none focus:ring-1 focus:ring-terracotta font-bold text-darkbrown">
+                            </div>
+                        </div>
+
+                        <div>
+                            <span class="text-[9px] uppercase tracking-wider font-bold text-darkbrown/50 block mb-1">Schnellauswahl Grösse:</span>
+                            <div class="flex flex-wrap gap-1">
+                                ${COMMON_SIZES.map(s => `
+                                    <button type="button" onclick="setPhotoSize(${idx}, '${s}')" 
+                                            class="text-[9px] px-2 py-1 rounded-lg border transition font-medium ${p.size === s ? 'bg-terracotta text-white border-terracotta' : 'bg-sand/35 hover:bg-terracotta hover:text-white border-darkbrown/15'}">
+                                        ${s}
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <div class="text-[10px] text-darkbrown/70">
+                            <span>Vorschau im Shop:</span> 
+                            <strong id="preview_title_${idx}" class="text-terracotta font-bold">„${displayTitle}“</strong>
+                        </div>
+                    </div>
+
+                    <div class="shrink-0 flex sm:flex-col gap-2 w-full sm:w-28 pt-2 sm:pt-0 border-t sm:border-t-0 sm:border-l border-darkbrown/10 sm:pl-3">
+                        <div>
+                            <label class="block text-[9px] uppercase font-bold tracking-wider text-darkbrown/70 mb-0.5">Bestand:</label>
+                            <input type="number" min="0" value="${p.stock || 1}" 
+                                   onchange="updatePhotoProp(${idx}, 'stock', Number(this.value))"
+                                   class="w-full bg-white border border-darkbrown/20 rounded-xl px-2.5 py-1 text-xs text-center font-bold text-darkbrown outline-none focus:ring-1 focus:ring-terracotta">
+                        </div>
+                        <div>
+                            <label class="block text-[9px] uppercase font-bold tracking-wider text-darkbrown/70 mb-0.5">Aufpreis (CHF):</label>
+                            <input type="number" step="0.50" min="0" value="${p.price_add || 0}" 
+                                   onchange="updatePhotoProp(${idx}, 'price_add', Number(this.value))"
+                                   class="w-full bg-white border border-darkbrown/20 rounded-xl px-2.5 py-1 text-xs text-center font-medium text-darkbrown outline-none focus:ring-1 focus:ring-terracotta">
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function setPhotoSize(index, sizeVal) {
+            if (!uploadedPhotos[index]) return;
+            uploadedPhotos[index].size = sizeVal;
+            const input = document.getElementById(`size_input_${index}`);
+            if (input) input.value = sizeVal;
+            renderVariantCards();
+        }
+
+        function updatePhotoProp(index, prop, val) {
+            if (!uploadedPhotos[index]) return;
+            uploadedPhotos[index][prop] = val;
+            
+            const p = uploadedPhotos[index];
+            const titlePreview = document.getElementById(`preview_title_${index}`);
+            if (titlePreview) {
+                const display = p.color ? `${p.color}${p.size ? ` (Gr. ${p.size})` : ''}` : `Variante #${index + 1}`;
+                titlePreview.textContent = `„${display}“`;
+            }
+        }
+
+        async function analyzeImagesWithAI() {
+            if (uploadedPhotos.length === 0) return;
+
             const btn = document.getElementById('analyzeBtn');
             const status = document.getElementById('statusMessage');
             btn.disabled = true;
-            status.textContent = '✨ KI analysiert dein Foto und erstellt die Texte...';
+            status.textContent = `✨ KI vergleicht deine ${uploadedPhotos.length} Fotos, erkennt Farben & Grössen und erstellt die Texte...`;
             status.classList.remove('hidden');
 
             try {
@@ -240,36 +449,37 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        imageBase64: currentBase64,
-                        mimeType: currentMimeType
+                        images: uploadedPhotos.map(p => ({
+                            imageBase64: p.imageBase64,
+                            mimeType: p.mimeType,
+                            fileName: p.fileName
+                        }))
                     })
                 });
 
                 const data = await res.json();
                 if (data.error) throw new Error(data.error);
 
-                // Felder befüllen
                 if (data.name) document.getElementById('nameInput').value = data.name;
                 if (data.desc || data.description) document.getElementById('descInput').value = data.desc || data.description;
                 if (data.cat) document.getElementById('catInput').value = data.cat;
-                if (data.price && !document.getElementById('priceInput').value) {
-                    document.getElementById('priceInput').value = data.price;
-                }
-                if (data.colors) {
-                    document.getElementById('colorsInput').value = Array.isArray(data.colors) ? data.colors.join(', ') : data.colors;
+                if (data.price) document.getElementById('priceInput').value = data.price;
+                if (data.badge) document.getElementById('badgeInput').value = data.badge;
+
+                if (Array.isArray(data.variants)) {
+                    data.variants.forEach((v, idx) => {
+                        if (uploadedPhotos[idx]) {
+                            if (v.color && !uploadedPhotos[idx].color) uploadedPhotos[idx].color = v.color;
+                            if (v.size && !uploadedPhotos[idx].size) uploadedPhotos[idx].size = v.size;
+                            if (v.title) uploadedPhotos[idx].title = v.title;
+                            if (typeof v.stock !== 'undefined') uploadedPhotos[idx].stock = v.stock;
+                        }
+                    });
                 }
 
-                // Grösse befüllen (nur falls Feld noch leer ist)
-                const currentSize = document.getElementById('sizeInput').value.trim();
-                if (!currentSize && data.size) {
-                    selectSizePill(data.size);
-                }
+                renderVariantCards();
 
-                if (data.badge && !document.getElementById('badgeInput').value) {
-                    document.getElementById('badgeInput').value = data.badge;
-                }
-
-                status.textContent = '🎉 Fertig ausgefüllt! Überprüfe kurz Grösse & Preis und speichere dein Unikat.';
+                status.textContent = `🎉 Fantastisch! Beschreibung und ${uploadedPhotos.length} Varianten wurden erstellt. Du kannst jetzt jedes Detail kurz anpassen und speichern.`;
                 status.classList.remove('text-terracotta');
                 status.classList.add('text-emerald-700');
             } catch (err) {
@@ -280,36 +490,54 @@
             }
         }
 
-        async function saveProduct(e) {
+        async function saveProductWithVariants(e) {
             e.preventDefault();
+            if (uploadedPhotos.length === 0) {
+                alert("Bitte wähle mindestens ein Produktfoto aus!");
+                return;
+            }
+
             const btn = document.getElementById('saveBtn');
+            const saveBtnText = document.getElementById('saveBtnText');
             btn.disabled = true;
-            btn.textContent = 'Wird gespeichert...';
+            saveBtnText.textContent = `Speichere Produkt & lade ${uploadedPhotos.length} Fotos hoch...`;
 
             const name = document.getElementById('nameInput').value.trim();
-            const slug = name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
             const cat = document.getElementById('catInput').value;
             const price = document.getElementById('priceInput').value.trim();
-            const size = document.getElementById('sizeInput').value.trim();
-            const isUnique = document.getElementById('isUniqueToggle').checked;
             const description = document.getElementById('descInput').value.trim();
             const badge = document.getElementById('badgeInput').value.trim();
-            const colorsStr = document.getElementById('colorsInput').value.trim();
+            const isSinglePiece = document.getElementById('singleUniqueToggle').checked || uploadedPhotos.length === 1;
 
-            const colorsList = colorsStr ? colorsStr.split(',').map(c => ({ name: c.trim(), stock: 1 })) : [];
+            const variantsPayload = uploadedPhotos.map((p, idx) => {
+                let variantTitle = p.title || '';
+                if (!variantTitle) {
+                    const parts = [];
+                    if (p.color) parts.push(p.color);
+                    if (p.size) parts.push(`Gr. ${p.size}`);
+                    variantTitle = parts.join(' \u00B7 ') || `Ausf\u00fchrung #${idx + 1}`;
+                }
+                return {
+                    imageBase64: p.imageBase64,
+                    fileName: p.fileName,
+                    color: p.color,
+                    size: p.size,
+                    variantTitle: variantTitle,
+                    title: variantTitle,
+                    stock: typeof p.stock !== 'undefined' ? Number(p.stock) : 1,
+                    price_add: Number(p.price_add) || 0
+                };
+            });
 
             try {
-                // Direkt ueber unsere sichere Serverless API speichern (ohne Token-Eingabe!)
                 let token = '';
                 try {
                     const sveltiaUser = JSON.parse(localStorage.getItem('sveltia-cms.user') || '{}');
                     token = sveltiaUser.token || localStorage.getItem('uniquebylea_gh_token') || '';
-                } catch (e) {}
+                } catch (err) {}
 
                 const reqHeaders = { 'Content-Type': 'application/json' };
-                if (token) {
-                    reqHeaders['Authorization'] = 'token ' + token;
-                }
+                if (token) reqHeaders['Authorization'] = 'token ' + token;
 
                 const saveRes = await fetch('/api/save-product', {
                     method: 'POST',
@@ -318,15 +546,11 @@
                         name: name,
                         cat: cat,
                         price: price,
-                        size: size,
-                        isUnique: isUnique,
-                        stock: 1,
-                        hasColorVariants: !isUnique, // Bei Unikaten keine leeren Pflicht-Dropdowns erzeugen
                         description: description,
                         badge: badge,
-                        colorsList: colorsList,
-                        imageBase64: currentBase64,
-                        fileName: currentFileName
+                        isUnique: isSinglePiece && uploadedPhotos.length === 1,
+                        size: uploadedPhotos[0]?.size || '',
+                        variants: variantsPayload
                     })
                 });
 
@@ -335,12 +559,12 @@
                     throw new Error(resData.error || ('Fehler beim Speichern (' + saveRes.status + ')'));
                 }
 
-                alert('🎉 Fantastisch! Das Unikat "' + name + '"' + (size ? ' in Grösse ' + size : '') + ' wurde erfolgreich erstellt und ist in ca. 20 Sekunden in deinem Shop online!');
+                alert(`🎉 Fantastisch! Das Produkt "${name}" mit ${uploadedPhotos.length} Variante(n) wurde erfolgreich erstellt und ist in ca. 20 Sekunden in deinem Shop online!`);
                 window.location.href = '/shop.html';
             } catch (err) {
                 alert("Fehler beim Speichern: " + err.message);
                 btn.disabled = false;
-                btn.textContent = '🚀 Produkt jetzt veröffentlichen';
+                saveBtnText.textContent = `🚀 Produkt mit ${uploadedPhotos.length} Variante${uploadedPhotos.length > 1 ? 'n' : ''} veröffentlichen`;
             }
         }
     </script>
