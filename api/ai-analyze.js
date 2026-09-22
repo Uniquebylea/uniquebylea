@@ -1,4 +1,4 @@
-﻿module.exports = async (req, res) => {
+module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -101,15 +101,16 @@ Folgendes Format ist zwingend einzuhalten:
     }
 
     const modelsToTry = [
-      'gemini-2.5-flash',
       'gemini-1.5-flash',
+      'gemini-1.5-flash-latest',
       'gemini-2.0-flash',
-      'gemini-3.8-flash',
-      'gemini-3.7-flash'
+      'gemini-2.0-flash-lite',
+      'gemini-1.5-pro'
     ];
 
     let lastError = null;
     let successfulData = null;
+    const attempts = [];
 
     for (const model of modelsToTry) {
       try {
@@ -120,26 +121,37 @@ Folgendes Format ist zwingend einzuhalten:
           body: JSON.stringify({
             contents: [{ parts }],
             generationConfig: {
-              response_mime_type: 'application/json',
+              responseMimeType: 'application/json',
               temperature: 0.2
             }
           })
         });
 
         const data = await response.json();
-        if (response.ok && !data.error && data.candidates?.[0]?.content?.parts?.[0]?.text) {
+        const hasText = !!data.candidates?.[0]?.content?.parts?.[0]?.text;
+        attempts.push({
+          model,
+          status: response.status,
+          error: data.error?.message || (hasText ? 'OK' : 'No text candidate')
+        });
+
+        if (response.ok && !data.error && hasText) {
           successfulData = data;
           break;
         } else {
           lastError = data.error?.message || `HTTP ${response.status} from ${model}`;
         }
       } catch (callErr) {
+        attempts.push({ model, error: callErr.message });
         lastError = callErr.message;
       }
     }
 
     if (!successfulData) {
-      return res.status(500).json({ error: lastError || 'Kein KI-Modell konnte die Bildanalyse durchführen.' });
+      return res.status(500).json({
+        error: lastError || 'Kein KI-Modell konnte die Bildanalyse durchführen.',
+        attempts
+      });
     }
 
     const textResponse = successfulData.candidates[0].content.parts[0].text;
