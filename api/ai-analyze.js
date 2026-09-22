@@ -101,11 +101,10 @@ Folgendes Format ist zwingend einzuhalten:
     }
 
     const modelsToTry = [
-      'gemini-1.5-flash',
-      'gemini-1.5-flash-latest',
-      'gemini-2.0-flash',
-      'gemini-2.0-flash-lite',
-      'gemini-1.5-pro'
+      'gemini-3.6-flash',
+      'gemini-3.5-flash-lite',
+      'gemini-3.5-flash',
+      'gemini-2.5-flash'
     ];
 
     let lastError = null;
@@ -148,9 +147,19 @@ Folgendes Format ist zwingend einzuhalten:
     }
 
     if (!successfulData) {
+      let availableModels = [];
+      try {
+        const listRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+        const listData = await listRes.json();
+        if (listData.models) {
+          availableModels = listData.models.map(m => m.name);
+        }
+      } catch (e) {}
+
       return res.status(500).json({
         error: lastError || 'Kein KI-Modell konnte die Bildanalyse durchführen.',
-        attempts
+        attempts,
+        availableModels
       });
     }
 
