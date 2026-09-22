@@ -31,7 +31,7 @@ module.exports = async (req, res) => {
     }
     body = body || {};
 
-    const { name, cat, price, description, badge, colorsList, imageBase64, fileName } = body;
+    const { name, cat, price, description, badge, size, isUnique, stock, hasColorVariants, colorsList, imageBase64, fileName } = body;
     if (!name || !imageBase64) {
       return res.status(400).json({ error: 'Name und Bild sind erforderlich.' });
     }
@@ -84,7 +84,11 @@ module.exports = async (req, res) => {
 
     // 2. Upload Product JSON to GitHub
     const options = [];
-    if (Array.isArray(colorsList) && colorsList.length > 0) {
+    const isSingleItem = isUnique !== false; // Standardmässig Einzelstück
+    const cleanSize = (size || '').trim();
+
+    // Nur wenn explizit Farb-Varianten gewünscht sind (nicht bei reinen Einzelstücken), wird ein Dropdown erzeugt
+    if (hasColorVariants && Array.isArray(colorsList) && colorsList.length > 0) {
       options.push({
         name: "Farbe",
         type: "color",
@@ -102,12 +106,14 @@ module.exports = async (req, res) => {
       cat: cat || 'Unikate',
       price: (price || '49.00').includes('CHF') ? price : `${price} CHF`,
       badge: badge || 'Unikat',
-      stock: 1,
+      size: cleanSize,
+      stock: typeof stock !== 'undefined' ? Number(stock) : 1,
+      is_unique: isSingleItem,
       description: description || '',
       img: imagePath,
       options: options,
       variants_color: Array.isArray(colorsList) ? colorsList : [],
-      variants_size: [],
+      variants_size: cleanSize ? [{ name: cleanSize, stock: 1, price_add: 0 }] : [],
       allow_custom_name: false
     };
 
