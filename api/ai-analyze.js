@@ -9,60 +9,82 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { imageBase64, mimeType } = req.body;
-    if (!imageBase64) {
-      return res.status(400).json({ error: 'Kein Bild empfangen.' });
+    let imageList = [];
+    if (Array.isArray(req.body.images) && req.body.images.length > 0) {
+      imageList = req.body.images;
+    } else if (req.body.imageBase64) {
+      imageList = [{
+        imageBase64: req.body.imageBase64,
+        mimeType: req.body.mimeType || 'image/jpeg'
+      }];
     }
 
-    const cleanBase64 = imageBase64.replace(/^data:image\/\w+;base64,/, '');
-    const cleanMime = mimeType || 'image/jpeg';
+    if (imageList.length === 0) {
+      return res.status(400).json({ error: 'Keine Bilder empfangen.' });
+    }
 
-    const prompt = `Du bist ein erfahrener E-Commerce-Experte für das Schweizer Handarbeits-Label "Unique by Lea" in Interlaken.
+    const isMulti = imageList.length > 1;
+
+    let prompt = '';
+    if (isMulti) {
+      prompt = `Du bist ein erfahrener Schweizer E-Commerce-Experte für das Handarbeits-Label "Unique by Lea" in Interlaken.
+Vor dir liegen ${imageList.length} Fotos verschiedener Ausführungen oder Farben desselben handgefertigten Modells/Produkttyps (z. B. Badeponchos, Strampler, Taschen in verschiedenen Farben und Grössen).
+Analysiere alle ${imageList.length} Fotos und gib ausschließlich ein valides JSON-Objekt zurück.
+
+Folgendes Format ist zwingend einzuhalten:
+{
+  "name": "Eleganter, übergeordneter Modellname im Schweizer Boutique-Stil (z. B. 'Kuschel-Badeponcho mit Öhrchen')",
+  "cat": "Wähle exakt eine dieser Kategorien: Baby, Kinder, Erwachsene, Makramee, Taschen, Gutscheine, Accessoires",
+  "price": "Einheitlicher Basispreis in CHF (z. B. '55.00 CHF')",
+  "description": "Liebevoller, ansprechender Verkaufstext (ca. 3-4 Sätze), der das Modell allgemein beschreibt (Schnitt, Funktion, weicher Stoff, Besonderheiten, Handarbeit im Berner Oberland), passend für alle abgebildeten Varianten.",
+  "badge": "Unikate",
+  "variants": [
+${imageList.map((_, idx) => `    {
+      "imageIndex": ${idx},
+      "color": "Erkannte Hauptfarbe von Foto ${idx + 1} (z. B. 'Senfgelb', 'Beere', 'Salbei')",
+      "size": "Geschätzte Grösse von Foto ${idx + 1} falls erkennbar (z. B. '1–3 Jahre' oder '62/68' oder 'Einheitsgrösse')",
+      "title": "Kompakte Bezeichnung für Bild ${idx + 1} (z. B. 'Senfgelb · Gr. 1–3 Jahre')",
+      "stock": 1,
+      "price_add": 0
+    }`).join(',\n')}
+  ]
+}`;
+    } else {
+      prompt = `Du bist ein erfahrener E-Commerce-Experte für das Schweizer Handarbeits-Label "Unique by Lea" in Interlaken.
 Analysiere dieses Foto eines handgefertigten Unikats/Produkts und gib ausschließlich ein valides JSON-Objekt zurück.
 
 Folgendes Format ist zwingend einzuhalten:
 {
-  "name": "Prägnanter, eleganter Produktname im Schweizer Boutique-Stil (z. B. 'Babynestchen Kuschelschaf' oder 'Makramee Wandbehang Boho')",
+  "name": "Prägnanter, eleganter Produktname im Schweizer Boutique-Stil (z. B. 'Kuschel-Badeponcho mit Öhrchen' oder 'Babynestchen Kuschelschaf')",
   "cat": "Wähle exakt eine dieser Kategorien: Baby, Kinder, Erwachsene, Makramee, Taschen, Gutscheine, Accessoires",
   "price": "Passender Preis in CHF (z. B. '55.00 CHF')",
-  "size": "Geschätzte Grösse (z. B. '62/68' für Babys, '86/92' für Kleinkinder, oder 'Einheitsgrösse' für Accessoires/Taschen/Decken)",
+  "size": "Geschätzte Grösse (z. B. '62/68' für Babys, '1–3 Jahre' für Kleinkinder, oder 'Einheitsgrösse')",
   "description": "Liebevoller, ansprechender Verkaufstext (ca. 2-3 Sätze). Betone hochwertige Handarbeit und das Besondere an diesem Unikat.",
   "colors": ["Hauptfarbe 1", "Hauptfarbe 2"],
-  "badge": "Unikat"
+  "badge": "Unikat",
+  "variants": [
+    {
+      "imageIndex": 0,
+      "color": "Hauptfarbe",
+      "size": "Geschätzte Grösse",
+      "title": "Hauptfarbe · Grösse",
+      "stock": 1,
+      "price_add": 0
+    }
+  ]
 }`;
+    }
 
-    // Active models verified on API
-    const modelsToTry = [
-      'gemini-3.8-flash',
-      'gemini-3.7-flash',
-      'gemini-3.6-flash',
-      'gemini-2.5-flash'
-    ];
-
-    let lastError = null;
-    let successfulData = null;
-
-    for (const model of modelsToTry) {
-      try {
-        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-
-        const response = await fetch(geminiUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [
-              {
-                parts: [
-                  { text: prompt },
-                  {
-                    inline_data: {
-                      mime_type: cleanMime,
-                      data: cleanBase64
-                    }
-                  }
-                ]
-              }
-            ],
+    const parts = [{ text: prompt }];
+    for (const img of imageList) {
+      const cleanBase64 = img.imageBase64.replace(/^data:image\/\w+;base64,/, '');
+      parts.push({
+        inline_data: {
+          mime_type: img.mimeType || 'image/jpeg',
+          data: cleanBase64
+        }
+      });
+    }
             generationConfig: {
               response_mime_type: 'application/json',
               temperature: 0.2
