@@ -771,7 +771,7 @@
                         <h3 class="font-serif text-[11px] md:text-sm uppercase tracking-wider mb-1 truncate">${item.name}</h3>
                         <div class="flex items-center justify-between gap-1 mb-2.5">
                             <p class="text-terracotta font-bold text-xs">${item.price}</p>
-                            ${item.size ? `<span class="text-[9px] md:text-[10px] text-darkbrown/75 bg-sand/70 border border-darkbrown/15 px-2 py-0.5 rounded-md font-semibold">Gr. ${item.size}</span>` : ''}
+                            ${item.size ? `<span class="text-[9px] md:text-[10px] text-darkbrown/75 bg-sand/70 border border-darkbrown/15 px-2 py-0.5 rounded-md font-semibold">Gr. ${item.size}</span>` : (item.options && item.options[0]?.values?.length > 1 ? `<span class="text-[9px] md:text-[10px] text-terracotta bg-sand/60 border border-terracotta/20 px-2 py-0.5 rounded-md font-semibold">${item.options[0].values.length} Varianten</span>` : '')}
                         </div>
                         
                         ${isOutOfStock ? `
