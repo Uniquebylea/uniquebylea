@@ -1,0 +1,40 @@
+{
+  "name": "Kuschel-Badeponcho Öhrchen Senf",
+  "cat": "Kinder",
+  "price": "55 CHF",
+  "badge": "Unikat",
+  "stock": 1,
+  "description": "Dieser liebevoll handgefertigte Badeponcho aus weichem Frottee hält kleine Entdecker nach dem Badespass kuschelig warm. Die verspielte Kapuze mit niedlichen Bärenöhrchen und gemustertem Innenfutter verleiht dem Unikat seinen ganz besonderen Charme. Mit praktischer Kängurutasche und Knöpfen für ein kinderleichtes Überziehen.",
+  "img": "images/kuschel-badeponcho-oehrchen-senf-4220149300.jpg",
+  "options": [
+    {
+      "name": "Farbe",
+      "type": "color",
+      "required": true,
+      "values": [
+        {
+          "title": "Senf",
+          "price_add": 0,
+          "stock": 1
+        },
+        {
+          "title": "Beige",
+          "price_add": 0,
+          "stock": 1
+        }
+      ]
+    }
+  ],
+  "variants_color": [
+    {
+      "name": "Senf",
+      "stock": 1
+    },
+    {
+      "name": "Beige",
+      "stock": 1
+    }
+  ],
+  "variants_size": [],
+  "allow_custom_name": false
+}
