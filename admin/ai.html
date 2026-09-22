@@ -85,6 +85,50 @@
                 </div>
             </div>
 
+            <!-- Grösse & Einzelstück-Option -->
+            <div class="bg-sand/35 p-4 rounded-2xl border border-darkbrown/15 space-y-3">
+                <div class="flex items-center justify-between">
+                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/80">
+                        📏 Grösse des Einzelstücks:
+                    </label>
+                    <span class="text-[10px] text-terracotta font-semibold">Tippen oder Schnellauswahl</span>
+                </div>
+
+                <div class="flex gap-2">
+                    <input type="text" id="sizeInput" placeholder="z. B. 62/68, 74/80 oder Einheitsgrösse" 
+                           class="flex-1 bg-white border border-darkbrown/20 rounded-xl px-4 py-2.5 text-xs outline-none focus:ring-1 focus:ring-terracotta font-bold text-darkbrown"
+                           oninput="onSizeManualInput(this.value)">
+                    <button type="button" onclick="clearSize()" class="text-[10px] text-darkbrown/60 hover:text-darkbrown px-2.5 py-1 rounded-xl border border-darkbrown/15 bg-white transition">✕ Leeren</button>
+                </div>
+
+                <!-- Häufige Grössen als Klick-Buttons -->
+                <div>
+                    <span class="text-[9px] uppercase tracking-wider font-bold text-darkbrown/60 block mb-1.5">Häufige Grössen (zum Auswählen klicken):</span>
+                    <div class="flex flex-wrap gap-1.5" id="sizePillContainer">
+                        <button type="button" onclick="selectSizePill('50/56')" class="size-pill text-[10px] px-2.5 py-1.5 bg-white hover:bg-terracotta hover:text-white border border-darkbrown/15 rounded-xl transition font-medium">50/56 (0–2M)</button>
+                        <button type="button" onclick="selectSizePill('62/68')" class="size-pill text-[10px] px-2.5 py-1.5 bg-white hover:bg-terracotta hover:text-white border border-darkbrown/15 rounded-xl transition font-medium">62/68 (3–6M)</button>
+                        <button type="button" onclick="selectSizePill('74/80')" class="size-pill text-[10px] px-2.5 py-1.5 bg-white hover:bg-terracotta hover:text-white border border-darkbrown/15 rounded-xl transition font-medium">74/80 (6–12M)</button>
+                        <button type="button" onclick="selectSizePill('86/92')" class="size-pill text-[10px] px-2.5 py-1.5 bg-white hover:bg-terracotta hover:text-white border border-darkbrown/15 rounded-xl transition font-medium">86/92 (1–2J)</button>
+                        <button type="button" onclick="selectSizePill('98/104')" class="size-pill text-[10px] px-2.5 py-1.5 bg-white hover:bg-terracotta hover:text-white border border-darkbrown/15 rounded-xl transition font-medium">98/104 (3–4J)</button>
+                        <button type="button" onclick="selectSizePill('110/116')" class="size-pill text-[10px] px-2.5 py-1.5 bg-white hover:bg-terracotta hover:text-white border border-darkbrown/15 rounded-xl transition font-medium">110/116 (5–6J)</button>
+                        <button type="button" onclick="selectSizePill('Einheitsgrösse')" class="size-pill text-[10px] px-2.5 py-1.5 bg-white hover:bg-terracotta hover:text-white border border-darkbrown/15 rounded-xl transition font-medium">Einheitsgrösse</button>
+                    </div>
+                </div>
+
+                <!-- Einzelstück-Option Toggle -->
+                <div class="pt-2 border-t border-darkbrown/10 space-y-1">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="isUniqueToggle" checked class="accent-terracotta w-4 h-4 rounded">
+                        <span class="text-[11px] text-darkbrown font-medium">
+                            ✨ <strong>Einzelstück / Unikat:</strong> Nur 1x vorhanden, feste Grösse, sofort versandbereit.
+                        </span>
+                    </label>
+                    <p class="text-[10px] text-darkbrown/65 pl-6 font-light">
+                        Kunden können direkt auf „In den Warenkorb“ klicken – keine verwirrenden, leeren Options-Dropdowns!
+                    </p>
+                </div>
+            </div>
+
             <div>
                 <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Liebevolle Beschreibung:</label>
                 <textarea id="descInput" rows="3" placeholder="Wird von der KI geschrieben..." 
@@ -93,13 +137,14 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Erkannte Farben (Kommagetrennt):</label>
+                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Erkannte Farbtöne:</label>
                     <input type="text" id="colorsInput" placeholder="z. B. Salbei, Naturweiss" 
                            class="w-full bg-white border border-darkbrown/15 rounded-xl px-4 py-2 text-xs outline-none focus:ring-1 focus:ring-terracotta">
+                    <p class="text-[9px] text-darkbrown/50 mt-0.5">Dient der Produktbeschreibung und Suchfunktion im Shop.</p>
                 </div>
 
                 <div>
-                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Badge:</label>
+                    <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Badge (Aufkleber):</label>
                     <input type="text" id="badgeInput" value="Unikat" 
                            class="w-full bg-white border border-darkbrown/15 rounded-xl px-4 py-2 text-xs outline-none focus:ring-1 focus:ring-terracotta">
                 </div>
@@ -118,6 +163,51 @@
         let currentBase64 = '';
         let currentMimeType = '';
         let currentFileName = '';
+
+        function selectSizePill(val) {
+            const input = document.getElementById('sizeInput');
+            input.value = val;
+            highlightPill(val);
+            updateBadgeWithSize(val);
+        }
+
+        function clearSize() {
+            const input = document.getElementById('sizeInput');
+            input.value = '';
+            highlightPill('');
+            updateBadgeWithSize('');
+        }
+
+        function onSizeManualInput(val) {
+            highlightPill(val.trim());
+            updateBadgeWithSize(val.trim());
+        }
+
+        function highlightPill(val) {
+            document.querySelectorAll('.size-pill').forEach(btn => {
+                const text = btn.textContent.trim();
+                if (val && (text === val || text.startsWith(val + ' ') || text.includes('(' + val + ')'))) {
+                    btn.classList.add('bg-terracotta', 'text-white', 'border-terracotta');
+                    btn.classList.remove('bg-white', 'hover:bg-terracotta', 'border-darkbrown/15');
+                } else {
+                    btn.classList.remove('bg-terracotta', 'text-white', 'border-terracotta');
+                    btn.classList.add('bg-white', 'border-darkbrown/15');
+                }
+            });
+        }
+
+        function updateBadgeWithSize(sizeVal) {
+            const badge = document.getElementById('badgeInput');
+            if (!badge) return;
+            const current = badge.value.trim();
+            if (!current || current === 'Unikat' || current.startsWith('Unikat · Gr.')) {
+                if (sizeVal && sizeVal !== 'Einheitsgrösse') {
+                    badge.value = `Unikat · Gr. ${sizeVal}`;
+                } else {
+                    badge.value = 'Unikat';
+                }
+            }
+        }
 
         function handleFileSelect(event) {
             const file = event.target.files[0];
@@ -159,13 +249,27 @@
                 if (data.error) throw new Error(data.error);
 
                 // Felder befüllen
-                document.getElementById('nameInput').value = data.name || '';
-                document.getElementById('descInput').value = data.description || '';
+                if (data.name) document.getElementById('nameInput').value = data.name;
+                if (data.desc || data.description) document.getElementById('descInput').value = data.desc || data.description;
                 if (data.cat) document.getElementById('catInput').value = data.cat;
-                if (data.colors) document.getElementById('colorsInput').value = Array.isArray(data.colors) ? data.colors.join(', ') : data.colors;
-                if (data.badge) document.getElementById('badgeInput').value = data.badge;
+                if (data.price && !document.getElementById('priceInput').value) {
+                    document.getElementById('priceInput').value = data.price;
+                }
+                if (data.colors) {
+                    document.getElementById('colorsInput').value = Array.isArray(data.colors) ? data.colors.join(', ') : data.colors;
+                }
 
-                status.textContent = '🎉 Fertig ausgefüllt! Überprüfe kurz den Preis und speichere das Produkt.';
+                // Grösse befüllen (nur falls Feld noch leer ist)
+                const currentSize = document.getElementById('sizeInput').value.trim();
+                if (!currentSize && data.size) {
+                    selectSizePill(data.size);
+                }
+
+                if (data.badge && !document.getElementById('badgeInput').value) {
+                    document.getElementById('badgeInput').value = data.badge;
+                }
+
+                status.textContent = '🎉 Fertig ausgefüllt! Überprüfe kurz Grösse & Preis und speichere dein Unikat.';
                 status.classList.remove('text-terracotta');
                 status.classList.add('text-emerald-700');
             } catch (err) {
@@ -186,6 +290,8 @@
             const slug = name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
             const cat = document.getElementById('catInput').value;
             const price = document.getElementById('priceInput').value.trim();
+            const size = document.getElementById('sizeInput').value.trim();
+            const isUnique = document.getElementById('isUniqueToggle').checked;
             const description = document.getElementById('descInput').value.trim();
             const badge = document.getElementById('badgeInput').value.trim();
             const colorsStr = document.getElementById('colorsInput').value.trim();
@@ -212,6 +318,10 @@
                         name: name,
                         cat: cat,
                         price: price,
+                        size: size,
+                        isUnique: isUnique,
+                        stock: 1,
+                        hasColorVariants: !isUnique, // Bei Unikaten keine leeren Pflicht-Dropdowns erzeugen
                         description: description,
                         badge: badge,
                         colorsList: colorsList,
@@ -225,7 +335,7 @@
                     throw new Error(resData.error || ('Fehler beim Speichern (' + saveRes.status + ')'));
                 }
 
-                alert('Fantastisch! Das Produkt "' + name + '" wurde erfolgreich erstellt und ist in wenigen Sekunden in deinem Shop online!');
+                alert('🎉 Fantastisch! Das Unikat "' + name + '"' + (size ? ' in Grösse ' + size : '') + ' wurde erfolgreich erstellt und ist in ca. 20 Sekunden in deinem Shop online!');
                 window.location.href = '/shop.html';
             } catch (err) {
                 alert("Fehler beim Speichern: " + err.message);
