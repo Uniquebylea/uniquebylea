@@ -418,6 +418,7 @@
         function setPhotoSize(index, sizeVal) {
             if (!uploadedPhotos[index]) return;
             uploadedPhotos[index].size = sizeVal;
+            uploadedPhotos[index].title = '';
             const input = document.getElementById(`size_input_${index}`);
             if (input) input.value = sizeVal;
             renderVariantCards();
@@ -426,6 +427,7 @@
         function updatePhotoProp(index, prop, val) {
             if (!uploadedPhotos[index]) return;
             uploadedPhotos[index][prop] = val;
+            uploadedPhotos[index].title = '';
             
             const p = uploadedPhotos[index];
             const titlePreview = document.getElementById(`preview_title_${index}`);
@@ -472,6 +474,10 @@
                 if (data.price) document.getElementById('priceInput').value = data.price;
                 if (data.badge) document.getElementById('badgeInput').value = data.badge;
 
+                if (data.size && uploadedPhotos.length === 1 && !uploadedPhotos[0].size) {
+                    uploadedPhotos[0].size = data.size;
+                }
+
                 if (Array.isArray(data.variants)) {
                     data.variants.forEach((v, idx) => {
                         if (uploadedPhotos[idx]) {
@@ -516,13 +522,10 @@
             const isSinglePiece = document.getElementById('singleUniqueToggle').checked || uploadedPhotos.length === 1;
 
             const variantsPayload = uploadedPhotos.map((p, idx) => {
-                let variantTitle = p.title || '';
-                if (!variantTitle) {
-                    const parts = [];
-                    if (p.color) parts.push(p.color);
-                    if (p.size) parts.push(`Gr. ${p.size}`);
-                    variantTitle = parts.join(' \u00B7 ') || `Ausf\u00fchrung #${idx + 1}`;
-                }
+                const parts = [];
+                if (p.color) parts.push(p.color);
+                if (p.size) parts.push(`Gr. ${p.size}`);
+                const variantTitle = parts.join(' \u00B7 ') || p.title || `Ausf\u00fchrung #${idx + 1}`;
                 return {
                     imageBase64: p.imageBase64,
                     fileName: p.fileName,
