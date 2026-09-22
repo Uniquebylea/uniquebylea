@@ -27,6 +27,7 @@ collections:
         options: ["Baby", "Kinder", "Erwachsene", "Makramee", "Taschen", "Gutscheine", "Accessoires"]
       - {label: "Basispreis (z. B. 79.00 CHF)", name: "price", widget: "string"}
       - {label: "Badge (Optional, z. B. Neu, Unikat, Bestseller)", name: "badge", widget: "string", required: false}
+      - {label: "Feste Grösse (z. B. 62/68 für Einzelstücke)", name: "size", widget: "string", required: false, hint: "Bei Einzelstücken direkt die Grösse eintragen. Kunden sehen diese sofort und können ohne Dropdowns bestellen."}
       - {label: "Standard-Bestand (falls keine Optionen mit Bestand)", name: "stock", widget: "number", default: 1, value_type: "int", min: 0, required: false}
       - {label: "Beschreibung", name: "description", widget: "text", required: false}
       - {label: "Hauptbild", name: "img", widget: "image"}
