@@ -1,4 +1,9 @@
 {
+  "functions": {
+    "api/*.js": {
+      "maxDuration": 60
+    }
+  },
   "rewrites": [
     { "source": "/ai", "destination": "/admin/ai.html" },
     { "source": "/ai.html", "destination": "/admin/ai.html" },
