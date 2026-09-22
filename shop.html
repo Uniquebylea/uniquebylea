@@ -402,6 +402,10 @@
                                 <h3 id="modalTitle" class="font-serif text-lg md:text-xl uppercase tracking-wider font-bold text-darkbrown"></h3>
                                 <p id="modalPrice" class="text-terracotta font-bold text-lg whitespace-nowrap"></p>
                             </div>
+                            <div id="modalSizeBadge" class="hidden text-xs font-semibold text-darkbrown/85 mt-2 flex items-center gap-2 flex-wrap">
+                                <span class="bg-sand/70 text-darkbrown px-2.5 py-1 rounded-lg border border-darkbrown/15 flex items-center gap-1">📏 Grösse: <strong id="modalSizeText" class="text-terracotta"></strong></span>
+                                <span class="text-[11px] text-emerald-800 bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded-lg flex items-center gap-1">✨ Sofort versandbereit</span>
+                            </div>
                             <div id="modalStockStatus" class="text-[11px] font-bold mt-1"></div>
                         </div>
 
@@ -618,7 +622,14 @@
 
         function normalizeProductOptions(item) {
             if (!item) return item;
-            if (Array.isArray(item.options) && item.options.length > 0) {
+
+            // Feste Grösse auslesen, falls variants_size nur 1 Eintrag hat oder bereits item.size gesetzt ist
+            if (!item.size && Array.isArray(item.variants_size) && item.variants_size.length === 1) {
+                item.size = item.variants_size[0].name || item.variants_size[0].title || '';
+            }
+
+            // Wenn options bereits explizit definiert ist (z. B. leeres Array [] für Unikate)
+            if (Array.isArray(item.options)) {
                 const isVoucherItem = item.cat === 'Gutscheine' || (item.name && item.name.toLowerCase().includes('gutschein'));
                 if (isVoucherItem) {
                     const hasMsgOpt = item.options.some(o => o.name && o.name.toLowerCase().includes('nachricht'));
@@ -633,8 +644,10 @@
                 }
                 return item;
             }
+
+            // Fallback für ältere Produkte ohne 'options'-Feld: Nur echte Optionen erzeugen, wenn mehr als 1 Auswahlmöglichkeit existiert!
             const opts = [];
-            if (Array.isArray(item.variants_color) && item.variants_color.length > 0) {
+            if (Array.isArray(item.variants_color) && item.variants_color.length > 1) {
                 opts.push({
                     name: "Farbe",
                     type: "color",
@@ -647,7 +660,7 @@
                     }))
                 });
             }
-            if (Array.isArray(item.variants_size) && item.variants_size.length > 0) {
+            if (Array.isArray(item.variants_size) && item.variants_size.length > 1) {
                 opts.push({
                     name: "Gr\u00f6\u00dfe",
                     type: "size",
@@ -756,7 +769,10 @@
                     </div>
                     <div>
                         <h3 class="font-serif text-[11px] md:text-sm uppercase tracking-wider mb-1 truncate">${item.name}</h3>
-                        <p class="text-terracotta font-bold text-xs mb-3">${item.price}</p>
+                        <div class="flex items-center justify-between gap-1 mb-2.5">
+                            <p class="text-terracotta font-bold text-xs">${item.price}</p>
+                            ${item.size ? `<span class="text-[9px] md:text-[10px] text-darkbrown/75 bg-sand/70 border border-darkbrown/15 px-2 py-0.5 rounded-md font-semibold">Gr. ${item.size}</span>` : ''}
+                        </div>
                         
                         ${isOutOfStock ? `
                             <button disabled class="w-full block text-center bg-darkbrown/10 text-darkbrown/40 py-2 rounded-lg text-[9px] uppercase font-bold cursor-not-allowed">
@@ -792,6 +808,17 @@
             document.getElementById('modalCurrentImg').src = item.img || 'images/logo.png';
             document.getElementById('modalTitle').textContent = item.name;
             updateModalPriceDisplay();
+
+            const sizeElem = document.getElementById('modalSizeBadge');
+            const sizeText = document.getElementById('modalSizeText');
+            if (sizeElem && sizeText) {
+                if (item.size) {
+                    sizeText.textContent = item.size;
+                    sizeElem.classList.remove('hidden');
+                } else {
+                    sizeElem.classList.add('hidden');
+                }
+            }
 
             document.getElementById('modalDescription').textContent = item.description || 'Liebevoll von mir handgefertigtes Unikat aus Interlaken.';
 
@@ -1196,7 +1223,7 @@ let currentGalleryImages = [];
         window.quickAddToCart = function(idx) {
             const prod = allProducts[idx];
             if (!prod) return;
-            addCartItem(prod, '', '', 0, '', prod.img || 'images/logo.png', Number(prod.stock) || 1, '', '');
+            addCartItem(prod, '', prod.size || '', 0, '', prod.img || 'images/logo.png', Number(prod.stock) || 1, prod.size ? ('Gr\u00f6\u00dfe: ' + prod.size) : '', '');
         };
 
         window.addCurrentModalToCart = function() {
@@ -1251,7 +1278,7 @@ let currentGalleryImages = [];
                         if (checkedRadio.dataset.stock !== undefined) {
                             lowestStock = Math.min(lowestStock, Number(checkedRadio.dataset.stock));
                         }
-                        if ((optName.toLowerCase().includes('gr\u00f6\u00dfe') || optName.toLowerCase().includes('grosse') || optName.toLowerCase().includes('groesse')) || (optName.toLowerCase().includes('gr\u00f6\u00dfe') || optName.toLowerCase().includes('grosse') || optName.toLowerCase().includes('groesse'))) sizeName = checkedRadio.value;
+                        if ((optName.toLowerCase().includes('gr\u00f6\u00dfe') || optName.toLowerCase().includes('grosse') || optName.toLowerCase().includes('groesse'))) sizeName = checkedRadio.value;
                         if (optName.toLowerCase().includes('farbe')) colorName = checkedRadio.value;
                         selectedOptionsList.push({ name: optName, value: checkedRadio.value, priceAdd: add });
                     }
@@ -1267,10 +1294,18 @@ let currentGalleryImages = [];
                                 lowestStock = Math.min(lowestStock, Number(opt.dataset.stock));
                             }
                             if (type === 'color' || optName.toLowerCase().includes('farbe')) colorName = opt.value;
-                            if (type === 'size' || (optName.toLowerCase().includes('gr\u00f6\u00dfe') || optName.toLowerCase().includes('grosse') || optName.toLowerCase().includes('groesse')) || (optName.toLowerCase().includes('gr\u00f6\u00dfe') || optName.toLowerCase().includes('grosse') || optName.toLowerCase().includes('groesse'))) sizeName = opt.value;
+                            if (type === 'size' || (optName.toLowerCase().includes('gr\u00f6\u00dfe') || optName.toLowerCase().includes('grosse') || optName.toLowerCase().includes('groesse'))) sizeName = opt.value;
                             selectedOptionsList.push({ name: optName, value: opt.value, priceAdd: add });
                         }
                     }
+                }
+            }
+
+            // Falls keine Grösse als Dropdown existiert, aber das Produkt eine feste Unikat-Grösse hat
+            if (!sizeName && prod.size) {
+                sizeName = prod.size;
+                if (!selectedOptionsList.some(o => o.name && (o.name.toLowerCase().includes('gr\u00f6\u00dfe') || o.name.toLowerCase().includes('grosse')))) {
+                    selectedOptionsList.push({ name: 'Gr\u00f6\u00dfe', value: prod.size, priceAdd: 0 });
                 }
             }
 
