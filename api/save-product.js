@@ -31,9 +31,41 @@ module.exports = async (req, res) => {
     }
     body = body || {};
 
-    const { name, cat, price, description, badge, size, isUnique, stock, hasColorVariants, colorsList, imageBase64, fileName } = body;
-    if (!name || !imageBase64) {
-      return res.status(400).json({ error: 'Name und Bild sind erforderlich.' });
+    const {
+      name,
+      cat,
+      price,
+      description,
+      badge,
+      size,
+      isUnique,
+      stock,
+      hasColorVariants,
+      colorsList,
+      variants: rawVariants,
+      images: rawImages,
+      imageBase64,
+      fileName
+    } = body;
+
+    // Normalisiere Varianten-Liste (entweder aus variants, images oder Einzelbild)
+    let variantList = [];
+    if (Array.isArray(rawVariants) && rawVariants.length > 0) {
+      variantList = rawVariants;
+    } else if (Array.isArray(rawImages) && rawImages.length > 0) {
+      variantList = rawImages;
+    } else if (imageBase64) {
+      variantList = [{
+        imageBase64,
+        fileName: fileName || 'produkt.jpg',
+        size: size || '',
+        stock: stock || 1,
+        price_add: 0
+      }];
+    }
+
+    if (!name || variantList.length === 0 || !variantList[0].imageBase64) {
+      return res.status(400).json({ error: 'Name und mindestens ein Bild sind erforderlich.' });
     }
 
     // Clean slug
@@ -43,10 +75,6 @@ module.exports = async (req, res) => {
       .replace(/-+/g, '-')
       .replace(/^-|-$/g, '');
 
-    const cleanFileName = (fileName || 'produkt.jpg').toLowerCase().replace(/[^a-z0-9.]/g, '-');
-    const imagePath = `images/${slug}-${cleanFileName}`;
-    const rawBase64 = imageBase64.replace(/^data:image\/\w+;base64,/, '');
-
     const headers = {
       'Authorization': `token ${token}`,
       'Accept': 'application/vnd.github+json',
@@ -54,66 +82,138 @@ module.exports = async (req, res) => {
       'Content-Type': 'application/json'
     };
 
-    // 1. Upload Image to GitHub
-    let imageSha = null;
-    try {
-      const checkRes = await fetch(`https://api.github.com/repos/Uniquebylea/uniquebylea/contents/${imagePath}`, { headers });
-      if (checkRes.ok) {
-        const d = await checkRes.json();
-        imageSha = d.sha;
+    // 1. Alle Bilder zu GitHub hochladen
+    const galleryPaths = [];
+    for (let idx = 0; idx < variantList.length; idx++) {
+      const v = variantList[idx];
+      if (!v.imageBase64) continue;
+
+      const rawBase64 = v.imageBase64.replace(/^data:image\/\w+;base64,/, '');
+      const rawExtMatch = (v.fileName || '').match(/\.[a-z0-9]+$/i);
+      const ext = rawExtMatch ? rawExtMatch[0].toLowerCase() : '.jpg';
+      const baseClean = (v.fileName || `foto-${idx + 1}`).replace(/\.[a-z0-9]+$/i, '').toLowerCase().replace(/[^a-z0-9.]/g, '-');
+      const cleanFileName = `${baseClean}${ext}`;
+
+      const imagePath = `images/${slug}-${idx > 0 ? (idx + 1) + '-' : ''}${cleanFileName}`;
+
+      let imageSha = null;
+      try {
+        const checkRes = await fetch(`https://api.github.com/repos/Uniquebylea/uniquebylea/contents/${imagePath}`, { headers });
+        if (checkRes.ok) {
+          const d = await checkRes.json();
+          imageSha = d.sha;
+        }
+      } catch (e) {}
+
+      const imgBody = {
+        message: `Upload image ${idx + 1} for ${name}`,
+        content: rawBase64,
+        branch: 'main'
+      };
+      if (imageSha) imgBody.sha = imageSha;
+
+      const imgUploadRes = await fetch(`https://api.github.com/repos/Uniquebylea/uniquebylea/contents/${imagePath}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify(imgBody)
+      });
+
+      if (!imgUploadRes.ok) {
+        const errData = await imgUploadRes.json().catch(() => ({}));
+        throw new Error(`Bild-Upload #${idx + 1} fehlgeschlagen: ${errData.message || imgUploadRes.status}`);
       }
-    } catch (e) {}
 
-    const imgBody = {
-      message: `Upload image for ${name}`,
-      content: rawBase64,
-      branch: 'main'
-    };
-    if (imageSha) imgBody.sha = imageSha;
-
-    const imgUploadRes = await fetch(`https://api.github.com/repos/Uniquebylea/uniquebylea/contents/${imagePath}`, {
-      method: 'PUT',
-      headers,
-      body: JSON.stringify(imgBody)
-    });
-
-    if (!imgUploadRes.ok) {
-      const errData = await imgUploadRes.json().catch(() => ({}));
-      throw new Error(`Bild-Upload zu GitHub fehlgeschlagen: ${errData.message || imgUploadRes.status}`);
+      v.imagePath = imagePath;
+      galleryPaths.push(imagePath);
     }
 
-    // 2. Upload Product JSON to GitHub
-    const options = [];
-    const isSingleItem = isUnique !== false; // Standardmässig Einzelstück
-    const cleanSize = (size || '').trim();
+    const coverImage = galleryPaths[0] || '';
+    const isMultiVariant = variantList.length > 1;
 
-    // Nur wenn explizit Farb-Varianten gewünscht sind (nicht bei reinen Einzelstücken), wird ein Dropdown erzeugt
-    if (hasColorVariants && Array.isArray(colorsList) && colorsList.length > 0) {
-      options.push({
-        name: "Farbe",
-        type: "color",
-        required: true,
-        values: colorsList.map(c => ({
-          title: c.name || c.title || 'Farbe',
-          price_add: 0,
-          stock: typeof c.stock !== 'undefined' ? Number(c.stock) : 1
-        }))
-      });
+    // 2. Produkt-Optionen aufbauen
+    let options = [];
+    let productStock = 1;
+    let variantsColor = [];
+    let variantsSize = [];
+    let cleanSize = (size || '').trim();
+
+    if (isMultiVariant) {
+      // Mehrere Ausführungen / Varianten mit je eigenem Foto, Grösse und Bestand
+      productStock = variantList.reduce((acc, v) => acc + (Number(v.stock) || 1), 0);
+      cleanSize = ''; // Grösse ist auf Variantenebene definiert
+
+      options = [
+        {
+          name: "Ausf\u00fchrung / Variante",
+          type: "color",
+          required: true,
+          values: variantList.map((v, i) => {
+            let title = v.variantTitle || v.title || '';
+            if (!title) {
+              const parts = [];
+              if (v.color) parts.push(v.color);
+              if (v.size) parts.push(`Gr. ${v.size}`);
+              title = parts.join(' \u00B7 ') || `Variante ${i + 1}`;
+            }
+            return {
+              title: title,
+              img: v.imagePath || coverImage,
+              stock: typeof v.stock !== 'undefined' ? Number(v.stock) : 1,
+              price_add: Number(v.price_add || v.priceAdd) || 0
+            };
+          })
+        }
+      ];
+
+      variantsColor = variantList.map(v => ({
+        name: v.color || v.title || 'Unikat',
+        img: v.imagePath || coverImage,
+        stock: typeof v.stock !== 'undefined' ? Number(v.stock) : 1
+      }));
+
+      variantsSize = variantList.filter(v => v.size).map(v => ({
+        name: v.size,
+        stock: typeof v.stock !== 'undefined' ? Number(v.stock) : 1,
+        price_add: Number(v.price_add || v.priceAdd) || 0
+      }));
+
+    } else {
+      // Einzelstück (1 Bild)
+      const single = variantList[0];
+      cleanSize = (single.size || size || '').trim();
+      productStock = typeof single.stock !== 'undefined' ? Number(single.stock) : (Number(stock) || 1);
+
+      if (hasColorVariants && Array.isArray(colorsList) && colorsList.length > 0) {
+        options.push({
+          name: "Farbe",
+          type: "color",
+          required: true,
+          values: colorsList.map(c => ({
+            title: c.name || c.title || 'Farbe',
+            price_add: 0,
+            stock: typeof c.stock !== 'undefined' ? Number(c.stock) : 1
+          }))
+        });
+      }
+
+      variantsColor = Array.isArray(colorsList) ? colorsList : (single.color ? [{ name: single.color, stock: productStock }] : []);
+      variantsSize = cleanSize ? [{ name: cleanSize, stock: productStock, price_add: 0 }] : [];
     }
 
     const productData = {
       name: name,
       cat: cat || 'Unikate',
       price: (price || '49.00').includes('CHF') ? price : `${price} CHF`,
-      badge: badge || 'Unikat',
+      badge: badge || (isMultiVariant ? 'Unikate' : 'Unikat'),
       size: cleanSize,
-      stock: typeof stock !== 'undefined' ? Number(stock) : 1,
-      is_unique: isSingleItem,
+      stock: productStock,
+      is_unique: !isMultiVariant && (isUnique !== false),
       description: description || '',
-      img: imagePath,
+      img: coverImage,
+      gallery: galleryPaths,
       options: options,
-      variants_color: Array.isArray(colorsList) ? colorsList : [],
-      variants_size: cleanSize ? [{ name: cleanSize, stock: 1, price_add: 0 }] : [],
+      variants_color: variantsColor,
+      variants_size: variantsSize,
       allow_custom_name: false
     };
 
