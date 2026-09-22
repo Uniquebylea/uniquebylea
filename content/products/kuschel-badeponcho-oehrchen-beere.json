@@ -2,39 +2,24 @@
   "name": "Kuschel-Badeponcho Öhrchen Beere",
   "cat": "Kinder",
   "price": "55 CHF",
-  "badge": "Unikat",
+  "badge": "Unikat · 1–3 Jahre",
+  "size": "1–3 Jahre (ca. Gr. 80–98)",
   "stock": 1,
+  "is_unique": true,
   "description": "Dieser wunderbar weiche Badeponcho aus saugfähigem Frottee hüllt kleine Entdecker nach dem Badespass wohlig warm ein. Liebevolle Details wie die verspielten Öhrchen an der Kapuze machen das handgefertigte Einzelstück zu einem echten Herzensbegleiter. Mit grösster Sorgfalt und Liebe zum Detail im Berner Oberland genäht.",
   "img": "images/kuschel-badeponcho-oehrchen-beere-4220149380.jpg",
-  "options": [
-    {
-      "name": "Farbe",
-      "type": "color",
-      "required": true,
-      "values": [
-        {
-          "title": "Beere",
-          "price_add": 0,
-          "stock": 1
-        },
-        {
-          "title": "Dunkelrot",
-          "price_add": 0,
-          "stock": 1
-        }
-      ]
-    }
-  ],
+  "options": [],
   "variants_color": [
     {
       "name": "Beere",
       "stock": 1
-    },
+    }
+  ],
+  "variants_size": [
     {
-      "name": "Dunkelrot",
+      "name": "1–3 Jahre",
       "stock": 1
     }
   ],
-  "variants_size": [],
   "allow_custom_name": false
 }
