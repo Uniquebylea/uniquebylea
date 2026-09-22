@@ -24,6 +24,8 @@ Folgendes Format ist zwingend einzuhalten:
 {
   "name": "Prägnanter, eleganter Produktname im Schweizer Boutique-Stil (z. B. 'Babynestchen Kuschelschaf' oder 'Makramee Wandbehang Boho')",
   "cat": "Wähle exakt eine dieser Kategorien: Baby, Kinder, Erwachsene, Makramee, Taschen, Gutscheine, Accessoires",
+  "price": "Passender Preis in CHF (z. B. '55.00 CHF')",
+  "size": "Geschätzte Grösse (z. B. '62/68' für Babys, '86/92' für Kleinkinder, oder 'Einheitsgrösse' für Accessoires/Taschen/Decken)",
   "description": "Liebevoller, ansprechender Verkaufstext (ca. 2-3 Sätze). Betone hochwertige Handarbeit und das Besondere an diesem Unikat.",
   "colors": ["Hauptfarbe 1", "Hauptfarbe 2"],
   "badge": "Unikat"
