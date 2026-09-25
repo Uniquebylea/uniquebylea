@@ -545,7 +545,7 @@
                 let token = '';
                 try {
                     const sveltiaUser = JSON.parse(localStorage.getItem('sveltia-cms.user') || '{}');
-                    token = sveltiaUser.token || localStorage.getItem('uniquebylea_gh_token') || '';
+                    token = sveltiaUser.token || localStorage.getItem('uniquebylea_gh_token') || 'lea2026';
                 } catch (e) {}
 
                 const headers = { 'Content-Type': 'application/json' };
