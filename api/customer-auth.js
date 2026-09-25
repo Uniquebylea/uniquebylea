@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 
 function hashPassword(password, salt) {
-  return crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
+  return crypto.pbkdf2Sync(password, salt, 100000, 64, 'sha512').toString('hex');
 }
 
 function getEmailHash(email) {
@@ -90,9 +90,20 @@ module.exports = async (req, res) => {
         const decoded = Buffer.from(tok, 'base64').toString('utf8');
         const parts = decoded.split(':');
         if (parts.length < 3) return null;
-        const [userEmail, time, sig] = parts;
-        const expectedSig = crypto.createHmac('sha256', secret).update(`${userEmail}:${time}`).digest('hex');
-        if (sig === expectedSig) {
+        const [userEmail, timeStr, sig] = parts;
+
+        // Ablaufdatum prüfen (30 Tage Gültigkeit)
+        const time = parseInt(timeStr, 10);
+        const maxAge = 30 * 24 * 60 * 60 * 1000;
+        if (isNaN(time) || Date.now() - time > maxAge) {
+          return null;
+        }
+
+        const expectedSig = crypto.createHmac('sha256', secret).update(`${userEmail}:${timeStr}`).digest('hex');
+        const sigBuf = Buffer.from(sig, 'utf8');
+        const expBuf = Buffer.from(expectedSig, 'utf8');
+
+        if (sigBuf.length === expBuf.length && crypto.timingSafeEqual(sigBuf, expBuf)) {
           return userEmail;
         }
       } catch (e) {}
