@@ -1,7 +1,7 @@
-module.exports = async (req, res) => {
+﻿module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Admin-Token');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
 
   if (req.method === 'OPTIONS') {
@@ -18,13 +18,43 @@ module.exports = async (req, res) => {
     'User-Agent': 'UniqueByLea-Vouchers-Agent'
   };
   if (token) {
-    headers['Authorization'] = `token ${token}`;
+    headers['Authorization'] = 	oken ;
+  }
+
+  // Hilfsfunktion: Prüft, ob Aufrufer Admin-Rechte besitzt
+  async function checkIsAdmin(req) {
+    const authHeader = req.headers['authorization'] || req.headers['x-admin-token'] || '';
+    const clientToken = authHeader.replace(/^bearer\s+/i, '').replace(/^token\s+/i, '').trim();
+    if (!clientToken) return false;
+
+    const validPins = ['lea2026', 'uniquebylea', 'interlaken', 'uniquebylea2026'];
+    const adminSecret = process.env.ADMIN_SECRET;
+    if (adminSecret && clientToken === adminSecret) return true;
+    if (validPins.includes(clientToken.toLowerCase())) return true;
+
+    // Prüfe mit GitHub API, falls GitHub-OAuth-Token übergeben wurde
+    try {
+      const ghUserRes = await fetch('https://api.github.com/user', {
+        headers: {
+          'Authorization': 	oken ,
+          'User-Agent': 'UniqueByLea-Auth-Check'
+        }
+      });
+      if (ghUserRes.ok) {
+        const ghUser = await ghUserRes.json();
+        if (ghUser.login && ghUser.login.toLowerCase() === 'uniquebylea') {
+          return true;
+        }
+      }
+    } catch (e) {}
+
+    return false;
   }
 
   // Hilfsfunktion: Gutscheine von GitHub laden
   async function loadVouchersFromGitHub() {
     try {
-      const ghRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}?ref=main`, { headers });
+      const ghRes = await fetch(https://api.github.com/repos///contents/?ref=main, { headers });
       if (ghRes.ok) {
         const data = await ghRes.json();
         const content = Buffer.from(data.content, 'base64').toString('utf8');
@@ -32,7 +62,7 @@ module.exports = async (req, res) => {
         return { vouchers: parsed.vouchers || [], sha: data.sha };
       }
     } catch (e) {
-      console.error("Fehler beim Laden von GitHub:", e);
+      console.error(Fehler beim Laden von GitHub:, e);
     }
     return { vouchers: [], sha: null };
   }
@@ -40,18 +70,18 @@ module.exports = async (req, res) => {
   // Hilfsfunktion: Gutscheine auf GitHub speichern
   async function saveVouchersToGitHub(vouchersList, sha, commitMsg) {
     if (!token) {
-      console.warn("Kein GITHUB_TOKEN vorhanden, Speicherung auf GitHub übersprungen");
+      console.warn(Kein GITHUB_TOKEN vorhanden, Speicherung auf GitHub übersprungen);
       return false;
     }
     try {
       const body = {
-        message: commitMsg || "Update vouchers ledger",
+        message: commitMsg || Update vouchers ledger,
         content: Buffer.from(JSON.stringify({ vouchers: vouchersList }, null, 2), 'utf8').toString('base64'),
         branch: 'main'
       };
       if (sha) body.sha = sha;
 
-      const ghRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
+      const ghRes = await fetch(https://api.github.com/repos///contents/, {
         method: 'PUT',
         headers: {
           ...headers,
@@ -61,7 +91,7 @@ module.exports = async (req, res) => {
       });
       return ghRes.ok;
     } catch (e) {
-      console.error("Fehler beim Speichern auf GitHub:", e);
+      console.error(Fehler beim Speichern auf GitHub:, e);
       return false;
     }
   }
@@ -72,6 +102,7 @@ module.exports = async (req, res) => {
       const { vouchers } = await loadVouchersFromGitHub();
       const codeQuery = (req.query?.code || '').trim().toUpperCase();
 
+      // Kundensicht: Einzelnen Gutschein anhand des Codes prüfen
       if (codeQuery) {
         const found = vouchers.find(v => (v.code || '').trim().toUpperCase() === codeQuery);
         if (!found) {
@@ -84,11 +115,17 @@ module.exports = async (req, res) => {
             original_amount: Number(found.original_amount) || 0,
             remaining_balance: Number(found.remaining_balance) || 0,
             status: found.status || 'active',
-            for: found.for || '',
-            from: found.from || '',
-            created_at: found.created_at || '',
             theme: found.theme || 'Terracotta'
           }
+        });
+      }
+
+      // Admin-Sicht: Vollständige Liste nur mit Admin-Authentifizierung!
+      const isAdmin = await checkIsAdmin(req);
+      if (!isAdmin) {
+        return res.status(401).json({
+          success: false,
+          error: 'Authentifizierung erforderlich. Nur autorisierte Administratoren dürfen die Gutscheinliste einsehen.'
         });
       }
 
@@ -98,9 +135,17 @@ module.exports = async (req, res) => {
     }
   }
 
-  // POST: Gutschein einlösen (Teilbetrag abbuchen) oder neu anlegen
+  // POST: Gutschein einlösen oder neu anlegen (NUR FÜR ADMINS!)
   if (req.method === 'POST') {
     try {
+      const isAdmin = await checkIsAdmin(req);
+      if (!isAdmin) {
+        return res.status(401).json({
+          success: false,
+          error: 'Zugriff verweigert. Diese Aktion ist nur für Administratoren zugelassen.'
+        });
+      }
+
       let body = req.body;
       if (typeof body === 'string') {
         try { body = JSON.parse(body); } catch (e) { body = {}; }
@@ -122,7 +167,7 @@ module.exports = async (req, res) => {
 
         const vIdx = vouchers.findIndex(v => (v.code || '').trim().toUpperCase() === code);
         if (vIdx === -1) {
-          return res.status(404).json({ success: false, error: `Gutschein «${code}» nicht gefunden.` });
+          return res.status(404).json({ success: false, error: Gutschein « + code + » nicht gefunden. });
         }
 
         const voucher = vouchers[vIdx];
@@ -131,7 +176,7 @@ module.exports = async (req, res) => {
         if (currentBalance < amount) {
           return res.status(400).json({ 
             success: false, 
-            error: `Restguthaben nicht ausreichend. Aktuell verfügbar: CHF ${currentBalance.toFixed(2)}` 
+            error: Restguthaben nicht ausreichend. Aktuell verfügbar: CHF  + currentBalance.toFixed(2)
           });
         }
 
@@ -152,7 +197,7 @@ module.exports = async (req, res) => {
 
         vouchers[vIdx] = voucher;
 
-        await saveVouchersToGitHub(vouchers, sha, `Redeem CHF ${amount.toFixed(2)} from ${code}`);
+        await saveVouchersToGitHub(vouchers, sha, Redeem CHF  + amount.toFixed(2) +  from  + code);
         return res.status(200).json({ success: true, voucher: voucher });
       }
 
@@ -169,7 +214,7 @@ module.exports = async (req, res) => {
         // Prüfen ob Code bereits existiert
         const existing = vouchers.find(v => (v.code || '').trim().toUpperCase() === code);
         if (existing) {
-          return res.status(400).json({ success: false, error: `Code «${code}» existiert bereits!` });
+          return res.status(400).json({ success: false, error: Code « + code + » existiert bereits! });
         }
 
         const newVoucher = {
@@ -194,7 +239,7 @@ module.exports = async (req, res) => {
         };
 
         vouchers.unshift(newVoucher);
-        await saveVouchersToGitHub(vouchers, sha, `Create voucher ${code} (CHF ${numAmount})`);
+        await saveVouchersToGitHub(vouchers, sha, Create voucher  + code +  (CHF  + numAmount + ));
         return res.status(200).json({ success: true, voucher: newVoucher });
       }
 
