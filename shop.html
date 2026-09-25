@@ -512,6 +512,16 @@
             return val.toFixed(2) + " CHF";
         }
 
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
         async function load() {
             try {
                 let data = null;
@@ -1416,21 +1426,21 @@ let currentGalleryImages = [];
             cart.forEach((item, idx) => {
                 const variantDetails = [];
                 if (item.optionsSummary) {
-                    variantDetails.push(item.optionsSummary);
+                    variantDetails.push(escapeHtml(item.optionsSummary));
                 } else {
-                    if (item.color) variantDetails.push(`Farbe: ${item.color}`);
-                    if (item.size) variantDetails.push('Gr\u00f6\u00dfe: ' + item.size);
-                    if (item.customName) variantDetails.push(`Name: "${item.customName}"`);
-                    if (item.personalMessage) variantDetails.push(`Nachricht: "${item.personalMessage}"`);
+                    if (item.color) variantDetails.push(`Farbe: ${escapeHtml(item.color)}`);
+                    if (item.size) variantDetails.push('Gr\u00f6\u00dfe: ' + escapeHtml(item.size));
+                    if (item.customName) variantDetails.push(`Name: "${escapeHtml(item.customName)}"`);
+                    if (item.personalMessage) variantDetails.push(`Nachricht: "${escapeHtml(item.personalMessage)}"`);
                 }
 
                 const isMaxedOut = item.quantity >= item.maxStock;
 
                 container.innerHTML += `
                 <div class="flex items-center gap-3 bg-white p-3 rounded-2xl border border-darkbrown/5 shadow-sm">
-                    <img src="${item.img}" alt="${item.name}" onerror="this.src='images/logo.png'" class="w-14 h-16 ${item.name && item.name.toLowerCase().includes('gutschein') ? 'object-contain p-1' : 'object-cover'} rounded-xl bg-sand/30 flex-shrink-0">
+                    <img src="${item.img}" alt="${escapeHtml(item.name)}" onerror="this.src='images/logo.png'" class="w-14 h-16 ${item.name && item.name.toLowerCase().includes('gutschein') ? 'object-contain p-1' : 'object-cover'} rounded-xl bg-sand/30 flex-shrink-0">
                     <div class="flex-1 min-w-0">
-                        <h4 class="font-serif text-xs font-bold uppercase tracking-wider truncate mb-0.5">${item.name}</h4>
+                        <h4 class="font-serif text-xs font-bold uppercase tracking-wider truncate mb-0.5">${escapeHtml(item.name)}</h4>
                         <p class="text-terracotta text-xs font-bold mb-1">${formatCHF(item.priceNum)}</p>
                         
                         ${variantDetails.length > 0 ? `
@@ -2000,10 +2010,10 @@ let currentGalleryImages = [];
                 const itemDiv = document.createElement('div');
                 itemDiv.className = "flex gap-3.5 items-center p-3 rounded-2xl bg-white border border-darkbrown/10 shadow-sm";
                 itemDiv.innerHTML = `
-                    <img src="${img}" alt="${name}" onerror="this.src='images/logo.png'" 
+                    <img src="${img}" alt="${escapeHtml(name)}" onerror="this.src='images/logo.png'" 
                          class="w-16 h-16 rounded-xl object-cover border border-darkbrown/10 flex-shrink-0 bg-sand/30">
                     <div class="flex-1 min-w-0">
-                        <h4 class="font-serif text-xs font-bold uppercase tracking-wider truncate text-darkbrown">${name}</h4>
+                        <h4 class="font-serif text-xs font-bold uppercase tracking-wider truncate text-darkbrown">${escapeHtml(name)}</h4>
                         <p class="text-terracotta text-xs font-bold mt-0.5">${price}</p>
                         <div class="mt-1 flex items-center gap-2">
                             ${isAvailable ? 
