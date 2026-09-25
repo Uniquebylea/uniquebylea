@@ -1,4 +1,4 @@
-﻿// api/create-checkout-session.js
+// api/create-checkout-session.js
 // Erstellt eine Stripe Checkout-Session mit serverseitiger Preis- und Versandvalidierung
 
 const fs = require('fs');
@@ -52,7 +52,7 @@ module.exports = async (req, res) => {
 
     const host = req.headers['x-forwarded-host'] || req.headers.host || 'uniquebylea.vercel.app';
     const proto = req.headers['x-forwarded-proto'] || 'https';
-    const baseUrl = ${proto}://System.Management.Automation.Internal.Host.InternalHost;
+    const baseUrl = `${proto}://${host}`;
 
     const isVoucherEmailOnly = (shippingType === 'email') && items.every(item => 
       item.cat === 'Gutscheine' || (item.name && item.name.toLowerCase().includes('gutschein')) || item.isVoucher
@@ -67,8 +67,8 @@ module.exports = async (req, res) => {
       params.append('shipping_address_collection[allowed_countries][1]', 'LI');
     }
 
-    params.append('success_url', ${baseUrl}/shop.html?checkout=success&session_id={CHECKOUT_SESSION_ID});
-    params.append('cancel_url', ${baseUrl}/shop.html?checkout=canceled);
+    params.append('success_url', `${baseUrl}/shop.html?checkout=success&session_id={CHECKOUT_SESSION_ID}`);
+    params.append('cancel_url', `${baseUrl}/shop.html?checkout=canceled`);
 
     // 2. Artikel & Preise validieren
     let subtotal = 0;
@@ -94,7 +94,6 @@ module.exports = async (req, res) => {
           const basePrice = parseFloat(catalogItem.price.replace(/[^0-9.]/g, '')) || 0;
           let expectedPrice = basePrice;
 
-          // Eventuelle Optionsaufpreise berechnen
           if (Array.isArray(catalogItem.options)) {
             catalogItem.options.forEach(opt => {
               if (Array.isArray(opt.values)) {
@@ -107,118 +106,117 @@ module.exports = async (req, res) => {
             });
           }
 
-          // Schutz vor Parameter Tampering
           if (Math.abs(expectedPrice - verifiedPrice) > 0.50) {
-            console.warn([SECURITY] Preisabweichung für : Übergeben=, Erwartet=);
+            console.warn(`[SECURITY] Preisabweichung für ${item.name}: Übergeben=${verifiedPrice}, Erwartet=${expectedPrice}`);
             return res.status(400).json({ 
-              error: Preisüberprüfung für " fehlgeschlagen. Bitte aktualisiere deinen Warenkorb. 
- });
- }
- verifiedPrice = expectedPrice;
- }
- }
+              error: `Preisüberprüfung für "${item.name}" fehlgeschlagen. Bitte aktualisiere deinen Warenkorb.` 
+            });
+          }
+          verifiedPrice = expectedPrice;
+        }
+      }
 
- const qty = Math.max(1, Math.min(20, parseInt(item.quantity) || 1));
- subtotal += verifiedPrice * qty;
- const priceCents = Math.round(verifiedPrice * 100);
+      const qty = Math.max(1, Math.min(20, parseInt(item.quantity) || 1));
+      subtotal += verifiedPrice * qty;
+      const priceCents = Math.round(verifiedPrice * 100);
 
- params.append(line_items[][price_data][currency], 'chf');
- params.append(line_items[][price_data][unit_amount], priceCents.toString());
- params.append(line_items[][price_data][product_data][name], (item.name || 'Produkt').substring(0, 100));
+      params.append(`line_items[${index}][price_data][currency]`, 'chf');
+      params.append(`line_items[${index}][price_data][unit_amount]`, priceCents.toString());
+      params.append(`line_items[${index}][price_data][product_data][name]`, (item.name || 'Produkt').substring(0, 100));
 
- const descParts = [];
- if (item.color) descParts.push(Farbe: );
- if (item.size) descParts.push(Grösse: );
- if (item.customName) descParts.push(Wunschname: );
- if (item.optionsSummary) descParts.push(item.optionsSummary.substring(0, 100));
- if (item.voucherConfig) {
- if (item.voucherConfig.fuer) descParts.push(Für: );
- if (item.voucherConfig.von) descParts.push(Von: );
- if (item.voucherConfig.theme) descParts.push(Design: );
- }
+      const descParts = [];
+      if (item.color) descParts.push(`Farbe: ${item.color}`);
+      if (item.size) descParts.push(`Grösse: ${item.size}`);
+      if (item.customName) descParts.push(`Wunschname: ${item.customName.substring(0, 50)}`);
+      if (item.optionsSummary) descParts.push(item.optionsSummary.substring(0, 100));
+      if (item.voucherConfig) {
+        if (item.voucherConfig.fuer) descParts.push(`Für: ${item.voucherConfig.fuer.substring(0, 50)}`);
+        if (item.voucherConfig.von) descParts.push(`Von: ${item.voucherConfig.von.substring(0, 50)}`);
+        if (item.voucherConfig.theme) descParts.push(`Design: ${item.voucherConfig.theme}`);
+      }
 
- if (descParts.length > 0) {
- params.append(line_items[][price_data][product_data][description], descParts.join(' | '));
- }
+      if (descParts.length > 0) {
+        params.append(`line_items[${index}][price_data][product_data][description]`, descParts.join(' | '));
+      }
 
- params.append(line_items[][quantity], qty.toString());
- }
+      params.append(`line_items[${index}][quantity]`, qty.toString());
+    }
 
- // 3. Versandkosten serverseitig determinieren
- let validShippingCost = 0;
- let shippingName = 'Schweizerische Post (B-Post Paket)';
+    // 3. Versandkosten serverseitig determinieren
+    let validShippingCost = 0;
+    let shippingName = 'Schweizerische Post (B-Post Paket)';
 
- if (isVoucherEmailOnly || shippingType === 'email') {
- validShippingCost = 0;
- shippingName = 'Gutschein per E-Mail (PDF zum Ausdrucken, gratis)';
- } else if (shippingType === 'pickup') {
- validShippingCost = 0;
- shippingName = 'Abholung im Atelier (Interlaken)';
- } else if (shippingType === 'letter') {
- validShippingCost = 2.00;
- shippingName = 'Schweizerische Post (Briefversand Gutscheinkarte)';
- } else if (subtotal >= 100 && (shippingType === 'bpost' || !shippingType)) {
- validShippingCost = 0; // Kostenloser Versand ab 100 CHF
- shippingName = 'Schweizerische Post (B-Post Paket, portofrei ab CHF 100.–)';
- } else if (shippingType === 'apost') {
- validShippingCost = 10.50;
- shippingName = 'Schweizerische Post (A-Post Paket)';
- } else {
- validShippingCost = 8.50;
- shippingName = 'Schweizerische Post (B-Post Paket)';
- }
+    if (isVoucherEmailOnly || shippingType === 'email') {
+      validShippingCost = 0;
+      shippingName = 'Gutschein per E-Mail (PDF zum Ausdrucken, gratis)';
+    } else if (shippingType === 'pickup') {
+      validShippingCost = 0;
+      shippingName = 'Abholung im Atelier (Interlaken)';
+    } else if (shippingType === 'letter') {
+      validShippingCost = 2.00;
+      shippingName = 'Schweizerische Post (Briefversand Gutscheinkarte)';
+    } else if (subtotal >= 100 && (shippingType === 'bpost' || !shippingType)) {
+      validShippingCost = 0; // Kostenloser Versand ab 100 CHF
+      shippingName = 'Schweizerische Post (B-Post Paket, portofrei ab CHF 100.–)';
+    } else if (shippingType === 'apost') {
+      validShippingCost = 10.50;
+      shippingName = 'Schweizerische Post (A-Post Paket)';
+    } else {
+      validShippingCost = 8.50;
+      shippingName = 'Schweizerische Post (B-Post Paket)';
+    }
 
- const costCents = Math.round(validShippingCost * 100);
+    const costCents = Math.round(validShippingCost * 100);
 
- if (!isVoucherEmailOnly) {
- params.append('shipping_options[0][shipping_rate_data][type]', 'fixed_amount');
- params.append('shipping_options[0][shipping_rate_data][fixed_amount][amount]', costCents.toString());
- params.append('shipping_options[0][shipping_rate_data][fixed_amount][currency]', 'chf');
- params.append('shipping_options[0][shipping_rate_data][display_name]', shippingName);
- }
+    if (!isVoucherEmailOnly) {
+      params.append('shipping_options[0][shipping_rate_data][type]', 'fixed_amount');
+      params.append('shipping_options[0][shipping_rate_data][fixed_amount][amount]', costCents.toString());
+      params.append('shipping_options[0][shipping_rate_data][fixed_amount][currency]', 'chf');
+      params.append('shipping_options[0][shipping_rate_data][display_name]', shippingName);
+    }
 
- // Metadaten für Lea im Stripe Dashboard
- params.append('metadata[shipping_type]', shippingType || 'bpost');
- if (isVoucherEmailOnly) {
- params.append('metadata[delivery_note]', 'Gutschein per E-Mail (PDF zum Ausdrucken)');
- } else if (shippingType === 'letter') {
- params.append('metadata[delivery_note]', 'Gutschein Post Briefversand (Gutscheinkarte)');
- }
+    // Metadaten für Lea im Stripe Dashboard
+    params.append('metadata[shipping_type]', shippingType || 'bpost');
+    if (isVoucherEmailOnly) {
+      params.append('metadata[delivery_note]', 'Gutschein per E-Mail (PDF zum Ausdrucken)');
+    } else if (shippingType === 'letter') {
+      params.append('metadata[delivery_note]', 'Gutschein Post Briefversand (Gutscheinkarte)');
+    }
 
- const voucherWithMsg = items.find(i => i.personalMessage || (i.voucherConfig && i.voucherConfig.text) || (i.optionsSummary && i.optionsSummary.toLowerCase().includes('nachricht')));
- if (voucherWithMsg) {
- const msg = voucherWithMsg.personalMessage || (voucherWithMsg.voucherConfig && voucherWithMsg.voucherConfig.text) || voucherWithMsg.optionsSummary;
- params.append('metadata[gutschein_nachricht]', msg.substring(0, 500));
- }
+    const voucherWithMsg = items.find(i => i.personalMessage || (i.voucherConfig && i.voucherConfig.text) || (i.optionsSummary && i.optionsSummary.toLowerCase().includes('nachricht')));
+    if (voucherWithMsg) {
+      const msg = voucherWithMsg.personalMessage || (voucherWithMsg.voucherConfig && voucherWithMsg.voucherConfig.text) || voucherWithMsg.optionsSummary;
+      params.append('metadata[gutschein_nachricht]', msg.substring(0, 500));
+    }
 
- const customVoucher = items.find(i => i.isVoucher || i.voucherConfig);
- if (customVoucher && customVoucher.voucherConfig) {
- const vc = customVoucher.voucherConfig;
- params.append('metadata[gutschein_wert]', (vc.wert || '').toString());
- params.append('metadata[gutschein_fuer]', (vc.fuer || '').substring(0, 100));
- params.append('metadata[gutschein_von]', (vc.von || '').substring(0, 100));
- }
+    const customVoucher = items.find(i => i.isVoucher || i.voucherConfig);
+    if (customVoucher && customVoucher.voucherConfig) {
+      const vc = customVoucher.voucherConfig;
+      params.append('metadata[gutschein_wert]', (vc.wert || '').toString());
+      params.append('metadata[gutschein_fuer]', (vc.fuer || '').substring(0, 100));
+      params.append('metadata[gutschein_von]', (vc.von || '').substring(0, 100));
+    }
 
- // Call Stripe API
- const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
- method: 'POST',
- headers: {
- 'Authorization': Bearer ,
- 'Content-Type': 'application/x-www-form-urlencoded'
- },
- body: params.toString()
- });
+    // Call Stripe API
+    const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${stripeKey}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: params.toString()
+    });
 
- const session = await response.json();
+    const session = await response.json();
 
- if (session.error) {
- console.error('Stripe API Fehler:', session.error);
- return res.status(400).json({ error: session.error.message });
- }
+    if (session.error) {
+      console.error('Stripe API Fehler:', session.error);
+      return res.status(400).json({ error: session.error.message });
+    }
 
- return res.status(200).json({ url: session.url });
- } catch (err) {
- console.error('Checkout Fehler:', err);
- return res.status(500).json({ error: err.message || 'Interner Serverfehler beim Erstellen der Kasse.' });
- }
+    return res.status(200).json({ url: session.url });
+  } catch (err) {
+    console.error('Checkout Fehler:', err);
+    return res.status(500).json({ error: err.message || 'Interner Serverfehler beim Erstellen der Kasse.' });
+  }
 };
