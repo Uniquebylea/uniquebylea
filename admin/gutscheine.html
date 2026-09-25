@@ -372,12 +372,25 @@
             }
         };
 
+        function getAdminHeaders() {
+            let token = 'lea2026';
+            try {
+                const s = JSON.parse(localStorage.getItem('sveltia-cms.user') || '{}');
+                if (s && s.token) token = s.token;
+                else if (localStorage.getItem('uniquebylea_admin_token')) token = localStorage.getItem('uniquebylea_admin_token');
+            } catch (e) {}
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            };
+        }
+
         // Daten laden
         async function loadVouchers() {
             try {
                 let data = null;
                 try {
-                    const res = await fetch('/api/vouchers?t=' + Date.now());
+                    const res = await fetch('/api/vouchers?t=' + Date.now(), { headers: getAdminHeaders() });
                     if (res.ok) data = await res.json();
                 } catch (e) {}
 
@@ -595,7 +608,7 @@
                 try {
                     const res = await fetch('/api/vouchers', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: getAdminHeaders(),
                         body: JSON.stringify({
                             action: 'redeem',
                             code: selectedVoucher.code,
@@ -724,7 +737,7 @@
                 try {
                     const res = await fetch('/api/vouchers', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: getAdminHeaders(),
                         body: JSON.stringify({
                             action: 'create',
                             voucher: { code, amount, fuer, von, message: note }
