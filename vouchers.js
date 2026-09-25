@@ -1,4 +1,4 @@
-﻿module.exports = async (req, res) => {
+module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Admin-Token');
@@ -18,7 +18,7 @@
     'User-Agent': 'UniqueByLea-Vouchers-Agent'
   };
   if (token) {
-    headers['Authorization'] = 	oken ;
+    headers['Authorization'] = 'token ' + token;
   }
 
   // Hilfsfunktion: Prüft, ob Aufrufer Admin-Rechte besitzt
@@ -32,11 +32,10 @@
     if (adminSecret && clientToken === adminSecret) return true;
     if (validPins.includes(clientToken.toLowerCase())) return true;
 
-    // Prüfe mit GitHub API, falls GitHub-OAuth-Token übergeben wurde
     try {
       const ghUserRes = await fetch('https://api.github.com/user', {
         headers: {
-          'Authorization': 	oken ,
+          'Authorization': 'token ' + clientToken,
           'User-Agent': 'UniqueByLea-Auth-Check'
         }
       });
@@ -54,7 +53,7 @@
   // Hilfsfunktion: Gutscheine von GitHub laden
   async function loadVouchersFromGitHub() {
     try {
-      const ghRes = await fetch(https://api.github.com/repos///contents/?ref=main, { headers });
+      const ghRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}?ref=main`, { headers });
       if (ghRes.ok) {
         const data = await ghRes.json();
         const content = Buffer.from(data.content, 'base64').toString('utf8');
@@ -62,7 +61,7 @@
         return { vouchers: parsed.vouchers || [], sha: data.sha };
       }
     } catch (e) {
-      console.error(Fehler beim Laden von GitHub:, e);
+      console.error('Fehler beim Laden von GitHub:', e);
     }
     return { vouchers: [], sha: null };
   }
@@ -70,18 +69,18 @@
   // Hilfsfunktion: Gutscheine auf GitHub speichern
   async function saveVouchersToGitHub(vouchersList, sha, commitMsg) {
     if (!token) {
-      console.warn(Kein GITHUB_TOKEN vorhanden, Speicherung auf GitHub übersprungen);
+      console.warn('Kein GITHUB_TOKEN vorhanden, Speicherung auf GitHub übersprungen');
       return false;
     }
     try {
       const body = {
-        message: commitMsg || Update vouchers ledger,
+        message: commitMsg || 'Update vouchers ledger',
         content: Buffer.from(JSON.stringify({ vouchers: vouchersList }, null, 2), 'utf8').toString('base64'),
         branch: 'main'
       };
       if (sha) body.sha = sha;
 
-      const ghRes = await fetch(https://api.github.com/repos///contents/, {
+      const ghRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
         method: 'PUT',
         headers: {
           ...headers,
@@ -91,7 +90,7 @@
       });
       return ghRes.ok;
     } catch (e) {
-      console.error(Fehler beim Speichern auf GitHub:, e);
+      console.error('Fehler beim Speichern auf GitHub:', e);
       return false;
     }
   }
@@ -167,7 +166,7 @@
 
         const vIdx = vouchers.findIndex(v => (v.code || '').trim().toUpperCase() === code);
         if (vIdx === -1) {
-          return res.status(404).json({ success: false, error: Gutschein « + code + » nicht gefunden. });
+          return res.status(404).json({ success: false, error: `Gutschein «${code}» nicht gefunden.` });
         }
 
         const voucher = vouchers[vIdx];
@@ -176,7 +175,7 @@
         if (currentBalance < amount) {
           return res.status(400).json({ 
             success: false, 
-            error: Restguthaben nicht ausreichend. Aktuell verfügbar: CHF  + currentBalance.toFixed(2)
+            error: `Restguthaben nicht ausreichend. Aktuell verfügbar: CHF ${currentBalance.toFixed(2)}` 
           });
         }
 
@@ -197,7 +196,7 @@
 
         vouchers[vIdx] = voucher;
 
-        await saveVouchersToGitHub(vouchers, sha, Redeem CHF  + amount.toFixed(2) +  from  + code);
+        await saveVouchersToGitHub(vouchers, sha, `Redeem CHF ${amount.toFixed(2)} from ${code}`);
         return res.status(200).json({ success: true, voucher: voucher });
       }
 
@@ -211,10 +210,9 @@
         const code = voucher.code.trim().toUpperCase();
         const numAmount = parseFloat(voucher.amount) || 50;
 
-        // Prüfen ob Code bereits existiert
         const existing = vouchers.find(v => (v.code || '').trim().toUpperCase() === code);
         if (existing) {
-          return res.status(400).json({ success: false, error: Code « + code + » existiert bereits! });
+          return res.status(400).json({ success: false, error: `Code «${code}» existiert bereits!` });
         }
 
         const newVoucher = {
@@ -239,7 +237,7 @@
         };
 
         vouchers.unshift(newVoucher);
-        await saveVouchersToGitHub(vouchers, sha, Create voucher  + code +  (CHF  + numAmount + ));
+        await saveVouchersToGitHub(vouchers, sha, `Create voucher ${code} (CHF ${numAmount})`);
         return res.status(200).json({ success: true, voucher: newVoucher });
       }
 
