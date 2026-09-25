@@ -58,10 +58,17 @@ function renderPostMessage(data, status) {
   <script>
     (function() {
       function receiveMessage(e) {
-        console.log("receiveMessage", e);
+        var origin = e.origin || '';
+        var isAllowed = origin.indexOf('uniquebylea.vercel.app') !== -1 ||
+                        origin.indexOf('localhost') !== -1 ||
+                        origin.indexOf('127.0.0.1') !== -1;
+        if (!isAllowed) {
+          console.warn('Verdächtige Nachricht von nicht autorisierter Domain ignoriert:', origin);
+          return;
+        }
         window.opener.postMessage(
           'authorization:github:${status}:' + JSON.stringify(${JSON.stringify(data)}),
-          e.origin
+          origin
         );
         window.removeEventListener("message", receiveMessage, false);
       }
