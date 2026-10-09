@@ -16,7 +16,30 @@ module.exports = async (req, res) => {
 
   const debug = {};
 
-  // 1. Try local content/products.json first (fastest and complete)
+  // 1. PRIMARY: Read directly from content/products/*.json directory
+  // This ensures any additions, edits, or DELETIONS in Sveltia CMS are immediately reflected!
+  try {
+    const dir = path.join(process.cwd(), 'content', 'products');
+    debug.cwd = process.cwd();
+    debug.dirExists = fs.existsSync(dir);
+    if (debug.dirExists) {
+      const files = fs.readdirSync(dir).filter((f) => f.endsWith('.json'));
+      debug.filesCount = files.length;
+      if (files.length > 0) {
+        const produkte = files
+          .map((file) => safeParseJson(fs.readFileSync(path.join(dir, file), 'utf8')))
+          .filter(Boolean);
+
+        if (produkte.length > 0) {
+          return res.status(200).json({ produkte, source: 'content-products-dir' });
+        }
+      }
+    }
+  } catch (err) {
+    debug.dirError = err.message;
+  }
+
+  // 2. SECONDARY: Try local content/products.json
   try {
     const jsonPath = path.join(process.cwd(), 'content', 'products.json');
     if (fs.existsSync(jsonPath)) {
@@ -29,38 +52,36 @@ module.exports = async (req, res) => {
     debug.localJsonError = e.message;
   }
 
-  // 2. Try local filesystem directory (bundled by Vercel)
+  // 3. FALLBACK: Fetch directly from GitHub API
   try {
-    const dir = path.join(process.cwd(), 'content', 'products');
-    debug.cwd = process.cwd();
-    debug.dirExists = fs.existsSync(dir);
-    if (debug.dirExists) {
-      const files = fs.readdirSync(dir).filter((f) => f.endsWith('.json'));
-      debug.files = files;
-      if (files.length > 0) {
-        const produkte = files
-          .map((file) => safeParseJson(fs.readFileSync(path.join(dir, file), 'utf8')))
-          .filter(Boolean);
-
-        if (produkte.length > 0) {
-          return res.status(200).json({ produkte, source: 'fs' });
+    const headers = { 'User-Agent': 'UniqueByLea-Shop' };
+    if (process.env.GITHUB_TOKEN) {
+      headers['Authorization'] = `token ${process.env.GITHUB_TOKEN}`;
+    }
+    const ghRes = await fetch('https://api.github.com/repos/Uniquebylea/uniquebylea/contents/content/products', { headers });
+    debug.ghStatus = ghRes.status;
+    if (ghRes.ok) {
+      const files = await ghRes.json();
+      if (Array.isArray(files)) {
+        const jsonFiles = files.filter((f) => f.name.endsWith('.json') && f.download_url);
+        const produkte = await Promise.all(
+          jsonFiles.map(async (f) => {
+            try {
+              const fileRes = await fetch(f.download_url);
+              return safeParseJson(await fileRes.text());
+            } catch (e) {
+              return null;
+            }
+          })
+        );
+        const valid = produkte.filter(Boolean);
+        if (valid.length > 0) {
+          return res.status(200).json({ produkte: valid, source: 'github-api' });
         }
       }
     }
-  } catch (err) {
-    debug.fsError = err.message;
-  }
-
-  // 3. Fallback to static content/products.json via GitHub raw
-  try {
-    const fallbackRes = await fetch('https://raw.githubusercontent.com/Uniquebylea/uniquebylea/main/content/products.json');
-    debug.fallbackStatus = fallbackRes.status;
-    if (fallbackRes.ok) {
-      const data = safeParseJson(await fallbackRes.text());
-      if (data && data.produkte) return res.status(200).json({ ...data, source: 'fallback-file' });
-    }
-  } catch (e) {
-    debug.fallbackError = e.message;
+  } catch (ghErr) {
+    debug.ghError = ghErr.message;
   }
 
   return res.status(200).json({ produkte: [], debug });

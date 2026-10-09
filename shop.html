@@ -552,7 +552,7 @@
                 }
 
                 // 3. Robuster Fallback auf eingebettete products_data.js (sicher bei Doppelklick/file:// und offline)
-                if (!data || !data.produkte || data.produkte.length === 0 || (window.PRODUCTS_DATA && window.PRODUCTS_DATA.produkte && window.PRODUCTS_DATA.produkte.length > (data?.produkte?.length || 0))) {
+                if (!data || !data.produkte || data.produkte.length === 0) {
                     if (window.PRODUCTS_DATA && Array.isArray(window.PRODUCTS_DATA.produkte) && window.PRODUCTS_DATA.produkte.length > 0) {
                         data = window.PRODUCTS_DATA;
                     }
