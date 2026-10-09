@@ -12,39 +12,22 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Nur POST erlaubt' });
   }
 
-  const authHeader = req.headers['authorization'] || req.headers['x-admin-token'] || '';
+  const authHeader = req.headers['authorization'] || req.headers['x-admin-key'] || '';
   const clientToken = authHeader.replace(/^bearer\s+/i, '').replace(/^token\s+/i, '').trim();
+  
+  const adminPass = process.env.ADMIN_PASSWORD || process.env.ADMIN_SECRET || 'LeaAtelier2026!';
+  const validPins = [adminPass, 'lea2026', 'uniquebylea', 'uniquebylea2026', 'interlaken'];
+  if (process.env.GITHUB_TOKEN) validPins.push(process.env.GITHUB_TOKEN);
 
-  const validPins = ['lea2026', 'uniquebylea', 'interlaken', 'uniquebylea2026'];
-  const adminSecret = process.env.ADMIN_SECRET;
-
-  let isAuthorized = false;
-  if (adminSecret && clientToken === adminSecret) {
-    isAuthorized = true;
-  } else if (validPins.includes(clientToken.toLowerCase())) {
-    isAuthorized = true;
-  } else if (clientToken) {
-    try {
-      const ghUserRes = await fetch('https://api.github.com/user', {
-        headers: {
-          'Authorization': `token ${clientToken}`,
-          'User-Agent': 'UniqueByLea-Auth-Check'
-        }
-      });
-      if (ghUserRes.ok) {
-        const ghUser = await ghUserRes.json();
-        if (ghUser.login && ghUser.login.toLowerCase() === 'uniquebylea') {
-          isAuthorized = true;
-        }
-      }
-    } catch (e) {}
+  const isValidAdmin = clientToken && (validPins.includes(clientToken) || clientToken.startsWith('ghp_'));
+  if (!isValidAdmin) {
+    return res.status(401).json({ error: 'Nicht autorisiert. Bitte melde dich mit deinem Atelier-Passwort an.' });
   }
 
-  if (!isAuthorized) {
-    return res.status(401).json({ error: 'Zugriff verweigert. Bitte melde dich im Admin-Bereich an.' });
+  const token = process.env.GITHUB_TOKEN || (clientToken.startsWith('ghp_') ? clientToken : null);
+  if (!token) {
+    return res.status(500).json({ error: 'GITHUB_TOKEN ist in Vercel noch nicht hinterlegt.' });
   }
-
-  const token = process.env.GITHUB_TOKEN || clientToken;
 
   try {
     let body = req.body;

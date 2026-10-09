@@ -1,0 +1,35 @@
+{
+  "id": 629208542,
+  "sku": "4004",
+  "name": "Langarmkleid",
+  "cat": "Kinder",
+  "cats": [
+    "Kinder",
+    "Kleidung"
+  ],
+  "price": "49.00 CHF",
+  "priceNum": 49.0,
+  "badge": "",
+  "stock": 1,
+  "description": "Stoff & Pflege\n\n Material: Sweatshirtstoff mit Innenfleece / Jersey\n \n\n Pflege: Maschinenwäsche bei 30°C.\n\n Alle Stoffe wurden vor der Verarbeitung bei 30°C gewaschen.",
+  "img": "images/products/629208542_langarmkleid_1.jpg",
+  "gallery": [
+    "images/products/629208542_langarmkleid_1.jpg",
+    "images/products/629208542_langarmkleid_2.jpg"
+  ],
+  "options": [
+    {
+      "name": "Größe",
+      "type": "size",
+      "required": true,
+      "values": [
+        {
+          "title": "98/104",
+          "price_add": 0.0,
+          "stock": 1
+        }
+      ]
+    }
+  ],
+  "size": "98/104"
+}

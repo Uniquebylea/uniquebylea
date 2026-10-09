@@ -228,8 +228,13 @@
                     <div class="space-y-2 pt-2">
                         <button onclick="proceedToOnlineCheckout()" 
                                 class="w-full bg-darkbrown hover:bg-terracotta text-white py-3.5 rounded-xl text-xs uppercase tracking-widest font-bold shadow transition flex items-center justify-center gap-2">
-                            <span>Zur Kasse (TWINT, Karte, Apple Pay)</span>
+                            <span>Zahlungspflichtig bestellen (TWINT, Karte, Apple Pay) ➔</span>
                         </button>
+                        <p class="text-[9px] text-center text-darkbrown/60">Inkl. MwSt. (Kleinunternehmen gem. Art. 10 MWSTG befreit) · Sichere SSL-Verschlüsselung</p>
+                        <div id="personalizedItemNotice" class="hidden text-[10px] text-amber-900 bg-amber-50/90 rounded-xl p-2.5 border border-amber-200/80 text-left space-y-1">
+                            <span class="font-bold flex items-center gap-1">ℹ️ Personalisierte Anfertigung:</span>
+                            <p class="leading-relaxed">Bei Artikeln mit individueller Personalisierung (Wunschnamen) ist das gesetzliche Rückgaberecht gemäss AGB ausgeschlossen.</p>
+                        </div>
                         <button onclick="proceedToPickupCheckout()" 
                                 class="w-full border border-darkbrown/20 hover:bg-darkbrown/5 text-darkbrown py-2.5 rounded-xl text-[10px] uppercase tracking-wider font-bold transition">
                             Barzahlung bei Abholung
@@ -402,6 +407,9 @@
                                 <h3 id="modalTitle" class="font-serif text-lg md:text-xl uppercase tracking-wider font-bold text-darkbrown"></h3>
                                 <p id="modalPrice" class="text-terracotta font-bold text-lg whitespace-nowrap"></p>
                             </div>
+                            <div class="flex items-center gap-2 mt-1">
+                                <span id="modalSkuBadge" class="hidden text-[10px] text-darkbrown/60 bg-sand/50 border border-darkbrown/10 px-2 py-0.5 rounded-md font-mono">Art.-Nr. <strong id="modalSkuText" class="text-darkbrown/80"></strong></span>
+                            </div>
                             <div id="modalSizeBadge" class="hidden text-xs font-semibold text-darkbrown/85 mt-2 flex items-center gap-2 flex-wrap">
                                 <span class="bg-sand/70 text-darkbrown px-2.5 py-1 rounded-lg border border-darkbrown/15 flex items-center gap-1">📏 Grösse: <strong id="modalSizeText" class="text-terracotta"></strong></span>
                                 <span class="text-[11px] text-emerald-800 bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded-lg flex items-center gap-1">✨ Sofort versandbereit</span>
@@ -484,6 +492,9 @@
         </div>
     </footer>
 
+    <!-- Lokale Produktdaten (funktioniert auch ohne Webserver direkt per Doppelklick und offline) -->
+    <script src="content/products_data.js"></script>
+
     <!-- JavaScript Logik -->
     <script>
         let allProducts = [];
@@ -512,28 +523,41 @@
             return val.toFixed(2) + " CHF";
         }
 
-        function escapeHtml(str) {
-            if (str === null || str === undefined) return '';
-            return String(str)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
-        }
-
         async function load() {
             try {
                 let data = null;
+
+                // 1. API Fetch versuchen
                 try {
                     const res = await fetch('api/products');
-                    if (res.ok) data = await res.json();
+                    if (res.ok) {
+                        const json = await res.json();
+                        if (json && Array.isArray(json.produkte) && json.produkte.length > 5) {
+                            data = json;
+                        }
+                    }
                 } catch (e) {}
 
+                // 2. Statische products.json versuchen
                 if (!data || !data.produkte || data.produkte.length === 0) {
-                    const res = await fetch('content/products.json?t=' + Date.now());
-                    if (res.ok) data = await res.json();
+                    try {
+                        const res = await fetch('content/products.json?t=' + Date.now());
+                        if (res.ok) {
+                            const json = await res.json();
+                            if (json && Array.isArray(json.produkte) && json.produkte.length > 0) {
+                                data = json;
+                            }
+                        }
+                    } catch (e) {}
                 }
+
+                // 3. Robuster Fallback auf eingebettete products_data.js (sicher bei Doppelklick/file:// und offline)
+                if (!data || !data.produkte || data.produkte.length === 0 || (window.PRODUCTS_DATA && window.PRODUCTS_DATA.produkte && window.PRODUCTS_DATA.produkte.length > (data?.produkte?.length || 0))) {
+                    if (window.PRODUCTS_DATA && Array.isArray(window.PRODUCTS_DATA.produkte) && window.PRODUCTS_DATA.produkte.length > 0) {
+                        data = window.PRODUCTS_DATA;
+                    }
+                }
+
                 allProducts = data?.produkte || [];
 
                 const urlParams = new URLSearchParams(window.location.search);
@@ -619,7 +643,7 @@
             let filtered = allProducts;
 
             if (currentCategory) {
-                filtered = filtered.filter(p => p.cat === currentCategory);
+                filtered = filtered.filter(p => p.cat === currentCategory || (Array.isArray(p.cats) && p.cats.includes(currentCategory)));
             }
 
             if (query) {
@@ -818,6 +842,17 @@
             document.getElementById('modalCurrentImg').src = item.img || 'images/logo.png';
             document.getElementById('modalTitle').textContent = item.name;
             updateModalPriceDisplay();
+
+            const skuElem = document.getElementById('modalSkuBadge');
+            const skuText = document.getElementById('modalSkuText');
+            if (skuElem && skuText) {
+                if (item.sku) {
+                    skuText.textContent = item.sku;
+                    skuElem.classList.remove('hidden');
+                } else {
+                    skuElem.classList.add('hidden');
+                }
+            }
 
             const sizeElem = document.getElementById('modalSizeBadge');
             const sizeText = document.getElementById('modalSizeText');
@@ -1351,6 +1386,8 @@ let currentGalleryImages = [];
             } else {
                 cart.push({
                     key: cartKey,
+                    id: prod.id || null,
+                    sku: prod.sku || '',
                     name: prod.name,
                     cat: prod.cat || '',
                     priceNum: finalPrice,
@@ -1426,21 +1463,21 @@ let currentGalleryImages = [];
             cart.forEach((item, idx) => {
                 const variantDetails = [];
                 if (item.optionsSummary) {
-                    variantDetails.push(escapeHtml(item.optionsSummary));
+                    variantDetails.push(item.optionsSummary);
                 } else {
-                    if (item.color) variantDetails.push(`Farbe: ${escapeHtml(item.color)}`);
-                    if (item.size) variantDetails.push('Gr\u00f6\u00dfe: ' + escapeHtml(item.size));
-                    if (item.customName) variantDetails.push(`Name: "${escapeHtml(item.customName)}"`);
-                    if (item.personalMessage) variantDetails.push(`Nachricht: "${escapeHtml(item.personalMessage)}"`);
+                    if (item.color) variantDetails.push(`Farbe: ${item.color}`);
+                    if (item.size) variantDetails.push('Gr\u00f6\u00dfe: ' + item.size);
+                    if (item.customName) variantDetails.push(`Name: "${item.customName}"`);
+                    if (item.personalMessage) variantDetails.push(`Nachricht: "${item.personalMessage}"`);
                 }
 
                 const isMaxedOut = item.quantity >= item.maxStock;
 
                 container.innerHTML += `
                 <div class="flex items-center gap-3 bg-white p-3 rounded-2xl border border-darkbrown/5 shadow-sm">
-                    <img src="${item.img}" alt="${escapeHtml(item.name)}" onerror="this.src='images/logo.png'" class="w-14 h-16 ${item.name && item.name.toLowerCase().includes('gutschein') ? 'object-contain p-1' : 'object-cover'} rounded-xl bg-sand/30 flex-shrink-0">
+                    <img src="${item.img}" alt="${item.name}" onerror="this.src='images/logo.png'" class="w-14 h-16 ${item.name && item.name.toLowerCase().includes('gutschein') ? 'object-contain p-1' : 'object-cover'} rounded-xl bg-sand/30 flex-shrink-0">
                     <div class="flex-1 min-w-0">
-                        <h4 class="font-serif text-xs font-bold uppercase tracking-wider truncate mb-0.5">${escapeHtml(item.name)}</h4>
+                        <h4 class="font-serif text-xs font-bold uppercase tracking-wider truncate mb-0.5">${item.name}</h4>
                         <p class="text-terracotta text-xs font-bold mb-1">${formatCHF(item.priceNum)}</p>
                         
                         ${variantDetails.length > 0 ? `
@@ -1537,12 +1574,19 @@ let currentGalleryImages = [];
 
         window.changeQuantity = function(idx, delta) {
             if (!cart[idx]) return;
-            if (delta > 0 && cart[idx].quantity >= cart[idx].maxStock) {
-                alert(`Dieser Artikel ist nur ${cart[idx].maxStock}x verfügbar!`);
-                return;
+            const item = cart[idx];
+            if (delta > 0) {
+                if (item.isUnique || (typeof item.stock !== 'undefined' && item.stock <= 1) || item.maxStock === 1) {
+                    alert("Dieses handgefertigte Unikat ist leider nur 1x verfügbar!");
+                    return;
+                }
+                if (item.maxStock && item.quantity >= item.maxStock) {
+                    alert(`Dieser Artikel ist nur ${item.maxStock}x verfügbar!`);
+                    return;
+                }
             }
-            cart[idx].quantity += delta;
-            if (cart[idx].quantity <= 0) {
+            item.quantity += delta;
+            if (item.quantity <= 0) {
                 cart.splice(idx, 1);
             }
             saveCart();
@@ -1713,6 +1757,13 @@ let currentGalleryImages = [];
                     text.textContent = 'Noch ' + diff + ' CHF bis zum kostenlosen Paketversand!';
                 }
             }
+
+            const noticeEl = document.getElementById('personalizedItemNotice');
+            if (noticeEl) {
+                const hasPersonalized = cart.some(i => i.customName || (i.optionsSummary && i.optionsSummary.toLowerCase().includes('wunschname')));
+                if (hasPersonalized) noticeEl.classList.remove('hidden');
+                else noticeEl.classList.add('hidden');
+            }
         };
 
 
@@ -1760,13 +1811,22 @@ let currentGalleryImages = [];
                     body: JSON.stringify({
                         items: cart,
                         shippingType: shippingType,
-                        shippingCost: shippingCost
+                        shippingCost: shippingCost,
+                        voucherCode: (appliedCartVoucher && appliedCartVoucher.code) ? appliedCartVoucher.code : null
                     })
                 });
 
                 const data = await res.json();
                 if (data.url) {
-                    window.location.href = data.url;
+                    if (data.zeroAmount) {
+                        cart = [];
+                        appliedCartVoucher = null;
+                        saveCart();
+                        renderCartDrawer();
+                        showOrderSuccessModal();
+                    } else {
+                        window.location.href = data.url;
+                    }
                 } else if (data.error) {
                     alert("Hinweis zur Kasse:\n\n" + data.error);
                 }
@@ -2010,10 +2070,10 @@ let currentGalleryImages = [];
                 const itemDiv = document.createElement('div');
                 itemDiv.className = "flex gap-3.5 items-center p-3 rounded-2xl bg-white border border-darkbrown/10 shadow-sm";
                 itemDiv.innerHTML = `
-                    <img src="${img}" alt="${escapeHtml(name)}" onerror="this.src='images/logo.png'" 
+                    <img src="${img}" alt="${name}" onerror="this.src='images/logo.png'" 
                          class="w-16 h-16 rounded-xl object-cover border border-darkbrown/10 flex-shrink-0 bg-sand/30">
                     <div class="flex-1 min-w-0">
-                        <h4 class="font-serif text-xs font-bold uppercase tracking-wider truncate text-darkbrown">${escapeHtml(name)}</h4>
+                        <h4 class="font-serif text-xs font-bold uppercase tracking-wider truncate text-darkbrown">${name}</h4>
                         <p class="text-terracotta text-xs font-bold mt-0.5">${price}</p>
                         <div class="mt-1 flex items-center gap-2">
                             ${isAvailable ? 

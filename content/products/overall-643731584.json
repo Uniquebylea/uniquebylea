@@ -1,0 +1,35 @@
+{
+  "id": 643731584,
+  "sku": "3050",
+  "name": "Overall",
+  "cat": "Baby",
+  "cats": [
+    "Baby",
+    "Kleidung"
+  ],
+  "price": "49.00 CHF",
+  "priceNum": 49.0,
+  "badge": "",
+  "stock": 1,
+  "description": "Dieser Overall mit Innenfutter bietet deinem Baby eine gemütliche und warme Umgebung. Das Design mit den Holzknöpfen und der Kapuze lässt dein Baby noch süsser aussehen.\n\nStoff & Pflege\n\nMaterial: Musselin / Wolle\n \n\n Pflege: Maschinenwaschbar bei max. 30° C.\n\nAlle Stoffe wurden vor der Verarbeitung bei 30°C gewaschen.",
+  "img": "images/products/643731584_overall_1.jpg",
+  "gallery": [
+    "images/products/643731584_overall_1.jpg",
+    "images/products/643731584_overall_2.jpg"
+  ],
+  "options": [
+    {
+      "name": "Größe",
+      "type": "size",
+      "required": true,
+      "values": [
+        {
+          "title": "56/62",
+          "price_add": 0.0,
+          "stock": 1
+        }
+      ]
+    }
+  ],
+  "size": "56/62"
+}

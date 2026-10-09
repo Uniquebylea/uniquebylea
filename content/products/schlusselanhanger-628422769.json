@@ -1,0 +1,69 @@
+{
+  "id": 628422769,
+  "sku": "0001",
+  "name": "Schlüsselanhänger",
+  "cat": "Makramee",
+  "cats": [
+    "Makramee"
+  ],
+  "price": "9.00 CHF",
+  "priceNum": 9.0,
+  "badge": "",
+  "stock": 1,
+  "description": "Ein schlichter Schlüsselanhänger für alle, denen es gefällt. Wähle deine Farbe aus und ich mache dir deinen individuellen Schlüsselanhänger.",
+  "img": "images/products/628422769_schlusselanhanger_1.jpg",
+  "gallery": [
+    "images/products/628422769_schlusselanhanger_1.jpg",
+    "images/products/628422769_schlusselanhanger_2.jpg",
+    "images/products/628422769_schlusselanhanger_3.jpg",
+    "images/products/628422769_schlusselanhanger_4.jpg",
+    "images/products/628422769_schlusselanhanger_5.jpg",
+    "images/products/628422769_schlusselanhanger_6.jpg",
+    "images/products/628422769_schlusselanhanger_7.jpg",
+    "images/products/628422769_schlusselanhanger_8.jpg"
+  ],
+  "options": [
+    {
+      "name": "Farbe",
+      "type": "color",
+      "required": true,
+      "values": [
+        {
+          "title": "natural",
+          "price_add": 0.0,
+          "stock": 1
+        },
+        {
+          "title": "grau",
+          "price_add": 0.0,
+          "stock": 1
+        },
+        {
+          "title": "hellbraun",
+          "price_add": 0.0,
+          "stock": 1
+        },
+        {
+          "title": "rosa-braun",
+          "price_add": 0.0,
+          "stock": 1
+        },
+        {
+          "title": "bordeaux",
+          "price_add": 0.0,
+          "stock": 1
+        },
+        {
+          "title": "hellgrün",
+          "price_add": 0.0,
+          "stock": 1
+        },
+        {
+          "title": "dunkelgrün",
+          "price_add": 0.0,
+          "stock": 1
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "id": 643731567,
+  "sku": "8000",
+  "name": "Abschminkpads 5er-Set",
+  "cat": "Accessoires",
+  "cats": [
+    "Erwachsene",
+    "Accessoires"
+  ],
+  "price": "9.00 CHF",
+  "priceNum": 9.0,
+  "badge": "",
+  "stock": 1,
+  "description": "Entdecke eine nachhaltige Alternative für deine tägliche Make-up-Entfernung mit meinen wiederverwendbaren Abschminkpads aus Baumwolle und Frottee..\n\nWas diese Abschminkpads wirklich besonders macht, ist ihre Umweltfreundlichkeit. Im Gegensatz zu Einweg-Wattepads sind diese Pads waschbar und wiederverwendbar. Sie helfen, Abfall zu reduzieren und tragen so zu einer nachhaltigeren Lebensweise bei. Nach der Verwendung können sie einfach in der Waschmaschine gereinigt werden und sind bereit für den nächsten Einsatz.\n\nPro Set sind 5 Pads enthalten. Erhältlich in 2 verschiedenen Grössen.\n\n \n\nStoff & Pflege\n\nMaterial: Baumwolle / Musselin & Frottee\n\nPflege: Maschinenwäsche bei max. 60°C\n\nAlle Stoffe wurden vor der Verarbeitung bei 30°C gewaschen.",
+  "img": "images/products/643731567_abschminkpads-5er-set_1.jpg",
+  "gallery": [
+    "images/products/643731567_abschminkpads-5er-set_1.jpg",
+    "images/products/643731567_abschminkpads-5er-set_2.jpg",
+    "images/products/643731567_abschminkpads-5er-set_3.jpg",
+    "images/products/643731567_abschminkpads-5er-set_4.jpg"
+  ],
+  "options": [
+    {
+      "name": "Farbe",
+      "type": "color",
+      "required": true,
+      "values": [
+        {
+          "title": "gelb",
+          "price_add": 0.0,
+          "stock": 1
+        },
+        {
+          "title": "grün",
+          "price_add": 0.0,
+          "stock": 1
+        },
+        {
+          "title": "bordeaux",
+          "price_add": 0.0,
+          "stock": 1
+        }
+      ]
+    },
+    {
+      "name": "Grösse",
+      "type": "size",
+      "required": true,
+      "values": [
+        {
+          "title": "6,5cm",
+          "price_add": 0.0,
+          "stock": 1
+        },
+        {
+          "title": "10cm",
+          "price_add": 5.0,
+          "stock": 1
+        }
+      ]
+    }
+  ]
+}

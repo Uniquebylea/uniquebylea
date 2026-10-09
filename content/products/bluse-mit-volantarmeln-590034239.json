@@ -1,0 +1,35 @@
+{
+  "id": 590034239,
+  "sku": "5400",
+  "name": "Bluse mit Volantärmeln",
+  "cat": "Baby",
+  "cats": [
+    "Baby",
+    "Kleidung"
+  ],
+  "price": "39.00 CHF",
+  "priceNum": 39.0,
+  "badge": "",
+  "stock": 1,
+  "description": "Diese tolle Bluse mit Volantärmeln hat einen oversized Schnitt und ist das perfekte Oberteil für den Sommer und den Strand.\n\n Stoff & Pflege\n \n\nMaterial: Musselin\n \n\nPflege: Maschinenwäsche bei max. 30°C.\n\nAlle Stoffe wurden vor der Verarbeitung bei 30°C gewaschen.",
+  "img": "images/products/590034239_bluse-mit-volantarmeln_1.jpg",
+  "gallery": [
+    "images/products/590034239_bluse-mit-volantarmeln_1.jpg",
+    "images/products/590034239_bluse-mit-volantarmeln_2.jpg"
+  ],
+  "options": [
+    {
+      "name": "Größe",
+      "type": "size",
+      "required": true,
+      "values": [
+        {
+          "title": "80",
+          "price_add": 0.0,
+          "stock": 1
+        }
+      ]
+    }
+  ],
+  "size": "80"
+}

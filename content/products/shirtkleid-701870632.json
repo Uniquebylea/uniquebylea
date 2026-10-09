@@ -1,0 +1,39 @@
+{
+  "id": 701870632,
+  "sku": "4104",
+  "name": "Shirtkleid",
+  "cat": "Kinder",
+  "cats": [
+    "Kinder",
+    "Kleidung"
+  ],
+  "price": "45.00 CHF",
+  "priceNum": 45.0,
+  "badge": "",
+  "stock": 1,
+  "description": "Stoff & Pflege\n\n Material: Jersey / Musselin\n \n\n Pflege: Maschinenwäsche bei 30°C.\n\n Alle Stoffe wurden vor der Verarbeitung bei 30°C gewaschen.",
+  "img": "images/products/701870632_shirtkleid_1.jpg",
+  "gallery": [
+    "images/products/701870632_shirtkleid_1.jpg",
+    "images/products/701870632_shirtkleid_2.jpg"
+  ],
+  "options": [
+    {
+      "name": "Grösse",
+      "type": "size",
+      "required": true,
+      "values": [
+        {
+          "title": "98 / 104",
+          "price_add": 0.0,
+          "stock": 1
+        },
+        {
+          "title": "110 / 116",
+          "price_add": 0.0,
+          "stock": 1
+        }
+      ]
+    }
+  ]
+}

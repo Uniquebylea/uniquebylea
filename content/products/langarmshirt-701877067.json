@@ -1,0 +1,34 @@
+{
+  "id": 701877067,
+  "sku": "5104",
+  "name": "Langarmshirt",
+  "cat": "Baby",
+  "cats": [
+    "Baby",
+    "Kleidung"
+  ],
+  "price": "25.00 CHF",
+  "priceNum": 25.0,
+  "badge": "",
+  "stock": 1,
+  "description": "Stoff & Pflege\n\nMaterial: Jersey\n\nPflege: Maschinenwäsche bei max. 30°C.\n\nAlle Stoffe wurden vor der Verarbeitung bei 30°C gewaschen",
+  "img": "images/products/701877067_langarmshirt_1.jpg",
+  "gallery": [
+    "images/products/701877067_langarmshirt_1.jpg"
+  ],
+  "options": [
+    {
+      "name": "Grösse",
+      "type": "size",
+      "required": true,
+      "values": [
+        {
+          "title": "68",
+          "price_add": 0.0,
+          "stock": 1
+        }
+      ]
+    }
+  ],
+  "size": "68"
+}

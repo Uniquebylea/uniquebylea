@@ -1,0 +1,58 @@
+{
+  "id": 590042073,
+  "sku": "5252",
+  "name": "Pullover mit Latzhose",
+  "cat": "Baby",
+  "cats": [
+    "Baby",
+    "Kleidung"
+  ],
+  "price": "59.00 CHF",
+  "priceNum": 59.0,
+  "badge": "",
+  "stock": 1,
+  "description": "Ein wunderschöner weiss geblümter Pullover mit passender Latzhose in blauem Waffeljersey. Mit zwei Holzknöpfen ist der Look perfekt.\n\nStoff & Pflege\n\nMaterial: Strechjersey\n \n\n Pflege: Maschinenwaschbar bei max. 30° C.\n\nAlle Stoffe wurden vor der Verarbeitung bei 30°C gewaschen.",
+  "img": "images/products/590042073_pullover-mit-latzhose_1.jpg",
+  "gallery": [
+    "images/products/590042073_pullover-mit-latzhose_1.jpg",
+    "images/products/590042073_pullover-mit-latzhose_2.jpg",
+    "images/products/590042073_pullover-mit-latzhose_3.jpg"
+  ],
+  "options": [
+    {
+      "name": "Größe",
+      "type": "size",
+      "required": true,
+      "values": [
+        {
+          "title": "62/68",
+          "price_add": 0.0,
+          "stock": 1
+        }
+      ]
+    },
+    {
+      "name": "Set, Pullover, Hose",
+      "type": "dropdown",
+      "required": true,
+      "values": [
+        {
+          "title": "Set",
+          "price_add": 0.0,
+          "stock": 1
+        },
+        {
+          "title": "nur den Pullover",
+          "price_add": -30.0,
+          "stock": 1
+        },
+        {
+          "title": "nur die Hose",
+          "price_add": -30.0,
+          "stock": 1
+        }
+      ]
+    }
+  ],
+  "size": "62/68"
+}

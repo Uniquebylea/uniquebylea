@@ -1,0 +1,35 @@
+{
+  "id": 593755590,
+  "sku": "5300",
+  "name": "Oversized Pullover",
+  "cat": "Kinder",
+  "cats": [
+    "Kinder",
+    "Kleidung"
+  ],
+  "price": "35.00 CHF",
+  "priceNum": 35.0,
+  "badge": "",
+  "stock": 1,
+  "description": "Ein multicolor Pullover aus einem Mix von gefüttertem Sweatshirtstoff und Jersey. Perfekt für alle kühleren Tage.\n\nStoff & Pflege\n\nMaterial: gefütterter Sweatshirtstoff / Jersey / Bündchenware\n \n\nPflege: Maschinenwaschbar bei max. 30° C.\n\nAlle Stoffe wurden vor der Verarbeitung bei 30°C gewaschen.",
+  "img": "images/products/593755590_oversized-pullover_1.jpg",
+  "gallery": [
+    "images/products/593755590_oversized-pullover_1.jpg",
+    "images/products/593755590_oversized-pullover_2.jpg"
+  ],
+  "options": [
+    {
+      "name": "Größe",
+      "type": "size",
+      "required": true,
+      "values": [
+        {
+          "title": "98/104",
+          "price_add": 0.0,
+          "stock": 1
+        }
+      ]
+    }
+  ],
+  "size": "98/104"
+}

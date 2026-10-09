@@ -1,0 +1,69 @@
+{
+  "id": 628422772,
+  "sku": "0002",
+  "name": "Schnullerkette",
+  "cat": "Makramee",
+  "cats": [
+    "Makramee"
+  ],
+  "price": "17.00 CHF",
+  "priceNum": 17.0,
+  "badge": "",
+  "stock": 1,
+  "description": "Die schlichte Schnullerkette für dein Baby ist in den verschiedenen Farben erhältlich. Ich freue mich auf deine Bestellung.",
+  "img": "images/products/628422772_schnullerkette_1.jpg",
+  "gallery": [
+    "images/products/628422772_schnullerkette_1.jpg",
+    "images/products/628422772_schnullerkette_2.jpg",
+    "images/products/628422772_schnullerkette_3.jpg",
+    "images/products/628422772_schnullerkette_4.jpg",
+    "images/products/628422772_schnullerkette_5.jpg",
+    "images/products/628422772_schnullerkette_6.jpg",
+    "images/products/628422772_schnullerkette_7.jpg",
+    "images/products/628422772_schnullerkette_8.jpg"
+  ],
+  "options": [
+    {
+      "name": "Farbe",
+      "type": "color",
+      "required": true,
+      "values": [
+        {
+          "title": "natural",
+          "price_add": 0.0,
+          "stock": 1
+        },
+        {
+          "title": "grau",
+          "price_add": 0.0,
+          "stock": 1
+        },
+        {
+          "title": "hellbraun",
+          "price_add": 0.0,
+          "stock": 1
+        },
+        {
+          "title": "rosa-braun",
+          "price_add": 0.0,
+          "stock": 1
+        },
+        {
+          "title": "bordeaux",
+          "price_add": 0.0,
+          "stock": 1
+        },
+        {
+          "title": "hellgrün",
+          "price_add": 0.0,
+          "stock": 1
+        },
+        {
+          "title": "dunkelgrün",
+          "price_add": 0.0,
+          "stock": 1
+        }
+      ]
+    }
+  ]
+}

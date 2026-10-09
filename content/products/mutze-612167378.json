@@ -1,0 +1,33 @@
+{
+  "id": 612167378,
+  "sku": "9100",
+  "name": "Mütze",
+  "cat": "Accessoires",
+  "cats": [
+    "Erwachsene",
+    "Accessoires"
+  ],
+  "price": "29.00 CHF",
+  "priceNum": 29.0,
+  "badge": "",
+  "stock": 1,
+  "description": "Mütze für Erwachsene. unisex.\n \n\n \n \n\n Stoff & Pflege\n \n\n Material: Strickjersey\n \n\n Pflege: Maschinenwäsche bei 30°C.\n\nAlle Stoffe wurden vor der Verarbeitung bei 30°C gewaschen.",
+  "img": "images/products/612167378_mutze_1.jpg",
+  "gallery": [
+    "images/products/612167378_mutze_1.jpg"
+  ],
+  "options": [
+    {
+      "name": "als Geschenk",
+      "type": "checkbox",
+      "required": true,
+      "values": [
+        {
+          "title": "Geschenkverpackung",
+          "price_add": 2.5,
+          "stock": 1
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,103 @@
+{
+    "produkte":  [
+                     {
+                         "name":  "Babynest Schafe",
+                         "cat":  "Baby",
+                         "price":  "79.00 CHF",
+                         "badge":  "Bestseller",
+                         "stock":  2,
+                         "description":  "Handgefertigtes Babynest mit kuscheligen Schafen für die Kleinsten. Liebevoll genäht in Interlaken.",
+                         "img":  "images/baby-babynest.jpeg",
+                         "options":  [
+                                         {
+                                             "name":  "Farbe",
+                                             "type":  "color",
+                                             "required":  true,
+                                             "values":  [
+                                                            {
+                                                                "title":  "Naturweiss / Schafe",
+                                                                "price_add":  0,
+                                                                "img":  "images/baby-babynest.jpeg",
+                                                                "stock":  2
+                                                            },
+                                                            {
+                                                                "title":  "Salbeigrün",
+                                                                "price_add":  0,
+                                                                "img":  "images/baby-babynest.jpeg",
+                                                                "stock":  0
+                                                            }
+                                                        ]
+                                         },
+                                         {
+                                             "name":  "Größe",
+                                             "type":  "size",
+                                             "required":  true,
+                                             "values":  [
+                                                            {
+                                                                "title":  "Standard (ca. 75x40 cm)",
+                                                                "price_add":  0,
+                                                                "stock":  1
+                                                            },
+                                                            {
+                                                                "title":  "Maxi (ca. 90x50 cm)",
+                                                                "price_add":  15,
+                                                                "stock":  1
+                                                            }
+                                                        ]
+                                         },
+                                         {
+                                             "name":  "Wunschname für Bestickung",
+                                             "type":  "text",
+                                             "required":  false,
+                                             "values":  [
+
+                                                        ]
+                                         }
+                                     ]
+                     },
+                     {
+                         "name":  "Geschenkgutschein",
+                         "cat":  "Gutscheine",
+                         "price":  "25 CHF",
+                         "badge":  "",
+                         "stock":  10,
+                         "description":  "Schenke pure Freude mit dem liebevoll gestalteten Geschenkgutschein im Wert von 25 CHF. Das ideale Geschenk, um handgefertigte Lieblingsstücke und einzigartige Unikate ganz nach eigenem Wunsch auszuwählen. Einlösbar für das gesamte Sortiment im Onlineshop.",
+                         "img":  "images/geschenkgutschein-25-chf-gutschein-25.png",
+                         "options":  [
+                                         {
+                                             "name":  "Wert",
+                                             "type":  "dropdown",
+                                             "required":  true,
+                                             "values":  [
+                                                            {
+                                                                "title":  "25 CHF Gutschein",
+                                                                "price_add":  0,
+                                                                "img":  "images/geschenkgutschein-25-chf-gutschein-25.png",
+                                                                "stock":  10
+                                                            },
+                                                            {
+                                                                "title":  "50 CHF Gutschein",
+                                                                "price_add":  25,
+                                                                "img":  "images/gutschein-50.png",
+                                                                "stock":  10
+                                                            },
+                                                            {
+                                                                "title":  "75 CHF Gutschein",
+                                                                "price_add":  50,
+                                                                "img":  "images/gutschein-75.png",
+                                                                "stock":  10
+                                                            }
+                                                        ]
+                                         },
+                                         {
+                                             "name":  "Persönliche Nachricht",
+                                             "type":  "textarea",
+                                             "required":  false,
+                                             "values":  [
+
+                                                        ]
+                                         }
+                                     ]
+                     }
+                 ]
+}

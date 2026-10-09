@@ -1,0 +1,35 @@
+{
+  "id": 630794363,
+  "sku": "3200",
+  "name": "Badeponcho",
+  "cat": "Baby",
+  "cats": [
+    "Baby",
+    "Badetücher"
+  ],
+  "price": "55.00 CHF",
+  "priceNum": 55.0,
+  "badge": "",
+  "stock": 1,
+  "description": "Dieser niedliche und praktische Poncho wurde speziell für Kinder entworfen, um sie nach dem Schwimmen oder Baden warm und gemütlich zu halten.\n\nDer Badeponcho ist aus hochwertiger, weicher Baumwolle gefertigt, die sanft zur zarten Haut Ihres Kindes ist. Die großzügige Kapuze sorgt nicht nur für zusätzliche Wärme, sondern auch für einen niedlichen Look, den dein Kind lieben wird. Der Poncho ist leicht anzuziehen und bietet Bewegungsfreiheit, damit dein kleiner Liebling sich bequem bewegen kann, ohne eingeschränkt zu sein.\n\nMit seinem verspielten Design und den fröhlichen Farben wird dieser Badeponcho garantiert zum Lieblingsaccessoire Ihres Kindes am Strand, im Schwimmbad oder zu Hause. Er ist perfekt geeignet, um sich nach einem erfrischenden Bad abzutrocknen oder sich schnell mal etwas überzuziehen.\n\nÜberrasche dein Kind mit diesem niedlichen Badeponcho und mache das Schwimmen zu einem noch größeren Vergnügen!\n\nStoff & Pflege\n\nMaterial: Baumwollfrottee\n \n\nPflege: Maschinenpflege bis max. 60°C, trocknergeeignet\n\nAlle Stoffe wurden vor der Verarbeitung bei 30° gewaschen.",
+  "img": "images/products/630794363_badeponcho_1.jpg",
+  "gallery": [
+    "images/products/630794363_badeponcho_1.jpg",
+    "images/products/630794363_badeponcho_2.jpg"
+  ],
+  "options": [
+    {
+      "name": "Grösse",
+      "type": "size",
+      "required": true,
+      "values": [
+        {
+          "title": "74/80",
+          "price_add": 0.0,
+          "stock": 1
+        }
+      ]
+    }
+  ],
+  "size": "74/80"
+}

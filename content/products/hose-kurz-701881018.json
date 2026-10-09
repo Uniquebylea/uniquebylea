@@ -1,0 +1,34 @@
+{
+  "id": 701881018,
+  "sku": "6100",
+  "name": "Hose kurz",
+  "cat": "Baby",
+  "cats": [
+    "Baby",
+    "Kleidung"
+  ],
+  "price": "20.00 CHF",
+  "priceNum": 20.0,
+  "badge": "",
+  "stock": 1,
+  "description": "Stoff & Pflege\n\nMaterial: Jersey / Bündchenstoff\n\nPflege: Maschinenwäsche bei max. 30°C.\n \n\nAlle Stoffe wurden vor der Verarbeitung bei 30°C gewaschen.",
+  "img": "images/products/701881018_hose-kurz_1.jpg",
+  "gallery": [
+    "images/products/701881018_hose-kurz_1.jpg"
+  ],
+  "options": [
+    {
+      "name": "Grösse",
+      "type": "size",
+      "required": true,
+      "values": [
+        {
+          "title": "56",
+          "price_add": 0.0,
+          "stock": 1
+        }
+      ]
+    }
+  ],
+  "size": "56"
+}

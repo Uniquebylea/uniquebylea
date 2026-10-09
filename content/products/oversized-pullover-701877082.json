@@ -1,0 +1,35 @@
+{
+  "id": 701877082,
+  "sku": "5303",
+  "name": "Oversized Pullover",
+  "cat": "Kinder",
+  "cats": [
+    "Kinder",
+    "Kleidung"
+  ],
+  "price": "35.00 CHF",
+  "priceNum": 35.0,
+  "badge": "",
+  "stock": 1,
+  "description": "Stoff & Pflege\n\nMaterial: Jersey / Bündchenstoff\n\nPflege: Maschinenwäsche bei max. 30°C.\n \n\nAlle Stoffe wurden vor der Verarbeitung bei 30°C gewaschen.",
+  "img": "images/products/701877082_oversized-pullover_1.jpg",
+  "gallery": [
+    "images/products/701877082_oversized-pullover_1.jpg",
+    "images/products/701877082_oversized-pullover_2.jpg"
+  ],
+  "options": [
+    {
+      "name": "Grösse",
+      "type": "size",
+      "required": true,
+      "values": [
+        {
+          "title": "110 / 116",
+          "price_add": 0.0,
+          "stock": 1
+        }
+      ]
+    }
+  ],
+  "size": "110 / 116"
+}

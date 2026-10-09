@@ -1,0 +1,39 @@
+{
+  "id": 701871213,
+  "sku": "6001",
+  "name": "Hose lang",
+  "cat": "Baby",
+  "cats": [
+    "Baby",
+    "Kleidung"
+  ],
+  "price": "25.00 CHF",
+  "priceNum": 25.0,
+  "badge": "",
+  "stock": 1,
+  "description": "Stoff & Pflege\n\nMaterial: Jersey mit Innenfleece / Bündchenstoff\n\nPflege: Maschinenwäsche bei max. 30°C.\n \n\nAlle Stoffe wurden vor der Verarbeitung bei 30°C gewaschen.",
+  "img": "images/products/701871213_hose-lang_1.jpg",
+  "gallery": [
+    "images/products/701871213_hose-lang_1.jpg",
+    "images/products/701871213_hose-lang_2.jpg"
+  ],
+  "options": [
+    {
+      "name": "Grösse",
+      "type": "size",
+      "required": true,
+      "values": [
+        {
+          "title": "62",
+          "price_add": 0.0,
+          "stock": 1
+        },
+        {
+          "title": "68",
+          "price_add": 0.0,
+          "stock": 1
+        }
+      ]
+    }
+  ]
+}

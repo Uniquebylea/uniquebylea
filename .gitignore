@@ -1,0 +1,13 @@
+github_token.txt
+*.token
+.env
+.env.*
+.DS_Store
+Thumbs.db
+node_modules/
+.vercel/
+*.backup.json
+ecwid_all_products.json
+CONVERSATION_HISTORY.md
+*.ps1
+raw_transcript/

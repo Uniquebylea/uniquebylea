@@ -1,0 +1,35 @@
+{
+  "id": 593743996,
+  "sku": "5000",
+  "name": "T-shirt mit Hose",
+  "cat": "Baby",
+  "cats": [
+    "Baby",
+    "Kleidung"
+  ],
+  "price": "42.00 CHF",
+  "priceNum": 42.0,
+  "badge": "",
+  "stock": 1,
+  "description": "Diese schöne Kombination aus einem T-Shirt mit Volantärmeln und einer kurzen Hose eignet sich perfekt für die Sommertage.\n\nStoff & Pflege\n \n\nMaterial: Jersey\n \n\n Pflege: Maschinenwäsche bei max. 30°C.\n\nAlle Stoffe wurden vor der Verarbeitung bei 30°C gewaschen",
+  "img": "images/products/593743996_t-shirt-mit-hose_1.jpg",
+  "gallery": [
+    "images/products/593743996_t-shirt-mit-hose_1.jpg",
+    "images/products/593743996_t-shirt-mit-hose_2.jpg"
+  ],
+  "options": [
+    {
+      "name": "Größe",
+      "type": "size",
+      "required": true,
+      "values": [
+        {
+          "title": "56",
+          "price_add": 0.0,
+          "stock": 1
+        }
+      ]
+    }
+  ],
+  "size": "56"
+}

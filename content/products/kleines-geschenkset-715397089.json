@@ -1,0 +1,20 @@
+{
+  "id": 715397089,
+  "sku": "3505",
+  "name": "Kleines Geschenkset",
+  "cat": "Baby",
+  "cats": [
+    "Baby",
+    "Schnuffeltücher und Greiflinge"
+  ],
+  "price": "35.00 CHF",
+  "priceNum": 35.0,
+  "badge": "",
+  "stock": 1,
+  "description": "Das kleine Geschenkset bestehend aus einem Schnuffeltuch, Greifling und Halstuch. Alle 3 Produkte bestehen aus Musselinstoff.",
+  "img": "images/products/715397089_kleines-geschenkset_1.jpg",
+  "gallery": [
+    "images/products/715397089_kleines-geschenkset_1.jpg"
+  ],
+  "options": []
+}

@@ -1,0 +1,21 @@
+{
+  "id": 643726655,
+  "sku": "3600",
+  "name": "Wickelunterlage mit Tasche",
+  "cat": "Baby",
+  "cats": [
+    "Baby",
+    "Wickelunterlagen"
+  ],
+  "price": "79.00 CHF",
+  "priceNum": 79.0,
+  "badge": "",
+  "stock": 1,
+  "description": "Stoff & Pflege\n\nMaterial: Baumwolle & Cord / Füllung: Volumenvlies\n\nPflege: Maschinenwäsche bei max. 30°C.\n\nAlle Stoffe wurden vor der Verarbeitung bei 30°C gewaschen.",
+  "img": "images/products/643726655_wickelunterlage-mit-tasche_1.jpg",
+  "gallery": [
+    "images/products/643726655_wickelunterlage-mit-tasche_1.jpg",
+    "images/products/643726655_wickelunterlage-mit-tasche_2.jpg"
+  ],
+  "options": []
+}

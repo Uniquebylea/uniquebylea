@@ -1,0 +1,20 @@
+{
+  "id": 701883002,
+  "sku": "9213",
+  "name": "Knotenmütze",
+  "cat": "Accessoires",
+  "cats": [
+    "Kinder",
+    "Accessoires"
+  ],
+  "price": "7.00 CHF",
+  "priceNum": 7.0,
+  "badge": "",
+  "stock": 1,
+  "description": "Stoff & Pflege\n\n Material: Jersey\n \n\n Pflege: Maschinenwäsche bei 30°C.\n\n Alle Stoffe wurden vor der Verarbeitung bei 30°C gewaschen.",
+  "img": "images/products/701883002_knotenmutze_1.jpg",
+  "gallery": [
+    "images/products/701883002_knotenmutze_1.jpg"
+  ],
+  "options": []
+}

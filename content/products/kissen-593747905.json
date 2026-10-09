@@ -1,0 +1,43 @@
+{
+  "id": 593747905,
+  "sku": "3301",
+  "name": "Kissen",
+  "cat": "Accessoires",
+  "cats": [
+    "Kinder",
+    "Accessoires"
+  ],
+  "price": "25.00 CHF",
+  "priceNum": 25.0,
+  "badge": "",
+  "stock": 1,
+  "description": "Stoff & Pflege\n\nMaterial: Baumwolle / Füllwatte\n \n\nPflege: Maschinenwäsche bei 30°C. Empfehlung: in den Wäschetrockner mit Trocknerbällen, damit die Füllung gut erhalten bleibt.\n\nAlle Stoffe wurden vor der Verarbeitung bei 30°C gewaschen.",
+  "img": "images/products/593747905_kissen_1.jpg",
+  "gallery": [
+    "images/products/593747905_kissen_1.jpg"
+  ],
+  "options": [
+    {
+      "name": "Form",
+      "type": "dropdown",
+      "required": true,
+      "values": [
+        {
+          "title": "Mond",
+          "price_add": 0.0,
+          "stock": 1
+        },
+        {
+          "title": "Stern",
+          "price_add": 0.0,
+          "stock": 1
+        },
+        {
+          "title": "Mond und Stern",
+          "price_add": 25.0,
+          "stock": 1
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "id": 628383720,
+  "sku": "0003",
+  "name": "Makramee Aufhänger",
+  "cat": "Makramee",
+  "cats": [
+    "Makramee"
+  ],
+  "price": "14.00 CHF",
+  "priceNum": 14.0,
+  "badge": "",
+  "stock": 1,
+  "description": "Dieses Produkt kannst du als Deko in deiner Wohnung aufhängen oder als Tischdecke nutzen. Es ist in verschiedenen Farben erhältlich.",
+  "img": "images/products/628383720_makramee-aufhanger_1.jpg",
+  "gallery": [
+    "images/products/628383720_makramee-aufhanger_1.jpg",
+    "images/products/628383720_makramee-aufhanger_2.jpg",
+    "images/products/628383720_makramee-aufhanger_3.jpg",
+    "images/products/628383720_makramee-aufhanger_4.jpg",
+    "images/products/628383720_makramee-aufhanger_5.jpg",
+    "images/products/628383720_makramee-aufhanger_6.jpg",
+    "images/products/628383720_makramee-aufhanger_7.jpg",
+    "images/products/628383720_makramee-aufhanger_8.jpg"
+  ],
+  "options": [
+    {
+      "name": "Farbe",
+      "type": "color",
+      "required": true,
+      "values": [
+        {
+          "title": "natural",
+          "price_add": 0.0,
+          "stock": 1
+        },
+        {
+          "title": "grau",
+          "price_add": 0.0,
+          "stock": 1
+        },
+        {
+          "title": "hellbraun",
+          "price_add": 0.0,
+          "stock": 1
+        },
+        {
+          "title": "rosa-braun",
+          "price_add": 0.0,
+          "stock": 1
+        },
+        {
+          "title": "bordeaux",
+          "price_add": 0.0,
+          "stock": 1
+        },
+        {
+          "title": "hellgrün",
+          "price_add": 0.0,
+          "stock": 1
+        },
+        {
+          "title": "dunkelgrün",
+          "price_add": 0.0,
+          "stock": 1
+        }
+      ]
+    }
+  ]
+}

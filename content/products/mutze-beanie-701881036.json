@@ -1,0 +1,20 @@
+{
+  "id": 701881036,
+  "sku": "9207",
+  "name": "Mütze / Beanie",
+  "cat": "Accessoires",
+  "cats": [
+    "Kinder",
+    "Accessoires"
+  ],
+  "price": "15.00 CHF",
+  "priceNum": 15.0,
+  "badge": "",
+  "stock": 1,
+  "description": "Stoff & Pflege\n\n Material: Jersey\n \n\n Pflege: Maschinenwäsche bei 30°C.\n\n Alle Stoffe wurden vor der Verarbeitung bei 30°C gewaschen.",
+  "img": "images/products/701881036_mutze-beanie_1.jpg",
+  "gallery": [
+    "images/products/701881036_mutze-beanie_1.jpg"
+  ],
+  "options": []
+}

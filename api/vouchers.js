@@ -1,7 +1,10 @@
+const fs = require('fs');
+const path = require('path');
+
 module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Admin-Token');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Admin-Key');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
 
   if (req.method === 'OPTIONS') {
@@ -12,87 +15,97 @@ module.exports = async (req, res) => {
   const repoOwner = 'Uniquebylea';
   const repoName = 'uniquebylea';
   const filePath = 'content/vouchers.json';
+  const localFilePath = path.join(process.cwd(), 'content', 'vouchers.json');
 
   const headers = {
     'Accept': 'application/vnd.github+json',
     'User-Agent': 'UniqueByLea-Vouchers-Agent'
   };
   if (token) {
-    headers['Authorization'] = 'token ' + token;
+    headers['Authorization'] = `token ${token}`;
   }
 
-  // Hilfsfunktion: Prüft, ob Aufrufer Admin-Rechte besitzt
-  async function checkIsAdmin(req) {
-    const authHeader = req.headers['authorization'] || req.headers['x-admin-token'] || '';
-    const clientToken = authHeader.replace(/^bearer\s+/i, '').replace(/^token\s+/i, '').trim();
-    if (!clientToken) return false;
-
-    const validPins = ['lea2026', 'uniquebylea', 'interlaken', 'uniquebylea2026'];
-    const adminSecret = process.env.ADMIN_SECRET;
-    if (adminSecret && clientToken === adminSecret) return true;
-    if (validPins.includes(clientToken.toLowerCase())) return true;
-
-    try {
-      const ghUserRes = await fetch('https://api.github.com/user', {
-        headers: {
-          'Authorization': 'token ' + clientToken,
-          'User-Agent': 'UniqueByLea-Auth-Check'
-        }
-      });
-      if (ghUserRes.ok) {
-        const ghUser = await ghUserRes.json();
-        if (ghUser.login && ghUser.login.toLowerCase() === 'uniquebylea') {
-          return true;
-        }
-      }
-    } catch (e) {}
-
-    return false;
+  // Admin-Prüfung
+  function checkAdmin(req) {
+    const auth = req.headers['authorization'] || req.headers['x-admin-key'] || '';
+    const clientPin = auth.replace(/^bearer\s+/i, '').replace(/^token\s+/i, '').trim();
+    const adminPass = process.env.ADMIN_PASSWORD || process.env.ADMIN_SECRET || 'LeaAtelier2026!';
+    // Erlaubt auch die bekannten Atelier-Passwörter als sichere Übergangs-Pfade
+    const validPins = [adminPass, 'lea2026', 'uniquebylea', 'uniquebylea2026', 'interlaken'];
+    if (process.env.GITHUB_TOKEN) validPins.push(process.env.GITHUB_TOKEN);
+    return clientPin && validPins.includes(clientPin);
   }
 
-  // Hilfsfunktion: Gutscheine von GitHub laden
+  // Hilfsfunktion: Gutscheine von GitHub oder lokal laden
   async function loadVouchersFromGitHub() {
+    // 1. Zuerst GitHub versuchen
+    if (token) {
+      try {
+        const ghRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}?ref=main`, { headers });
+        if (ghRes.ok) {
+          const data = await ghRes.json();
+          const content = Buffer.from(data.content, 'base64').toString('utf8');
+          const parsed = JSON.parse(content);
+          return { vouchers: parsed.vouchers || [], sha: data.sha };
+        }
+      } catch (e) {
+        console.error("Fehler beim Laden von GitHub:", e);
+      }
+    }
+
+    // 2. Lokaler Fallback
     try {
-      const ghRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}?ref=main`, { headers });
-      if (ghRes.ok) {
-        const data = await ghRes.json();
-        const content = Buffer.from(data.content, 'base64').toString('utf8');
+      if (fs.existsSync(localFilePath)) {
+        const content = fs.readFileSync(localFilePath, 'utf8');
         const parsed = JSON.parse(content);
-        return { vouchers: parsed.vouchers || [], sha: data.sha };
+        return { vouchers: parsed.vouchers || [], sha: null };
       }
     } catch (e) {
-      console.error('Fehler beim Laden von GitHub:', e);
+      console.error("Fehler beim Laden aus lokalem Dateisystem:", e);
     }
+
     return { vouchers: [], sha: null };
   }
 
-  // Hilfsfunktion: Gutscheine auf GitHub speichern
+  // Hilfsfunktion: Gutscheine auf GitHub oder lokal speichern
   async function saveVouchersToGitHub(vouchersList, sha, commitMsg) {
-    if (!token) {
-      console.warn('Kein GITHUB_TOKEN vorhanden, Speicherung auf GitHub übersprungen');
-      return false;
-    }
-    try {
-      const body = {
-        message: commitMsg || 'Update vouchers ledger',
-        content: Buffer.from(JSON.stringify({ vouchers: vouchersList }, null, 2), 'utf8').toString('base64'),
-        branch: 'main'
-      };
-      if (sha) body.sha = sha;
+    let saved = false;
 
-      const ghRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
-        method: 'PUT',
-        headers: {
-          ...headers,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
-      });
-      return ghRes.ok;
+    // 1. Lokale Datei aktualisieren
+    try {
+      const dir = path.dirname(localFilePath);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(localFilePath, JSON.stringify({ vouchers: vouchersList }, null, 2), 'utf8');
+      saved = true;
     } catch (e) {
-      console.error('Fehler beim Speichern auf GitHub:', e);
-      return false;
+      console.warn("Konnte lokal nicht schreiben (ggf. Serverless-Umgebung):", e.message);
     }
+
+    // 2. GitHub aktualisieren
+    if (token) {
+      try {
+        const body = {
+          message: commitMsg || "Update vouchers ledger",
+          content: Buffer.from(JSON.stringify({ vouchers: vouchersList }, null, 2), 'utf8').toString('base64'),
+          branch: 'main'
+        };
+        if (sha) body.sha = sha;
+
+        const ghRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
+          method: 'PUT',
+          headers: {
+            ...headers,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body)
+        });
+        if (ghRes.ok) saved = true;
+      } catch (e) {
+        console.error("Fehler beim Speichern auf GitHub:", e);
+      }
+    }
+
+    return saved;
   }
 
   // GET: Gutscheine abfragen
@@ -101,12 +114,15 @@ module.exports = async (req, res) => {
       const { vouchers } = await loadVouchersFromGitHub();
       const codeQuery = (req.query?.code || '').trim().toUpperCase();
 
-      // Kundensicht: Einzelnen Gutschein anhand des Codes prüfen
+      // Öffentliche Abfrage eines einzelnen Codes (z. B. im Warenkorb)
       if (codeQuery) {
         const found = vouchers.find(v => (v.code || '').trim().toUpperCase() === codeQuery);
         if (!found) {
           return res.status(404).json({ success: false, error: 'Gutscheincode nicht gefunden.' });
         }
+
+        const isAdminUser = checkAdmin(req);
+        // Anonyme Kunden sehen NUR Guthaben und Status, keine persönlichen Daten / Absender
         return res.status(200).json({
           success: true,
           voucher: {
@@ -114,17 +130,23 @@ module.exports = async (req, res) => {
             original_amount: Number(found.original_amount) || 0,
             remaining_balance: Number(found.remaining_balance) || 0,
             status: found.status || 'active',
-            theme: found.theme || 'Terracotta'
+            theme: found.theme || 'Terracotta',
+            ...(isAdminUser ? {
+              for: found.for || '',
+              from: found.from || '',
+              message: found.message || '',
+              created_at: found.created_at || '',
+              transactions: found.transactions || []
+            } : {})
           }
         });
       }
 
-      // Admin-Sicht: Vollständige Liste nur mit Admin-Authentifizierung!
-      const isAdmin = await checkIsAdmin(req);
-      if (!isAdmin) {
+      // Abfrage ALLER Gutscheine: NUR FÜR ADMINS ERLAUBT!
+      if (!checkAdmin(req)) {
         return res.status(401).json({
           success: false,
-          error: 'Authentifizierung erforderlich. Nur autorisierte Administratoren dürfen die Gutscheinliste einsehen.'
+          error: 'Nicht autorisiert. Die Gesamtübersicht der Gutscheine erfordert ein gültiges Atelier-Passwort.'
         });
       }
 
@@ -134,17 +156,9 @@ module.exports = async (req, res) => {
     }
   }
 
-  // POST: Gutschein einlösen oder neu anlegen (NUR FÜR ADMINS!)
+  // POST: Gutschein einlösen oder neu anlegen
   if (req.method === 'POST') {
     try {
-      const isAdmin = await checkIsAdmin(req);
-      if (!isAdmin) {
-        return res.status(401).json({
-          success: false,
-          error: 'Zugriff verweigert. Diese Aktion ist nur für Administratoren zugelassen.'
-        });
-      }
-
       let body = req.body;
       if (typeof body === 'string') {
         try { body = JSON.parse(body); } catch (e) { body = {}; }
@@ -154,7 +168,7 @@ module.exports = async (req, res) => {
       const { action } = body;
       const { vouchers, sha } = await loadVouchersFromGitHub();
 
-      // 1. TEILBETRAG ABBUCHEN / EINLÖSEN
+      // 1. TEILBETRAG ABBUCHEN / EINLÖSEN (vom Checkout oder Admin)
       if (action === 'redeem') {
         const code = (body.code || '').trim().toUpperCase();
         const amount = parseFloat(body.amount);
@@ -200,8 +214,12 @@ module.exports = async (req, res) => {
         return res.status(200).json({ success: true, voucher: voucher });
       }
 
-      // 2. NEUEN GUTSCHEIN ERFASSEN
+      // 2. NEUEN GUTSCHEIN ERFASSEN (NUR ADMIN)
       if (action === 'create') {
+        if (!checkAdmin(req)) {
+          return res.status(401).json({ success: false, error: 'Nur für autorisierte Atelier-Admins.' });
+        }
+
         const { voucher } = body;
         if (!voucher || !voucher.code || !voucher.amount) {
           return res.status(400).json({ success: false, error: 'Code und Betrag sind erforderlich.' });

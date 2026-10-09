@@ -1,0 +1,35 @@
+{
+  "id": 590044603,
+  "sku": "5100",
+  "name": "Langamshirt und Pumphose",
+  "cat": "Baby",
+  "cats": [
+    "Baby",
+    "Kleidung"
+  ],
+  "price": "45.00 CHF",
+  "priceNum": 45.0,
+  "badge": "",
+  "stock": 1,
+  "description": "Diese tolle Kombination aus Langarmshirt mit Knopfleiste und einer kurzen Pumphose eignen sich gut im Sommer, aber auch im Herbst mit einer Strumpfhose.\n\n Stoff & Pflege\n \n\n Material: Jersey / Musselin\n \n\n Pflege: Maschinenwäsche bei max. 30°C.\n\n Alle Stoffe wurden vor der Verarbeitung bei 30°C gewaschen",
+  "img": "images/products/590044603_langamshirt-und-pumphose_1.jpg",
+  "gallery": [
+    "images/products/590044603_langamshirt-und-pumphose_1.jpg",
+    "images/products/590044603_langamshirt-und-pumphose_2.jpg"
+  ],
+  "options": [
+    {
+      "name": "Größe",
+      "type": "size",
+      "required": true,
+      "values": [
+        {
+          "title": "56",
+          "price_add": 0.0,
+          "stock": 1
+        }
+      ]
+    }
+  ],
+  "size": "56"
+}

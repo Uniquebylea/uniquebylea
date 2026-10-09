@@ -1,0 +1,35 @@
+{
+  "id": 643733037,
+  "sku": "5230",
+  "name": "Pullover mit Kapuze",
+  "cat": "Baby",
+  "cats": [
+    "Baby",
+    "Kleidung"
+  ],
+  "price": "30.00 CHF",
+  "priceNum": 30.0,
+  "badge": "",
+  "stock": 1,
+  "description": "Stoff & Pflege\n\nMaterial: Baumwolle Waffelstoff / Jersey\n\nPflege: Maschinenwäsche bei max. 30°C.\n \n\nAlle Stoffe wurden vor der Verarbeitung bei 30°C gewaschen.",
+  "img": "images/products/643733037_pullover-mit-kapuze_1.jpg",
+  "gallery": [
+    "images/products/643733037_pullover-mit-kapuze_1.jpg",
+    "images/products/643733037_pullover-mit-kapuze_2.jpg"
+  ],
+  "options": [
+    {
+      "name": "Größe",
+      "type": "size",
+      "required": true,
+      "values": [
+        {
+          "title": "68",
+          "price_add": 0.0,
+          "stock": 1
+        }
+      ]
+    }
+  ],
+  "size": "68"
+}
