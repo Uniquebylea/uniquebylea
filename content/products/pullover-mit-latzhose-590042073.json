@@ -20,18 +20,6 @@
   ],
   "options": [
     {
-      "name": "Größe",
-      "type": "size",
-      "required": true,
-      "values": [
-        {
-          "title": "62/68",
-          "price_add": 0.0,
-          "stock": 1
-        }
-      ]
-    },
-    {
       "name": "Set, Pullover, Hose",
       "type": "dropdown",
       "required": true,

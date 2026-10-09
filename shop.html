@@ -664,6 +664,28 @@
 
             // Wenn options bereits explizit definiert ist (z. B. leeres Array [] für Unikate)
             if (Array.isArray(item.options)) {
+                // Filtere Optionen heraus, die nur 1 Wert haben (keine echte Auswahl für Kunden!)
+                // und extrahiere Grösse / Farbe als Produkt-Eigenschaft
+                const realOptions = [];
+                item.options.forEach(opt => {
+                    const type = opt.type || 'dropdown';
+                    const vals = Array.isArray(opt.values) ? opt.values : [];
+                    const optName = (opt.name || '').toLowerCase();
+                    if (type === 'text' || type === 'textarea') {
+                        realOptions.push(opt);
+                    } else if (vals.length > 1) {
+                        realOptions.push(opt);
+                    } else if (vals.length === 1) {
+                        if (!item.size && (optName.includes('grö') || optName.includes('gro') || optName.includes('kopf') || optName.includes('size'))) {
+                            item.size = vals[0].title || '';
+                        }
+                        if (!item.color && optName.includes('farb')) {
+                            item.color = vals[0].title || '';
+                        }
+                    }
+                });
+                item.options = realOptions;
+
                 const isVoucherItem = item.cat === 'Gutscheine' || (item.name && item.name.toLowerCase().includes('gutschein'));
                 if (isVoucherItem) {
                     const hasMsgOpt = item.options.some(o => o.name && o.name.toLowerCase().includes('nachricht'));
@@ -729,7 +751,12 @@
 
         function hasProductOptions(item) {
             normalizeProductOptions(item);
-            return Array.isArray(item.options) && item.options.length > 0;
+            if (!Array.isArray(item.options) || item.options.length === 0) return false;
+            return item.options.some(opt => {
+                const type = opt.type || 'dropdown';
+                if (type === 'text' || type === 'textarea') return true;
+                return Array.isArray(opt.values) && opt.values.length > 1;
+            });
         }
 
         function getProductTotalStock(item) {
@@ -805,7 +832,7 @@
                         <h3 class="font-serif text-[11px] md:text-sm uppercase tracking-wider mb-1 truncate">${item.name}</h3>
                         <div class="flex items-center justify-between gap-1 mb-2.5">
                             <p class="text-terracotta font-bold text-xs">${item.price}</p>
-                            ${item.size ? `<span class="text-[9px] md:text-[10px] text-darkbrown/75 bg-sand/70 border border-darkbrown/15 px-2 py-0.5 rounded-md font-semibold">Gr. ${item.size}</span>` : (item.options && item.options[0]?.values?.length > 1 ? `<span class="text-[9px] md:text-[10px] text-terracotta bg-sand/60 border border-terracotta/20 px-2 py-0.5 rounded-md font-semibold">${item.options[0].values.length} Varianten</span>` : '')}
+                            ${item.size ? `<span class="text-[9px] md:text-[10px] text-darkbrown/75 bg-sand/70 border border-darkbrown/15 px-2 py-0.5 rounded-md font-semibold">Gr. ${item.size}</span>` : (hasVariants && item.options && item.options[0]?.values?.length > 1 ? `<span class="text-[9px] md:text-[10px] text-terracotta bg-sand/60 border border-terracotta/20 px-2 py-0.5 rounded-md font-semibold">${item.options[0].values.length} Varianten</span>` : '')}
                         </div>
                         
                         ${isOutOfStock ? `
@@ -1050,11 +1077,14 @@ let currentGalleryImages = [];
             }
 
             const options = item.options || [];
+            const optSection = document.getElementById('modalOptionsSection');
 
             if (options.length === 0) {
+                if (optSection) optSection.classList.add('hidden');
                 updateAvailabilityDisplay(Number(item.stock) || 1);
                 updateModalPriceDisplay();
             } else {
+                if (optSection) optSection.classList.remove('hidden');
                 options.forEach((opt, optIdx) => {
                     const optWrapper = document.createElement('div');
                     optWrapper.className = 'option-row space-y-1.5';

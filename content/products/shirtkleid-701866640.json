@@ -17,19 +17,6 @@
     "images/products/701866640_shirtkleid_1.jpg",
     "images/products/701866640_shirtkleid_2.jpg"
   ],
-  "options": [
-    {
-      "name": "Grösse",
-      "type": "size",
-      "required": true,
-      "values": [
-        {
-          "title": "98 / 104",
-          "price_add": 0.0,
-          "stock": 1
-        }
-      ]
-    }
-  ],
+  "options": [],
   "size": "98 / 104"
 }

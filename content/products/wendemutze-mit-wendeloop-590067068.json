@@ -16,19 +16,6 @@
   "gallery": [
     "images/products/590067068_wendemutze-mit-wendeloop_1.jpg"
   ],
-  "options": [
-    {
-      "name": "Grösse",
-      "type": "size",
-      "required": true,
-      "values": [
-        {
-          "title": "6-12 Monate",
-          "price_add": 0.0,
-          "stock": 1
-        }
-      ]
-    }
-  ],
+  "options": [],
   "size": "6-12 Monate"
 }

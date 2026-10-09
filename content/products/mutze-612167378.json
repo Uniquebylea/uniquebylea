@@ -16,18 +16,5 @@
   "gallery": [
     "images/products/612167378_mutze_1.jpg"
   ],
-  "options": [
-    {
-      "name": "als Geschenk",
-      "type": "checkbox",
-      "required": true,
-      "values": [
-        {
-          "title": "Geschenkverpackung",
-          "price_add": 2.5,
-          "stock": 1
-        }
-      ]
-    }
-  ]
+  "options": []
 }

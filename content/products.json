@@ -102,20 +102,7 @@
         "images/products/630794363_badeponcho_1.jpg",
         "images/products/630794363_badeponcho_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Grösse",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "74/80",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "74/80"
     },
     {
@@ -137,20 +124,7 @@
         "images/products/643733127_badeponcho_1.jpg",
         "images/products/643733127_badeponcho_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Grösse",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "86/92",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "86/92"
     },
     {
@@ -172,20 +146,7 @@
         "images/products/643743507_badeponcho_1.jpg",
         "images/products/643743507_badeponcho_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Grösse",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "74/80",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "74/80"
     },
     {
@@ -207,20 +168,7 @@
         "images/products/590034239_bluse-mit-volantarmeln_1.jpg",
         "images/products/590034239_bluse-mit-volantarmeln_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Größe",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "80",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "80"
     },
     {
@@ -303,20 +251,7 @@
       "gallery": [
         "images/products/701881018_hose-kurz_1.jpg"
       ],
-      "options": [
-        {
-          "name": "Grösse",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "56",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "56"
     },
     {
@@ -519,20 +454,7 @@
         "images/products/701877105_knotenmutze_1.jpg",
         "images/products/701877105_knotenmutze_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Kopfumfang",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "38-40 cm",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "38-40 cm"
     },
     {
@@ -553,20 +475,7 @@
       "gallery": [
         "images/products/701877116_knotenmutze_1.jpg"
       ],
-      "options": [
-        {
-          "name": "Kopfumfang",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "38-40 cm",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "38-40 cm"
     },
     {
@@ -587,20 +496,7 @@
       "gallery": [
         "images/products/701881034_knotenmutze_1.jpg"
       ],
-      "options": [
-        {
-          "name": "Kopfumfang",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "38-40 cm",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "38-40 cm"
     },
     {
@@ -692,20 +588,7 @@
         "images/products/590044603_langamshirt-und-pumphose_1.jpg",
         "images/products/590044603_langamshirt-und-pumphose_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Größe",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "56",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "56"
     },
     {
@@ -728,18 +611,6 @@
         "images/products/606047224_langarmkleid_2.jpg"
       ],
       "options": [
-        {
-          "name": "Größe",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "98/104",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        },
         {
           "name": "Mütze",
           "type": "dropdown",
@@ -779,20 +650,7 @@
         "images/products/629208542_langarmkleid_1.jpg",
         "images/products/629208542_langarmkleid_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Größe",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "98/104",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "98/104"
     },
     {
@@ -814,20 +672,7 @@
         "images/products/629792663_langarmkleid_1.jpg",
         "images/products/629792663_langarmkleid_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Größe",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "110/116",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "110/116"
     },
     {
@@ -888,20 +733,7 @@
         "images/products/701881003_langarmkleid_1.jpg",
         "images/products/701881003_langarmkleid_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Grösse",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "110 / 116",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "110 / 116"
     },
     {
@@ -922,20 +754,7 @@
       "gallery": [
         "images/products/701877067_langarmshirt_1.jpg"
       ],
-      "options": [
-        {
-          "name": "Grösse",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "68",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "68"
     },
     {
@@ -957,20 +776,7 @@
         "images/products/590040164_langarmshirt-mit-pumphose_1.jpg",
         "images/products/590040164_langarmshirt-mit-pumphose_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Größe",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "56",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "56"
     },
     {
@@ -992,20 +798,7 @@
         "images/products/590041866_langarmshirt-mit-pumphose_1.jpg",
         "images/products/590041866_langarmshirt-mit-pumphose_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Größe",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "56",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "56"
     },
     {
@@ -1026,20 +819,7 @@
       "gallery": [
         "images/products/634736416_langarmshirt-mit-pumphose_1.jpg"
       ],
-      "options": [
-        {
-          "name": "Größe",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "56",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "56"
     },
     {
@@ -1129,20 +909,7 @@
       "gallery": [
         "images/products/612167378_mutze_1.jpg"
       ],
-      "options": [
-        {
-          "name": "als Geschenk",
-          "type": "checkbox",
-          "required": true,
-          "values": [
-            {
-              "title": "Geschenkverpackung",
-              "price_add": 2.5,
-              "stock": 1
-            }
-          ]
-        }
-      ]
+      "options": []
     },
     {
       "id": 701871228,
@@ -1162,20 +929,7 @@
       "gallery": [
         "images/products/701871228_mutze-beanie_1.jpg"
       ],
-      "options": [
-        {
-          "name": "Kopfumfang",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "48-50 cm",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "48-50 cm"
     },
     {
@@ -1197,20 +951,7 @@
         "images/products/701871229_mutze-beanie_1.jpg",
         "images/products/701871229_mutze-beanie_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Kopfumfang",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "48-50 cm",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "48-50 cm"
     },
     {
@@ -1231,20 +972,7 @@
       "gallery": [
         "images/products/701877099_mutze-beanie_1.jpg"
       ],
-      "options": [
-        {
-          "name": "Kopfumfang",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "48-50cm",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "48-50cm"
     },
     {
@@ -1286,20 +1014,7 @@
         "images/products/643731584_overall_1.jpg",
         "images/products/643731584_overall_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Größe",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "56/62",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "56/62"
     },
     {
@@ -1320,20 +1035,7 @@
       "gallery": [
         "images/products/593751146_oversized-pullover_1.jpg"
       ],
-      "options": [
-        {
-          "name": "Größe",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "122/128",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "122/128"
     },
     {
@@ -1354,20 +1056,7 @@
       "gallery": [
         "images/products/593754133_oversized-pullover_1.jpg"
       ],
-      "options": [
-        {
-          "name": "Größe",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "110/116",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "110/116"
     },
     {
@@ -1389,20 +1078,7 @@
         "images/products/593755590_oversized-pullover_1.jpg",
         "images/products/593755590_oversized-pullover_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Größe",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "98/104",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "98/104"
     },
     {
@@ -1425,20 +1101,7 @@
         "images/products/701870720_oversized-pullover_2.jpg",
         "images/products/701870720_oversized-pullover_3.jpg"
       ],
-      "options": [
-        {
-          "name": "Grösse",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "98 / 104",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "98 / 104"
     },
     {
@@ -1460,20 +1123,7 @@
         "images/products/701871198_oversized-pullover_1.jpg",
         "images/products/701871198_oversized-pullover_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Grösse",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "110 / 116",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "110 / 116"
     },
     {
@@ -1495,20 +1145,7 @@
         "images/products/701877082_oversized-pullover_1.jpg",
         "images/products/701877082_oversized-pullover_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Grösse",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "110 / 116",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "110 / 116"
     },
     {
@@ -1529,20 +1166,7 @@
       "gallery": [
         "images/products/590217888_pullover_1.jpg"
       ],
-      "options": [
-        {
-          "name": "Größe",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "116",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "116"
     },
     {
@@ -1564,20 +1188,7 @@
         "images/products/701866702_pullover_1.jpg",
         "images/products/701866702_pullover_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Grösse",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "68",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "68"
     },
     {
@@ -1599,20 +1210,7 @@
         "images/products/701871194_pullover_1.jpg",
         "images/products/701871194_pullover_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Grösse",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "56",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "56"
     },
     {
@@ -1634,20 +1232,7 @@
         "images/products/701877010_pullover_1.jpg",
         "images/products/701877010_pullover_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Grösse",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "56",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "56"
     },
     {
@@ -1669,20 +1254,7 @@
         "images/products/701877066_pullover_1.jpg",
         "images/products/701877066_pullover_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Grösse",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "62",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "62"
     },
     {
@@ -1744,21 +1316,7 @@
         "images/products/701870626_pullover-mit-hose_2.jpg",
         "images/products/701870626_pullover-mit-hose_3.jpg"
       ],
-      "options": [
-        {
-          "name": "Grösse",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "68",
-              "price_add": 0,
-              "img": "",
-              "stock": 0
-            }
-          ]
-        }
-      ],
+      "options": [],
       "cats": [
         "Baby",
         "Kleidung"
@@ -1786,20 +1344,7 @@
         "images/products/643731554_pullover-mit-kapuze_1.jpg",
         "images/products/643731554_pullover-mit-kapuze_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Größe",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "68",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "68"
     },
     {
@@ -1821,20 +1366,7 @@
         "images/products/643733037_pullover-mit-kapuze_1.jpg",
         "images/products/643733037_pullover-mit-kapuze_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Größe",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "68",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "68"
     },
     {
@@ -1858,18 +1390,6 @@
         "images/products/590042073_pullover-mit-latzhose_3.jpg"
       ],
       "options": [
-        {
-          "name": "Größe",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "62/68",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        },
         {
           "name": "Set, Pullover, Hose",
           "type": "dropdown",
@@ -2169,20 +1689,7 @@
         "images/products/701866640_shirtkleid_1.jpg",
         "images/products/701866640_shirtkleid_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Grösse",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "98 / 104",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "98 / 104"
     },
     {
@@ -2243,20 +1750,7 @@
         "images/products/701870633_shirtkleid_1.jpg",
         "images/products/701870633_shirtkleid_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Grösse",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "110 / 116",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "110 / 116"
     },
     {
@@ -2355,20 +1849,7 @@
       "gallery": [
         "images/products/590201508_strampelsack_1.jpg"
       ],
-      "options": [
-        {
-          "name": "Größe",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "0-12 Monate",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "0-12 Monate"
     },
     {
@@ -2389,20 +1870,7 @@
       "gallery": [
         "images/products/590303305_strampelsack_1.jpg"
       ],
-      "options": [
-        {
-          "name": "Größe",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "0-12 Monate",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "0-12 Monate"
     },
     {
@@ -2424,20 +1892,7 @@
         "images/products/628394241_strampelsack-mit-innenfutter_1.jpg",
         "images/products/628394241_strampelsack-mit-innenfutter_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Größe",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "0-12 Monate",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "0-12 Monate"
     },
     {
@@ -2459,20 +1914,7 @@
         "images/products/701866623_strampelsack-mit-innenfutter_1.jpg",
         "images/products/701866623_strampelsack-mit-innenfutter_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Grösse",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "0-12 Monate",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "0-12 Monate"
     },
     {
@@ -2494,20 +1936,7 @@
         "images/products/701866624_strampelsack-mit-innenfutter_1.jpg",
         "images/products/701866624_strampelsack-mit-innenfutter_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Grösse",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "0-12 Monate",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "0-12 Monate"
     },
     {
@@ -2529,20 +1958,7 @@
         "images/products/701866625_strampelsack-mit-innenfutter_1.jpg",
         "images/products/701866625_strampelsack-mit-innenfutter_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Grösse",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "0-12 Monate",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "0-12 Monate"
     },
     {
@@ -2564,20 +1980,7 @@
         "images/products/701866626_strampelsack-mit-innenfutter_1.jpg",
         "images/products/701866626_strampelsack-mit-innenfutter_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Grösse",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "0-12 Monate",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "0-12 Monate"
     },
     {
@@ -2599,20 +2002,7 @@
         "images/products/701870615_strampelsack-mit-innenfutter_1.jpg",
         "images/products/701870615_strampelsack-mit-innenfutter_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Grösse",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "0-12 Monate",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "0-12 Monate"
     },
     {
@@ -2634,20 +2024,7 @@
         "images/products/701870616_strampelsack-mit-innenfutter_1.jpg",
         "images/products/701870616_strampelsack-mit-innenfutter_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Grösse",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "0-12 Monate",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "0-12 Monate"
     },
     {
@@ -2669,20 +2046,7 @@
         "images/products/590042072_t-shirt_1.jpg",
         "images/products/590042072_t-shirt_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Größe",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "50/56",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "50/56"
     },
     {
@@ -2704,20 +2068,7 @@
         "images/products/590042074_t-shirt-mit-hose_1.jpg",
         "images/products/590042074_t-shirt-mit-hose_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Größe",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "56",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "56"
     },
     {
@@ -2739,20 +2090,7 @@
         "images/products/593743996_t-shirt-mit-hose_1.jpg",
         "images/products/593743996_t-shirt-mit-hose_2.jpg"
       ],
-      "options": [
-        {
-          "name": "Größe",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "56",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "56"
     },
     {
@@ -2773,20 +2111,7 @@
       "gallery": [
         "images/products/606078049_wendemutze_1.jpg"
       ],
-      "options": [
-        {
-          "name": "Kopfumfang",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "48cm",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "48cm"
     },
     {
@@ -2807,20 +2132,7 @@
       "gallery": [
         "images/products/590067068_wendemutze-mit-wendeloop_1.jpg"
       ],
-      "options": [
-        {
-          "name": "Grösse",
-          "type": "size",
-          "required": true,
-          "values": [
-            {
-              "title": "6-12 Monate",
-              "price_add": 0.0,
-              "stock": 1
-            }
-          ]
-        }
-      ],
+      "options": [],
       "size": "6-12 Monate"
     },
     {

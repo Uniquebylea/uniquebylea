@@ -16,19 +16,6 @@
   "gallery": [
     "images/products/634736416_langarmshirt-mit-pumphose_1.jpg"
   ],
-  "options": [
-    {
-      "name": "Größe",
-      "type": "size",
-      "required": true,
-      "values": [
-        {
-          "title": "56",
-          "price_add": 0.0,
-          "stock": 1
-        }
-      ]
-    }
-  ],
+  "options": [],
   "size": "56"
 }

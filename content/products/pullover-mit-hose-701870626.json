@@ -12,21 +12,7 @@
     "images/products/701870626_pullover-mit-hose_2.jpg",
     "images/products/701870626_pullover-mit-hose_3.jpg"
   ],
-  "options": [
-    {
-      "name": "Grösse",
-      "type": "size",
-      "required": true,
-      "values": [
-        {
-          "title": "68",
-          "price_add": 0,
-          "img": "",
-          "stock": 0
-        }
-      ]
-    }
-  ],
+  "options": [],
   "cats": [
     "Baby",
     "Kleidung"

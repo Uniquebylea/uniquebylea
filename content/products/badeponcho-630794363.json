@@ -17,19 +17,6 @@
     "images/products/630794363_badeponcho_1.jpg",
     "images/products/630794363_badeponcho_2.jpg"
   ],
-  "options": [
-    {
-      "name": "Grösse",
-      "type": "size",
-      "required": true,
-      "values": [
-        {
-          "title": "74/80",
-          "price_add": 0.0,
-          "stock": 1
-        }
-      ]
-    }
-  ],
+  "options": [],
   "size": "74/80"
 }

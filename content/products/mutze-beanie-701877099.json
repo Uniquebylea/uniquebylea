@@ -16,19 +16,6 @@
   "gallery": [
     "images/products/701877099_mutze-beanie_1.jpg"
   ],
-  "options": [
-    {
-      "name": "Kopfumfang",
-      "type": "size",
-      "required": true,
-      "values": [
-        {
-          "title": "48-50cm",
-          "price_add": 0.0,
-          "stock": 1
-        }
-      ]
-    }
-  ],
+  "options": [],
   "size": "48-50cm"
 }

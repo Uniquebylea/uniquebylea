@@ -17,19 +17,6 @@
     "images/products/590034239_bluse-mit-volantarmeln_1.jpg",
     "images/products/590034239_bluse-mit-volantarmeln_2.jpg"
   ],
-  "options": [
-    {
-      "name": "Größe",
-      "type": "size",
-      "required": true,
-      "values": [
-        {
-          "title": "80",
-          "price_add": 0.0,
-          "stock": 1
-        }
-      ]
-    }
-  ],
+  "options": [],
   "size": "80"
 }

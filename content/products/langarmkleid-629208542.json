@@ -17,19 +17,6 @@
     "images/products/629208542_langarmkleid_1.jpg",
     "images/products/629208542_langarmkleid_2.jpg"
   ],
-  "options": [
-    {
-      "name": "Größe",
-      "type": "size",
-      "required": true,
-      "values": [
-        {
-          "title": "98/104",
-          "price_add": 0.0,
-          "stock": 1
-        }
-      ]
-    }
-  ],
+  "options": [],
   "size": "98/104"
 }

@@ -18,19 +18,6 @@
     "images/products/701870720_oversized-pullover_2.jpg",
     "images/products/701870720_oversized-pullover_3.jpg"
   ],
-  "options": [
-    {
-      "name": "Grösse",
-      "type": "size",
-      "required": true,
-      "values": [
-        {
-          "title": "98 / 104",
-          "price_add": 0.0,
-          "stock": 1
-        }
-      ]
-    }
-  ],
+  "options": [],
   "size": "98 / 104"
 }
