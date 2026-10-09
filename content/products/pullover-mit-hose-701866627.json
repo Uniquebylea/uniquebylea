@@ -1,16 +1,10 @@
 {
-  "id": 701866627,
-  "sku": "5251",
   "name": "Pullover mit Hose",
   "cat": "Baby",
-  "cats": [
-    "Baby",
-    "Kleidung"
-  ],
   "price": "55.00 CHF",
-  "priceNum": 55.0,
   "badge": "",
-  "stock": 1,
+  "size": "",
+  "stock": 0,
   "description": "Stoff & Pflege\n\nMaterial: Sweatshirtstoff mit Innenfleece / Bündchenstoff\n\nPflege: Maschinenwäsche bei max. 30°C.\n \n\nAlle Stoffe wurden vor der Verarbeitung bei 30°C gewaschen.",
   "img": "images/products/701866627_pullover-mit-hose_1.jpg",
   "gallery": [
@@ -28,15 +22,24 @@
       "values": [
         {
           "title": "62",
-          "price_add": 0.0,
-          "stock": 1
+          "price_add": 0,
+          "img": "",
+          "stock": 0
         },
         {
           "title": "68",
-          "price_add": 0.0,
-          "stock": 1
+          "price_add": 0,
+          "img": "",
+          "stock": 0
         }
       ]
     }
-  ]
+  ],
+  "cats": [
+    "Baby",
+    "Kleidung"
+  ],
+  "id": 701866627,
+  "priceNum": 55,
+  "sku": "5251"
 }
