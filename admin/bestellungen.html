@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Bestellungen | Unique by Lea</title>
+    <link rel="icon" type="image/png" href="../images/logo.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = { theme: { extend: {
+            colors: { sand: '#EAE3D9', creme: '#F9F6F2', terracotta: '#B08968', darkbrown: '#4A3728' },
+            fontFamily: { serif: ['Playfair Display', 'serif'], sans: ['Montserrat', 'sans-serif'] } } } }
+    </script>
+    <script src="/admin/admin-auth.js"></script>
+</head>
+<body class="bg-sand text-darkbrown font-sans min-h-screen p-3 md:p-8">
+
+    <div id="authOverlay" class="fixed inset-0 z-[9999] bg-sand flex items-center justify-center p-4">
+        <div class="bg-creme rounded-3xl p-8 max-w-sm w-full border border-darkbrown/15 shadow-2xl text-center space-y-4">
+            <span class="text-[10px] uppercase tracking-[0.2em] font-bold text-terracotta block">Geschützter Atelier-Bereich</span>
+            <h2 class="font-serif text-xl font-bold italic">Bestellungen</h2>
+            <form onsubmit="login(event)" class="space-y-3 pt-2">
+                <input type="password" id="pw" placeholder="Atelier-Passwort..." required autocomplete="current-password"
+                       class="w-full bg-white border border-darkbrown/20 rounded-xl py-3 px-4 text-xs text-center font-bold tracking-widest outline-none focus:ring-2 focus:ring-terracotta">
+                <button type="submit" class="w-full bg-terracotta hover:bg-darkbrown text-white py-3 rounded-xl font-bold uppercase text-xs tracking-wider transition">Bereich entsperren</button>
+                <div id="authErr" class="hidden text-xs text-red-600 font-medium">Passwort leider nicht korrekt.</div>
+            </form>
+        </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto">
+        <header class="flex flex-wrap items-center justify-between gap-3 mb-6">
+            <div>
+                <span class="text-[10px] uppercase tracking-[0.2em] font-bold text-terracotta block">Atelier Interlaken</span>
+                <h1 class="font-serif text-2xl font-bold italic">Bestellungen</h1>
+            </div>
+            <div class="flex gap-2 text-xs">
+                <a href="/admin/gutschein" class="px-3 py-2 rounded-xl border border-darkbrown/15 hover:border-terracotta">Gutscheine</a>
+                <button onclick="logout()" class="px-3 py-2 rounded-xl border border-darkbrown/15 hover:border-terracotta">Abmelden</button>
+            </div>
+        </header>
+
+        <div class="flex flex-wrap gap-2 mb-4 text-xs" id="filters">
+            <select id="fStatus" onchange="loadList()" class="bg-creme border border-darkbrown/15 rounded-xl px-3 py-2">
+                <option value="">Alle Bestellstatus</option>
+                <option value="awaiting_payment">Wartet auf Zahlung</option>
+                <option value="processing">In Bearbeitung</option>
+                <option value="shipped">Versandt</option>
+                <option value="completed">Abgeschlossen</option>
+                <option value="cancelled">Storniert</option>
+            </select>
+            <select id="fPay" onchange="loadList()" class="bg-creme border border-darkbrown/15 rounded-xl px-3 py-2">
+                <option value="">Alle Zahlungsstatus</option>
+                <option value="paid">Bezahlt</option>
+                <option value="pending">Zahlung ausstehend</option>
+                <option value="failed">Fehlgeschlagen</option>
+                <option value="expired">Abgelaufen/abgebrochen</option>
+                <option value="refunded">Zurückerstattet</option>
+            </select>
+            <label class="flex items-center gap-2 bg-creme border border-darkbrown/15 rounded-xl px-3 py-2"><input type="checkbox" id="fUnread" onchange="loadList()"> Nur ungelesene bezahlte</label>
+            <button onclick="loadList()" class="px-3 py-2 rounded-xl bg-terracotta text-white">Aktualisieren</button>
+        </div>
+
+        <div id="msg" class="hidden text-sm mb-3 rounded-xl px-4 py-3 bg-creme border border-darkbrown/15"></div>
+        <div class="bg-creme rounded-2xl border border-darkbrown/10 overflow-x-auto">
+            <table class="w-full text-xs">
+                <thead class="text-left uppercase tracking-wider text-[10px] text-darkbrown/60 border-b border-darkbrown/10">
+                    <tr><th class="p-3">Nr.</th><th class="p-3">Datum</th><th class="p-3">Kunde</th><th class="p-3 text-right">Betrag</th><th class="p-3">Bestellung</th><th class="p-3">Zahlung</th><th class="p-3"></th></tr>
+                </thead>
+                <tbody id="rows"></tbody>
+            </table>
+        </div>
+
+        <section id="detail" class="hidden mt-6 bg-creme rounded-2xl border border-darkbrown/10 p-5 text-xs space-y-4"></section>
+    </div>
+
+<script>
+const STATUS = { awaiting_payment: 'Wartet auf Zahlung', processing: 'In Bearbeitung', shipped: 'Versandt', completed: 'Abgeschlossen', cancelled: 'Storniert' };
+const PAY = { pending: 'Ausstehend', paid: 'Bezahlt', failed: 'Fehlgeschlagen', expired: 'Abgelaufen', refunded: 'Zurückerstattet', partially_refunded: 'Teilweise erstattet' };
+const NEXT = { awaiting_payment: ['cancelled'], processing: ['shipped', 'completed', 'cancelled'], shipped: ['completed'], completed: [], cancelled: [] };
+const chf = c => 'CHF ' + (c / 100).toFixed(2);
+const fmt = d => d ? new Date(d).toLocaleString('de-CH') : '–';
+
+// Sicheres Rendern: ausschliesslich textContent (Kundendaten werden nie als HTML interpretiert)
+function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined && text !== null) e.textContent = text; return e; }
+function badge(text, tone) { return el('span', 'inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ' + (tone || 'bg-darkbrown/10'), text); }
+function payTone(p) { return p === 'paid' ? 'bg-green-100 text-green-800' : (p === 'pending' ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-800'); }
+
+function showMsg(t) { const m = document.getElementById('msg'); m.textContent = t; m.classList.toggle('hidden', !t); }
+
+async function api(path, opts) {
+    const res = await adminFetch(path, opts);
+    if (res.status === 401) { document.getElementById('authOverlay').classList.remove('hidden'); throw new Error('Nicht angemeldet'); }
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'Fehler ' + res.status);
+    return data;
+}
+
+async function login(e) {
+    e.preventDefault();
+    const val = document.getElementById('pw').value.trim();
+    const r = await fetch('/api/admin-check', { headers: { Authorization: 'Bearer ' + val } });
+    if (r.ok) { sessionStorage.setItem('uniquebylea_admin_pw', val); document.getElementById('authOverlay').classList.add('hidden'); loadList(); openFromUrl(); }
+    else document.getElementById('authErr').classList.remove('hidden');
+}
+function logout() { clearAdminToken(); location.reload(); }
+
+async function loadList() {
+    showMsg('');
+    const p = new URLSearchParams();
+    if (fStatus.value) p.set('status', fStatus.value);
+    if (fPay.value) p.set('payment_status', fPay.value);
+    if (fUnread.checked) p.set('unread', '1');
+    try {
+        const { orders } = await api('/api/admin-orders?' + p.toString());
+        const tb = document.getElementById('rows'); tb.replaceChildren();
+        if (!orders.length) { const tr = el('tr'); const td = el('td', 'p-4 text-darkbrown/60', 'Keine Bestellungen gefunden.'); td.colSpan = 7; tr.append(td); tb.append(tr); }
+        orders.forEach(o => {
+            const tr = el('tr', 'border-b border-darkbrown/5 hover:bg-sand/40 cursor-pointer' + ((o.payment_status === 'paid' && !o.admin_read_at) ? ' font-bold' : ''));
+            tr.onclick = () => openOrder(o.id);
+            const nr = el('td', 'p-3', o.order_number);
+            if (o.needs_attention) nr.append(' ', badge('Prüfen', 'bg-red-100 text-red-800'));
+            if (o.email_failed) nr.append(' ', badge('Mail-Fehler', 'bg-red-100 text-red-800'));
+            tr.append(nr, el('td', 'p-3', fmt(o.created_at)), el('td', 'p-3', o.customer_name || o.customer_email || '–'),
+                el('td', 'p-3 text-right', chf(o.total_cents)));
+            const s1 = el('td', 'p-3'); s1.append(badge(STATUS[o.status] || o.status));
+            const s2 = el('td', 'p-3'); s2.append(badge(PAY[o.payment_status] || o.payment_status, payTone(o.payment_status)));
+            tr.append(s1, s2, el('td', 'p-3 text-terracotta', 'Öffnen'));
+            tb.append(tr);
+        });
+    } catch (err) { showMsg(err.message); }
+}
+
+async function openOrder(id) {
+    try {
+        const d = await api('/api/admin-orders?id=' + encodeURIComponent(id));
+        const o = d.order, box = document.getElementById('detail');
+        box.replaceChildren(); box.classList.remove('hidden');
+        const head = el('div', 'flex flex-wrap items-center justify-between gap-2');
+        head.append(el('h2', 'font-serif text-lg font-bold italic', 'Bestellung ' + o.order_number));
+        const bs = el('div', 'flex gap-2'); bs.append(badge(STATUS[o.status] || o.status), badge(PAY[o.payment_status] || o.payment_status, payTone(o.payment_status)));
+        head.append(bs); box.append(head);
+        if (o.needs_attention) box.append(el('div', 'rounded-xl bg-red-50 border border-red-200 text-red-800 p-3', 'Achtung: ' + o.needs_attention));
+
+        const grid = el('div', 'grid md:grid-cols-3 gap-4');
+        const addr = a => a ? [a.name, a.line1, a.line2, [a.postal_code, a.city].filter(Boolean).join(' '), a.country].filter(Boolean).join('\n') : '–';
+        [['Kunde', [o.customer_name, o.customer_email, o.customer_phone].filter(Boolean).join('\n') || '–'],
+         ['Lieferadresse (' + o.shipping_type + ')', addr(o.shipping_address)],
+         ['Rechnungsadresse', addr(o.billing_address)]].forEach(([t, v]) => {
+            const c = el('div'); c.append(el('div', 'uppercase text-[10px] font-bold text-terracotta mb-1', t), el('div', 'whitespace-pre-line', v)); grid.append(c); });
+        box.append(grid);
+
+        const tbl = el('table', 'w-full'); const th = el('tr', 'text-left text-[10px] uppercase text-darkbrown/60');
+        ['Produkt', 'Menge', 'Einzelpreis', 'Summe'].forEach(h => th.append(el('th', 'py-1 pr-2', h))); tbl.append(th);
+        d.items.forEach(i => {
+            const a = i.attributes || {}; const extra = [a.color && 'Farbe: ' + a.color, a.size && 'Grösse: ' + a.size, a.customName && 'Wunschname: ' + a.customName, a.optionsSummary].filter(Boolean).join(', ');
+            const tr = el('tr', 'border-t border-darkbrown/5'); const nameTd = el('td', 'py-1 pr-2', i.product_name);
+            if (extra) nameTd.append(el('div', 'text-darkbrown/60', extra));
+            tr.append(nameTd, el('td', 'py-1 pr-2', String(i.quantity)), el('td', 'py-1 pr-2', chf(i.unit_price_cents)), el('td', 'py-1 pr-2', chf(i.unit_price_cents * i.quantity))); tbl.append(tr); });
+        box.append(tbl);
+        const sums = el('div', 'text-right space-y-0.5');
+        sums.append(el('div', '', 'Zwischensumme: ' + chf(o.subtotal_cents)), el('div', '', 'Versand: ' + chf(o.shipping_cents)));
+        if (o.discount_cents) sums.append(el('div', '', 'Gutschein ' + (o.voucher_code || '') + ': −' + chf(o.discount_cents)));
+        sums.append(el('div', 'font-bold', 'Total: ' + chf(o.total_cents) + ' (MwSt. nicht ausgewiesen)')); box.append(sums);
+
+        const meta = el('div', 'text-darkbrown/70'); meta.textContent = 'Bestellt: ' + fmt(o.created_at) + ' · Bezahlt: ' + fmt(o.paid_at) + ' · Versandt: ' + fmt(o.shipped_at) + (o.tracking_number ? ' · Tracking: ' + o.tracking_number : '');
+        box.append(meta);
+        if (d.stripe_url) { const a = el('a', 'text-terracotta underline', 'Zahlung in Stripe öffnen'); a.href = d.stripe_url; a.target = '_blank'; a.rel = 'noopener noreferrer'; box.append(a); }
+
+        // Aktionen
+        const act = el('div', 'flex flex-wrap items-center gap-2 pt-2 border-t border-darkbrown/10');
+        const tracking = el('input', 'bg-white border border-darkbrown/20 rounded-xl px-3 py-2'); tracking.placeholder = 'Tracking-Nr. (optional)';
+        if ((NEXT[o.status] || []).includes('shipped')) act.append(tracking);
+        (NEXT[o.status] || []).forEach(t => {
+            const b = el('button', 'px-3 py-2 rounded-xl text-white ' + (t === 'cancelled' ? 'bg-red-700' : 'bg-terracotta'), '→ ' + STATUS[t]);
+            if ((t === 'shipped' || t === 'completed') && o.payment_status !== 'paid') { b.disabled = true; b.className += ' opacity-40'; b.title = 'Zahlung nicht bestätigt'; }
+            b.onclick = async () => {
+                if (t === 'cancelled' && !confirm(o.payment_status === 'paid' ? 'Bestellung stornieren? Eine Rückerstattung muss separat in Stripe erfolgen.' : 'Bestellung stornieren?')) return;
+                try { await api('/api/admin-orders', { method: 'POST', body: JSON.stringify({ action: 'set_status', id: o.id, status: t, tracking_number: tracking.value }) }); showMsg('Status aktualisiert.'); openOrder(o.id); loadList(); }
+                catch (err) { showMsg(err.message); } };
+            act.append(b); });
+        const retry = el('button', 'px-3 py-2 rounded-xl border border-darkbrown/20', 'Fehlgeschlagene E-Mails erneut senden');
+        retry.onclick = async () => { try { const r = await api('/api/admin-orders', { method: 'POST', body: JSON.stringify({ action: 'retry_email', id: o.id }) }); showMsg('E-Mail-Versand: ' + (r.results.map(x => x.kind + ' ' + x.status).join(', ') || 'nichts zu senden')); openOrder(o.id); } catch (err) { showMsg(err.message); } };
+        act.append(retry); box.append(act);
+
+        // Benachrichtigungen + Historie
+        const h = el('div', 'grid md:grid-cols-2 gap-4');
+        const n = el('div'); n.append(el('div', 'uppercase text-[10px] font-bold text-terracotta mb-1', 'E-Mail-Benachrichtigungen'));
+        if (!d.notifications.length) n.append(el('div', 'text-darkbrown/60', 'Keine'));
+        d.notifications.forEach(m => n.append(el('div', m.status === 'failed' ? 'text-red-700' : '', m.kind + ' → ' + m.recipient + ': ' + m.status + ' (Versuche: ' + m.attempts + ')' + (m.error_detail ? ' – ' + m.error_detail : ''))));
+        const hs = el('div'); hs.append(el('div', 'uppercase text-[10px] font-bold text-terracotta mb-1', 'Historie'));
+        d.history.forEach(x => hs.append(el('div', '', fmt(x.created_at) + ' · ' + x.kind + ': ' + (x.from_value || '–') + ' → ' + (x.to_value || '–') + ' (' + x.actor + ')' + (x.detail ? ' – ' + x.detail : ''))));
+        h.append(n, hs); box.append(h);
+        if (o.payment_status === 'paid' && !o.admin_read_at) { await api('/api/admin-orders', { method: 'POST', body: JSON.stringify({ action: 'mark_read', id: o.id }) }); loadList(); }
+        box.scrollIntoView({ behavior: 'smooth' });
+    } catch (err) { showMsg(err.message); }
+}
+
+function openFromUrl() { const id = new URLSearchParams(location.search).get('order'); if (id) openOrder(id); }
+
+(async function init() {
+    if (sessionStorage.getItem('uniquebylea_admin_pw')) {
+        document.getElementById('authOverlay').classList.add('hidden');
+        await loadList(); openFromUrl();
+    }
+})();
+</script>
+</body>
+</html>

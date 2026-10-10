@@ -5,6 +5,8 @@
 // nach bestätigter Zahlung.
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
+const db = require('./_db');
 
 const SHIPPING_TYPES = ['bpost', 'apost', 'letter', 'email', 'pickup'];
 const FREE_SHIPPING_FROM = 100;
@@ -70,6 +72,11 @@ module.exports = async (req, res) => {
   const stripeKey = process.env.STRIPE_SECRET_KEY;
   if (!stripeKey) {
     return res.status(500).json({ error: 'Die Bezahlung ist aktuell nicht verfügbar.' });
+  }
+  // Keine Zahlung ohne Bestellspeicherung
+  if (!db.configured()) {
+    console.error('SUPABASE_URL / SUPABASE_SECRET_KEY fehlen');
+    return res.status(503).json({ error: 'Die Bestellung ist aktuell nicht möglich. Bitte versuche es später erneut.' });
   }
 
   try {
@@ -169,7 +176,7 @@ module.exports = async (req, res) => {
       }
       // Gutscheine dürfen keine Gutscheine bezahlen
       if (!onlyVouchers) {
-        appliedDiscountChf = Math.min(grandTotal, remainingBal);
+        appliedDiscountChf = Math.min(totalItemAmount, remainingBal); // Stripe-Coupons rabattieren nur Positionen, nicht den Versand
         appliedVoucherCode = codeUpper;
         const discountCents = Math.round(appliedDiscountChf * 100);
 
@@ -195,6 +202,52 @@ module.exports = async (req, res) => {
         return res.status(400).json({ error: 'Gutscheine können nicht mit Gutscheinen bezahlt werden.' });
       }
     }
+
+    // 3b. Bestellung (ausstehend) anlegen. Doppelklick/Wiederholung: identischer Warenkorb innerhalb von 10 Min. -> gleiche Session
+    const toCents = v => Math.round(v * 100);
+    const subtotalCents = validatedItems.reduce((a, i) => a + toCents(i.validatedPrice) * i.quantity, 0);
+    const shippingCents = toCents(shippingCost);
+    const discountCents = toCents(appliedDiscountChf);
+    const cartHash = crypto.createHash('sha256').update(JSON.stringify({
+      i: validatedItems.map(i => [i.name, i.validatedPrice, i.quantity, i.color || '', i.size || '', i.customName || '', i.optionsSummary || '']),
+      s: shippingType, v: appliedVoucherCode
+    })).digest('hex');
+
+    const since = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+    const existing = await db.select('orders', `cart_hash=eq.${cartHash}&payment_status=eq.pending&stripe_session_url=not.is.null&created_at=gte.${since}&select=id,stripe_session_url,order_number&limit=1`);
+    if (existing.length) {
+      return res.status(200).json({ url: existing[0].stripe_session_url, orderNumber: existing[0].order_number });
+    }
+
+    const [order] = await db.insert('orders', [{
+      shipping_type: shippingType,
+      currency: 'CHF',
+      subtotal_cents: subtotalCents,
+      shipping_cents: shippingCents,
+      discount_cents: discountCents,
+      total_cents: subtotalCents + shippingCents - discountCents,
+      voucher_code: appliedVoucherCode || null,
+      cart_hash: cartHash
+    }]);
+    await db.insert('order_items', validatedItems.map(i => ({
+      order_id: order.id,
+      product_id: i.id ? String(i.id).substring(0, 100) : null,
+      sku: i.sku ? String(i.sku).substring(0, 100) : null,
+      product_name: String(i.name).substring(0, 250),
+      unit_price_cents: toCents(i.validatedPrice),
+      quantity: i.quantity,
+      attributes: {
+        color: i.color ? String(i.color).substring(0, 60) : undefined,
+        size: i.size ? String(i.size).substring(0, 40) : undefined,
+        customName: i.customName ? String(i.customName).substring(0, 60) : undefined,
+        optionsSummary: i.optionsSummary ? String(i.optionsSummary).substring(0, 300) : undefined,
+        voucherConfig: i.voucherConfig ? {
+          wert: i.voucherConfig.wert, fuer: String(i.voucherConfig.fuer || '').substring(0, 100),
+          von: String(i.voucherConfig.von || '').substring(0, 100), theme: String(i.voucherConfig.theme || '').substring(0, 40)
+        } : undefined
+      }
+    })), 'return=minimal');
+    await db.insert('order_status_history', [{ order_id: order.id, kind: 'order_status', from_value: null, to_value: 'awaiting_payment', actor: 'checkout', detail: 'Bestellung angelegt' }], 'return=minimal');
 
     // 4. Stripe Checkout Session
     const params = new URLSearchParams();
@@ -271,19 +324,31 @@ module.exports = async (req, res) => {
       params.append('metadata[gutschein_von]', String(vc.von || '').substring(0, 100));
     }
 
+    params.append('client_reference_id', order.id);
+    params.append('metadata[order_id]', order.id);
+    params.append('metadata[order_number]', order.order_number);
+    params.append('expires_at', String(Math.floor(Date.now() / 1000) + 31 * 60));
+
     const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${stripeKey}`, 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: {
+        'Authorization': `Bearer ${stripeKey}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Idempotency-Key': `order-${order.id}`
+      },
       body: params.toString()
     });
     const session = await response.json();
 
-    if (session.error) {
-      console.error('Stripe API Fehler:', session.error.message);
+    if (session.error || !session.id) {
+      console.error('Stripe API Fehler:', session.error && session.error.message);
+      await db.update('orders', `id=eq.${order.id}&payment_status=eq.pending`, { payment_status: 'failed', status: 'cancelled', cancelled_at: new Date().toISOString() });
+      await db.insert('order_status_history', [{ order_id: order.id, kind: 'payment_status', from_value: 'pending', to_value: 'failed', actor: 'checkout', detail: 'Stripe-Session konnte nicht erstellt werden' }], 'return=minimal');
       return res.status(400).json({ error: 'Die Bezahlung konnte nicht gestartet werden.' });
     }
 
-    return res.status(200).json({ url: session.url });
+    await db.update('orders', `id=eq.${order.id}`, { stripe_session_id: session.id, stripe_session_url: session.url });
+    return res.status(200).json({ url: session.url, orderNumber: order.order_number });
   } catch (err) {
     console.error('Checkout Fehler:', err);
     return res.status(500).json({ error: 'Interner Serverfehler beim Erstellen der Kasse.' });

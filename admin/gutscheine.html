@@ -17,6 +17,7 @@
             }
         }
     </script>
+    <script src="/admin/admin-auth.js"></script>
 </head>
 <body class="bg-sand text-darkbrown font-sans min-h-screen flex flex-col p-3 md:p-8">
 
@@ -345,43 +346,46 @@
 
         // Auth
         function checkAuth() {
-            const isSaved = localStorage.getItem('uniquebylea_admin_auth') === 'verified';
+            const isSaved = !!sessionStorage.getItem('uniquebylea_admin_pw');
             let hasCmsLogin = false;
             try {
                 const s = JSON.parse(localStorage.getItem('sveltia-cms.user') || '{}');
                 if (s && s.token) hasCmsLogin = true;
             } catch (e) {}
 
-            if (isSaved || hasCmsLogin) {
+            if (isSaved) {
                 document.getElementById('authOverlay')?.classList.add('hidden');
                 return true;
             }
             return false;
         }
 
-        window.verifyAdminAuth = function(e) {
+        window.verifyAdminAuth = async function(e) {
             e.preventDefault();
             const input = document.getElementById('adminPinInput');
-            const val = input ? input.value.trim().toLowerCase() : '';
-            if (val === 'lea2026' || val === 'uniquebylea' || val === 'interlaken' || val === 'uniquebylea2026') {
-                localStorage.setItem('uniquebylea_admin_auth', 'verified');
+            const val = input ? input.value.trim() : '';
+            const errEl = document.getElementById('authErrorMsg');
+            if (errEl) errEl.classList.add('hidden');
+
+            let ok = false;
+            try {
+                // Serverseitige Autorisierungsprüfung (kein Offline-Fallback, keine festen Passwörter)
+                const res = await fetch('/api/admin-check', { headers: { 'Authorization': 'Bearer ' + val } });
+                ok = res.ok;
+            } catch (err) {}
+            if (ok) {
+                sessionStorage.setItem('uniquebylea_admin_pw', val);
                 document.getElementById('authOverlay')?.classList.add('hidden');
                 loadVouchers();
-            } else {
-                document.getElementById('authErrorMsg')?.classList.remove('hidden');
+            } else if (errEl) {
+                errEl.classList.remove('hidden');
             }
         };
 
         function getAdminHeaders() {
-            let token = 'lea2026';
-            try {
-                const s = JSON.parse(localStorage.getItem('sveltia-cms.user') || '{}');
-                if (s && s.token) token = s.token;
-                else if (localStorage.getItem('uniquebylea_admin_token')) token = localStorage.getItem('uniquebylea_admin_token');
-            } catch (e) {}
             return {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + token
+                'Authorization': 'Bearer ' + (sessionStorage.getItem('uniquebylea_admin_pw') || '')
             };
         }
 

@@ -17,6 +17,7 @@
             }
         }
     </script>
+    <script src="/admin/admin-auth.js"></script>
 </head>
 <body class="bg-sand text-darkbrown font-sans min-h-screen flex flex-col p-3 md:p-8">
 
@@ -210,14 +211,14 @@
     <script>
         // Sicherheits-Check für Lea
         function checkAuth() {
-            const isSaved = localStorage.getItem('uniquebylea_admin_auth') === 'verified';
+            const isSaved = !!sessionStorage.getItem('uniquebylea_admin_pw');
             let hasCmsLogin = false;
             try {
                 const s = JSON.parse(localStorage.getItem('sveltia-cms.user') || '{}');
                 if (s && s.token) hasCmsLogin = true;
             } catch (e) {}
 
-            if (isSaved || hasCmsLogin) {
+            if (isSaved) {
                 const overlay = document.getElementById('authOverlay');
                 if (overlay) overlay.classList.add('hidden');
                 return true;
@@ -225,15 +226,18 @@
             return false;
         }
 
-        window.verifyAdminAuth = function(e) {
+        window.verifyAdminAuth = async function(e) {
             e.preventDefault();
             const input = document.getElementById('adminPinInput');
             const errorMsg = document.getElementById('authErrorMsg');
-            const val = input ? input.value.trim().toLowerCase() : '';
-
-            // Akzeptierte Passwörter für Lea
-            if (val === 'lea2026' || val === 'uniquebylea' || val === 'interlaken' || val === 'uniquebylea2026') {
-                localStorage.setItem('uniquebylea_admin_auth', 'verified');
+            const val = input ? input.value.trim() : '';
+            let ok = false;
+            try {
+                const r = await fetch('/api/admin-check', { headers: { 'Authorization': 'Bearer ' + val } });
+                ok = r.ok;
+            } catch (err) {}
+            if (ok) {
+                sessionStorage.setItem('uniquebylea_admin_pw', val);
                 const overlay = document.getElementById('authOverlay');
                 if (overlay) overlay.classList.add('hidden');
             } else {
@@ -306,7 +310,7 @@
                     // KI Analyse aufrufen
                     const res = await fetch('/api/fabric-analyze', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: window.adminHeaders(),
                         body: JSON.stringify({
                             imageBase64: base64,
                             mimeType: file.type || 'image/jpeg'
@@ -545,11 +549,11 @@
                 let token = '';
                 try {
                     const sveltiaUser = JSON.parse(localStorage.getItem('sveltia-cms.user') || '{}');
-                    token = sveltiaUser.token || localStorage.getItem('uniquebylea_gh_token') || 'lea2026';
+                    token = window.getAdminToken();
                 } catch (e) {}
 
                 const headers = { 'Content-Type': 'application/json' };
-                if (token) headers['Authorization'] = 'token ' + token;
+                if (token) headers['Authorization'] = 'Bearer ' + token;
 
                 await fetch('/api/save-fabric', {
                     method: 'POST',

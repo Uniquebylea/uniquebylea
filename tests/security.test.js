@@ -26,12 +26,21 @@ let stripeCalls;
 global.fetch = async (url, opts) => {
   stripeCalls.push({ url, body: opts && opts.body });
   if (url.includes('/coupons')) return { json: async () => ({ id: 'cpn_test' }) };
-  if (url.includes('/checkout/sessions')) return { json: async () => ({ url: 'https://stripe.test/session' }) };
+  if (url.includes('/checkout/sessions')) return { json: async () => ({ id: 'cs_test_mock', url: 'https://stripe.test/session' }) };
   return { ok: false, json: async () => ({}) };
 };
 
 process.env.STRIPE_SECRET_KEY = 'sk_test_dummy';
+process.env.SUPABASE_URL = 'https://mock.supabase.co';
+process.env.SUPABASE_SECRET_KEY = 'mock_secret';
 delete process.env.GITHUB_TOKEN;
+
+const db = require('../api/_db');
+db.configured = () => true;
+db.select = async (table, q) => [];
+db.insert = async (table, rows) => rows.map((r, i) => ({ id: '00000000-0000-0000-0000-00000000000' + i, order_number: 'UBL-2026-00001', ...r }));
+db.update = async (table, q, p) => [p];
+
 const checkout = require('../api/create-checkout-session.js');
 
 async function call(body) {
@@ -106,7 +115,7 @@ async function call(body) {
   await test('Webhook: ungültige Signatur -> 400, gültige Signatur wird akzeptiert', async () => {
     process.env.STRIPE_WEBHOOK_SECRET = 'whsec_test';
     const hook = require('../api/stripe-webhook.js');
-    const payload = JSON.stringify({ type: 'ping', data: { object: {} } });
+    const payload = JSON.stringify({ id: 'evt_ping_1', type: 'ping', data: { object: {} } });
     const mk = (sig, t) => {
       const { Readable } = require('stream');
       const r = Readable.from([Buffer.from(payload)]);

@@ -17,6 +17,7 @@
             }
         }
     </script>
+    <script src="/admin/admin-auth.js"></script>
 </head>
 <body class="bg-sand text-darkbrown font-sans min-h-screen flex flex-col p-3 md:p-8">
 
@@ -418,7 +419,6 @@
         function setPhotoSize(index, sizeVal) {
             if (!uploadedPhotos[index]) return;
             uploadedPhotos[index].size = sizeVal;
-            uploadedPhotos[index].title = '';
             const input = document.getElementById(`size_input_${index}`);
             if (input) input.value = sizeVal;
             renderVariantCards();
@@ -427,7 +427,6 @@
         function updatePhotoProp(index, prop, val) {
             if (!uploadedPhotos[index]) return;
             uploadedPhotos[index][prop] = val;
-            uploadedPhotos[index].title = '';
             
             const p = uploadedPhotos[index];
             const titlePreview = document.getElementById(`preview_title_${index}`);
@@ -449,7 +448,7 @@
             try {
                 const res = await fetch('/api/ai-analyze', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: window.adminHeaders(),
                     body: JSON.stringify({
                         images: uploadedPhotos.map(p => ({
                             imageBase64: p.imageBase64,
@@ -473,10 +472,6 @@
                 if (data.cat) document.getElementById('catInput').value = data.cat;
                 if (data.price) document.getElementById('priceInput').value = data.price;
                 if (data.badge) document.getElementById('badgeInput').value = data.badge;
-
-                if (data.size && uploadedPhotos.length === 1 && !uploadedPhotos[0].size) {
-                    uploadedPhotos[0].size = data.size;
-                }
 
                 if (Array.isArray(data.variants)) {
                     data.variants.forEach((v, idx) => {
@@ -522,10 +517,13 @@
             const isSinglePiece = document.getElementById('singleUniqueToggle').checked || uploadedPhotos.length === 1;
 
             const variantsPayload = uploadedPhotos.map((p, idx) => {
-                const parts = [];
-                if (p.color) parts.push(p.color);
-                if (p.size) parts.push(`Gr. ${p.size}`);
-                const variantTitle = parts.join(' \u00B7 ') || p.title || `Ausf\u00fchrung #${idx + 1}`;
+                let variantTitle = p.title || '';
+                if (!variantTitle) {
+                    const parts = [];
+                    if (p.color) parts.push(p.color);
+                    if (p.size) parts.push(`Gr. ${p.size}`);
+                    variantTitle = parts.join(' \u00B7 ') || `Ausf\u00fchrung #${idx + 1}`;
+                }
                 return {
                     imageBase64: p.imageBase64,
                     fileName: p.fileName,
@@ -542,11 +540,11 @@
                 let token = '';
                 try {
                     const sveltiaUser = JSON.parse(localStorage.getItem('sveltia-cms.user') || '{}');
-                    token = sveltiaUser.token || localStorage.getItem('uniquebylea_gh_token') || 'lea2026';
+                    token = window.getAdminToken();
                 } catch (err) {}
 
                 const reqHeaders = { 'Content-Type': 'application/json' };
-                if (token) reqHeaders['Authorization'] = 'token ' + token;
+                if (token) reqHeaders['Authorization'] = 'Bearer ' + token;
 
                 const saveRes = await fetch('/api/save-product', {
                     method: 'POST',

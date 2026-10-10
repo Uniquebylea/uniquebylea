@@ -17,6 +17,7 @@
             }
         }
     </script>
+    <script src="/admin/admin-auth.js"></script>
 </head>
 <body class="bg-sand text-darkbrown font-sans min-h-screen flex flex-col p-3 md:p-8">
 
@@ -447,10 +448,10 @@
             status.classList.remove('hidden');
 
             try {
-                let token = localStorage.getItem('uniquebylea_admin_token') || 'LeaAtelier2026!';
+                let token = window.getAdminToken();
                 try {
                     const s = JSON.parse(localStorage.getItem('sveltia-cms.user') || '{}');
-                    if (s && s.token) token = s.token;
+                    /* Sveltia-Token ist kein Admin-Passwort */
                 } catch (e) {}
 
                 const res = await fetch('/api/ai-analyze', {
@@ -551,7 +552,7 @@
                 let token = '';
                 try {
                     const sveltiaUser = JSON.parse(localStorage.getItem('sveltia-cms.user') || '{}');
-                    token = sveltiaUser.token || localStorage.getItem('uniquebylea_admin_token') || localStorage.getItem('uniquebylea_gh_token') || 'LeaAtelier2026!';
+                    token = window.getAdminToken();
                 } catch (err) {}
 
                 const reqHeaders = { 'Content-Type': 'application/json' };
