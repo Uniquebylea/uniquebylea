@@ -13,13 +13,7 @@ module.exports = async (req, res) => {
   }
 
   // Admin-Prüfung zum Schutz vor Credit-Drain
-  const auth = req.headers['authorization'] || req.headers['x-admin-key'] || '';
-  const clientPin = auth.replace(/^bearer\s+/i, '').replace(/^token\s+/i, '').trim();
-  const adminPass = process.env.ADMIN_PASSWORD || process.env.ADMIN_SECRET || 'LeaAtelier2026!';
-  const validPins = [adminPass, 'lea2026', 'uniquebylea', 'uniquebylea2026', 'interlaken'];
-  if (process.env.GITHUB_TOKEN) validPins.push(process.env.GITHUB_TOKEN);
-
-  if (!clientPin || !validPins.includes(clientPin)) {
+  if (!require('./_auth').isAdmin(req)) {
     return res.status(401).json({ error: 'Nicht autorisiert. Bitte gib dein Atelier-Passwort ein.' });
   }
 

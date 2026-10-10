@@ -27,13 +27,7 @@ module.exports = async (req, res) => {
 
   // Admin-Prüfung
   function checkAdmin(req) {
-    const auth = req.headers['authorization'] || req.headers['x-admin-key'] || '';
-    const clientPin = auth.replace(/^bearer\s+/i, '').replace(/^token\s+/i, '').trim();
-    const adminPass = process.env.ADMIN_PASSWORD || process.env.ADMIN_SECRET || 'LeaAtelier2026!';
-    // Erlaubt auch die bekannten Atelier-Passwörter als sichere Übergangs-Pfade
-    const validPins = [adminPass, 'lea2026', 'uniquebylea', 'uniquebylea2026', 'interlaken'];
-    if (process.env.GITHUB_TOKEN) validPins.push(process.env.GITHUB_TOKEN);
-    return clientPin && validPins.includes(clientPin);
+    return require('./_auth').isAdmin(req);
   }
 
   // Hilfsfunktion: Gutscheine von GitHub oder lokal laden
@@ -170,6 +164,9 @@ module.exports = async (req, res) => {
 
       // 1. TEILBETRAG ABBUCHEN / EINLÖSEN (vom Checkout oder Admin)
       if (action === 'redeem') {
+        if (!checkAdmin(req)) {
+          return res.status(401).json({ success: false, error: 'Nur für autorisierte Atelier-Admins.' });
+        }
         const code = (body.code || '').trim().toUpperCase();
         const amount = parseFloat(body.amount);
         const note = (body.note || 'Einkauf im Shop / Atelier').trim();

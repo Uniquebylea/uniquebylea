@@ -12,9 +12,10 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Nur POST erlaubt' });
   }
 
-  const authHeader = req.headers['authorization'] || '';
-  const clientToken = authHeader.replace(/^bearer\s+/i, '').replace(/^token\s+/i, '').trim();
-  const token = process.env.GITHUB_TOKEN || clientToken;
+  if (!require('./_auth').isAdmin(req)) {
+    return res.status(401).json({ error: 'Nicht autorisiert.' });
+  }
+  const token = process.env.GITHUB_TOKEN;
 
   try {
     let body = req.body;

@@ -12,6 +12,10 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Nur POST erlaubt' });
   }
 
+  if (!require('./_auth').isAdmin(req)) {
+    return res.status(401).json({ error: 'Nicht autorisiert.' });
+  }
+
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     return res.status(500).json({ error: 'GEMINI_API_KEY ist in Vercel noch nicht eingetragen.' });

@@ -12,19 +12,11 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Nur POST erlaubt' });
   }
 
-  const authHeader = req.headers['authorization'] || req.headers['x-admin-key'] || '';
-  const clientToken = authHeader.replace(/^bearer\s+/i, '').replace(/^token\s+/i, '').trim();
-  
-  const adminPass = process.env.ADMIN_PASSWORD || process.env.ADMIN_SECRET || 'LeaAtelier2026!';
-  const validPins = [adminPass, 'lea2026', 'uniquebylea', 'uniquebylea2026', 'interlaken'];
-  if (process.env.GITHUB_TOKEN) validPins.push(process.env.GITHUB_TOKEN);
-
-  const isValidAdmin = clientToken && (validPins.includes(clientToken) || clientToken.startsWith('ghp_'));
-  if (!isValidAdmin) {
+  if (!require('./_auth').isAdmin(req)) {
     return res.status(401).json({ error: 'Nicht autorisiert. Bitte melde dich mit deinem Atelier-Passwort an.' });
   }
 
-  const token = process.env.GITHUB_TOKEN || (clientToken.startsWith('ghp_') ? clientToken : null);
+  const token = process.env.GITHUB_TOKEN;
   if (!token) {
     return res.status(500).json({ error: 'GITHUB_TOKEN ist in Vercel noch nicht hinterlegt.' });
   }
