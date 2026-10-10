@@ -45,38 +45,7 @@ async function history(orderId, kind, from, to, detail) {
   await db.insert('order_status_history', [{ order_id: orderId, kind, from_value: from, to_value: to, actor: 'stripe-webhook', detail }], 'return=minimal');
 }
 
-// Gutschein-Ledger (GitHub-JSON) – idempotent über session_id
-async function applyVoucherLedger(code, amountCents, sessionId) {
-  const token = process.env.GITHUB_TOKEN;
-  if (!token) throw new Error('GITHUB_TOKEN fehlt');
-  const url = 'https://api.github.com/repos/Uniquebylea/uniquebylea/contents/content/vouchers.json';
-  const headers = { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github+json', 'User-Agent': 'UniqueByLea-Webhook', 'Content-Type': 'application/json' };
-  for (let attempt = 0; attempt < 3; attempt++) {
-    const getRes = await fetch(`${url}?ref=main`, { headers });
-    if (!getRes.ok) throw new Error(`Gutscheine nicht ladbar (${getRes.status})`);
-    const file = await getRes.json();
-    const vouchers = JSON.parse(Buffer.from(file.content, 'base64').toString('utf8')).vouchers || [];
-    const v = vouchers.find(x => (x.code || '').trim().toUpperCase() === code);
-    if (!v) throw new Error('Gutschein nicht gefunden');
-    if ((v.transactions || []).some(t => t.session_id === sessionId)) return 'already_processed';
-    const balance = Math.round((Number(v.remaining_balance) || 0) * 100);
-    const charged = Math.min(balance, amountCents);
-    v.remaining_balance = (balance - charged) / 100;
-    v.status = v.remaining_balance === 0 ? 'fully_redeemed' : 'partially_redeemed';
-    if (!Array.isArray(v.transactions)) v.transactions = [];
-    v.transactions.push({
-      date: new Date().toISOString().slice(0, 10), type: 'redeem', amount: charged / 100,
-      note: charged < amountCents ? 'Shop-Kauf (Guthaben geringer als Rabatt – bitte prüfen)' : 'Shop-Kauf',
-      session_id: sessionId, new_balance: v.remaining_balance
-    });
-    const putRes = await fetch(url, { method: 'PUT', headers, body: JSON.stringify({
-      message: `Redeem CHF ${(charged / 100).toFixed(2)} from ${code}`,
-      content: Buffer.from(JSON.stringify({ vouchers }, null, 2), 'utf8').toString('base64'), sha: file.sha, branch: 'main' }) });
-    if (putRes.ok) return charged < amountCents ? 'redeemed_partial_balance' : 'redeemed';
-    if (putRes.status !== 409) throw new Error(`Speichern fehlgeschlagen (${putRes.status})`);
-  }
-  throw new Error('Gutschein-Update nach 3 Versuchen nicht möglich');
-}
+const { applyVoucherLedger } = require('./_voucher');
 
 function extractCustomer(s) {
   const cd = s.customer_details || {};

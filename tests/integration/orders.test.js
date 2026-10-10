@@ -32,6 +32,7 @@ process.env.STRIPE_SECRET_KEY = "sk_test_mocked_key";
 process.env.STRIPE_WEBHOOK_SECRET = "whsec_mocked_secret";
 process.env.OPERATOR_EMAIL = "hello@uniquebylea.com";
 process.env.RESEND_API_KEY = "re_test_mocked_key";
+process.env.GITHUB_TOKEN = "ghp_test_mocked_token";
 
 const results = [];
 async function test(name, fn) {
@@ -95,7 +96,7 @@ global.fetch = async (url, opts = {}) => {
     }
     // GET
     const mockVouchers = {
-      vouchers: [
+      vouchers: global.__mockVoucherList || [
         { code: "TESTGUTSCHEIN50", original_amount: 50, remaining_balance: 50, status: "active", transactions: [] }
       ]
     };
@@ -382,6 +383,171 @@ const db = require('../../api/_db');
     }, res);
 
     assert.strictEqual(res.code, 409);
+  });
+
+  // --- TEST H: 0-CHF Vollrabatt Checkout mit Gutschein (Direktabschluss) ---
+  await test('Gutschein: 0-CHF Vollrabatt schliesst Bestellung direkt ab & bucht Gutschein ab', async () => {
+    global.__mockVoucherList = [
+      { code: "VOLLRABATT100", original_amount: 100, remaining_balance: 100, status: "active", transactions: [] }
+    ];
+
+    const prevPutCount = githubPuts.length;
+    const res = mockRes();
+    await checkoutHandler({
+      method: 'POST',
+      headers: { host: 'uniquebylea.com', origin: 'https://uniquebylea.com' },
+      body: {
+        items: [{ id: sampleProduct.id, name: sampleProduct.name, quantity: 1 }],
+        shippingType: 'bpost', // samplePrice < 100 CHF -> Versand 7.00 CHF, Total = samplePrice + 7 CHF <= 100 CHF
+        voucherCode: 'VOLLRABATT100',
+        customer: {
+          name: 'Beatrix Muster',
+          email: 'beatrix@example.com',
+          address: { line1: 'Gartenweg 5', postal_code: '3800', city: 'Interlaken', country: 'CH' }
+        }
+      }
+    }, res);
+
+    assert.strictEqual(res.code, 200, "Sollte mit 200 quittieren");
+    assert.strictEqual(res.body.zeroAmount, true, "Muss zeroAmount: true sein");
+    assert.ok(res.body.url.includes('checkout=success'), "Erfolgs-URL muss generiert werden");
+    assert.ok(res.body.orderNumber, "Bestellnummer muss vorhanden sein");
+
+    // Prüfe DB
+    const orders = await db.select('orders', `order_number=eq.${res.body.orderNumber}&select=*`);
+    assert.strictEqual(orders.length, 1);
+    const o = orders[0];
+    assert.strictEqual(o.total_cents, 0, "Total muss 0 Rappen sein");
+    assert.strictEqual(o.payment_status, 'paid', "Muss direkt als paid gespeichert sein");
+    assert.strictEqual(o.status, 'processing', "Muss direkt in processing sein");
+    assert.strictEqual(o.voucher_code, 'VOLLRABATT100');
+
+    // Prüfe Gutschein-Abbuchung in DB und GitHub Mock
+    const redemptions = await db.select('voucher_redemptions', `order_id=eq.${o.id}&select=*`);
+    assert.strictEqual(redemptions.length, 1, "Muss voucher_redemption Eintrag haben");
+    assert.strictEqual(redemptions[0].voucher_code, 'VOLLRABATT100');
+    assert.strictEqual(redemptions[0].amount_cents, o.discount_cents);
+    assert.ok(githubPuts.length > prevPutCount, "GitHub Ledger muss aktualisiert worden sein");
+  });
+
+  // --- TEST I: Teilrabatt mit Gutschein (Restbetrag über Stripe) ---
+  await test('Gutschein: Teilrabatt erzeugt reduzierten Stripe-Coupon & korrekten Restbetrag', async () => {
+    global.__mockVoucherList = [
+      { code: "TEILRABATT20", original_amount: 50, remaining_balance: 20, status: "partially_redeemed", transactions: [] }
+    ];
+
+    const res = mockRes();
+    await checkoutHandler({
+      method: 'POST',
+      headers: { host: 'uniquebylea.com', origin: 'https://uniquebylea.com' },
+      body: {
+        items: [{ id: sampleProduct.id, name: sampleProduct.name, quantity: 3 }], // 3 * 9.00 = 27.00 CHF + 7.00 Versand = 34.00 CHF
+        shippingType: 'bpost',
+        voucherCode: 'TEILRABATT20'
+      }
+    }, res);
+
+    assert.strictEqual(res.code, 200);
+    assert.ok(!res.body.zeroAmount, "Darf kein zeroAmount sein");
+    assert.ok(res.body.url, "Muss Stripe URL sein");
+
+    const orders = await db.select('orders', `order_number=eq.${res.body.orderNumber}&select=*`);
+    assert.strictEqual(orders.length, 1);
+    const o = orders[0];
+    assert.strictEqual(o.discount_cents, 2000, "Rabatt muss 20.00 CHF sein");
+    assert.strictEqual(o.total_cents, o.subtotal_cents + o.shipping_cents - 2000);
+    assert.strictEqual(o.payment_status, 'pending');
+  });
+
+  // --- TEST J: Checkout abgebrochen/abgelaufen (checkout.session.expired) ---
+  await test('Webhook: checkout.session.expired storniert unbezahlte Bestellung', async () => {
+    // Lege Bestellung an
+    const [ord] = await db.insert('orders', [{
+      shipping_type: 'bpost', currency: 'CHF',
+      subtotal_cents: 3000, shipping_cents: 700, discount_cents: 0, total_cents: 3700,
+      stripe_session_id: 'cs_expired_test_1'
+    }]);
+
+    const sessionObj = {
+      id: 'cs_expired_test_1',
+      client_reference_id: ord.id,
+      metadata: { order_id: ord.id }
+    };
+    const eventPayload = JSON.stringify({
+      id: 'evt_expired_1',
+      type: 'checkout.session.expired',
+      data: { object: sessionObj }
+    });
+    const t = Math.floor(Date.now() / 1000);
+    const sig = crypto.createHmac('sha256', process.env.STRIPE_WEBHOOK_SECRET).update(`${t}.${eventPayload}`).digest('hex');
+    const { Readable } = require('stream');
+    const req = Readable.from([Buffer.from(eventPayload)]);
+    req.method = 'POST';
+    req.headers = { 'stripe-signature': `t=${t},v1=${sig}` };
+    const res = mockRes();
+
+    await webhookHandler(req, res);
+    assert.strictEqual(res.code, 200);
+
+    const checked = (await db.select('orders', `id=eq.${ord.id}&select=*`))[0];
+    assert.strictEqual(checked.payment_status, 'expired', "Zahlung muss expired sein");
+    assert.strictEqual(checked.status, 'cancelled', "Bestellung muss cancelled sein");
+  });
+
+  // --- TEST K: Gutschein-Abbuchung über Webhook ist idempotent ---
+  await test('Gutschein: Webhook-Retry führt NICHT zu doppelter Ledger-Abbuchung', async () => {
+    global.__mockVoucherList = [
+      { code: "TESTGUTSCHEIN50", original_amount: 50, remaining_balance: 50, status: "active", transactions: [] }
+    ];
+
+    // Erstelle Bestellung mit Teilgutschein
+    const [ord] = await db.insert('orders', [{
+      shipping_type: 'bpost', currency: 'CHF',
+      subtotal_cents: 5000, shipping_cents: 700, discount_cents: 2000, total_cents: 3700,
+      voucher_code: 'TESTGUTSCHEIN50',
+      stripe_session_id: 'cs_voucher_retry_1'
+    }]);
+
+    const sessionObj = {
+      id: 'cs_voucher_retry_1',
+      currency: 'chf',
+      amount_total: 3700,
+      payment_status: 'paid',
+      payment_intent: 'pi_voucher_retry_1',
+      client_reference_id: ord.id,
+      customer_details: { email: 'anna@example.com', name: 'Anna' },
+      metadata: { order_id: ord.id, order_number: ord.order_number }
+    };
+
+    const makeReq = evtId => {
+      const payload = JSON.stringify({ id: evtId, type: 'checkout.session.completed', data: { object: sessionObj } });
+      const t = Math.floor(Date.now() / 1000);
+      const sig = crypto.createHmac('sha256', process.env.STRIPE_WEBHOOK_SECRET).update(`${t}.${payload}`).digest('hex');
+      const { Readable } = require('stream');
+      const req = Readable.from([Buffer.from(payload)]);
+      req.method = 'POST';
+      req.headers = { 'stripe-signature': `t=${t},v1=${sig}` };
+      return req;
+    };
+
+    const prevPuts = githubPuts.length;
+
+    // Erster Webhook
+    const res1 = mockRes();
+    await webhookHandler(makeReq('evt_voucher_hook_1'), res1);
+    assert.strictEqual(res1.code, 200);
+    const putsAfter1 = githubPuts.length;
+    assert.strictEqual(putsAfter1, prevPuts + 1, "Genau 1 Gutschein-Abbuchung bei GitHub");
+
+    // Zweiter Webhook (neue Event-ID, gleiche Session & Order)
+    const res2 = mockRes();
+    await webhookHandler(makeReq('evt_voucher_hook_2'), res2);
+    assert.strictEqual(res2.code, 200);
+    assert.strictEqual(githubPuts.length, putsAfter1, "Keine erneute Abbuchung beim zweiten Webhook");
+
+    // Prüfe DB voucher_redemptions
+    const redemptions = await db.select('voucher_redemptions', `stripe_session_id=eq.cs_voucher_retry_1&select=*`);
+    assert.strictEqual(redemptions.length, 1, "Exakt 1 Eintrag in voucher_redemptions");
   });
 
   console.log("\n==========================================");

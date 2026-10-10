@@ -35,25 +35,8 @@ function computeShipping(shippingType, subtotal, onlyVouchers) {
   return subtotal >= FREE_SHIPPING_FROM ? 0 : 7.0;
 }
 
-async function loadVouchers() {
-  const vPath = path.join(process.cwd(), 'content', 'vouchers.json');
-  const ghToken = process.env.GITHUB_TOKEN;
-  if (ghToken) {
-    try {
-      const ghRes = await fetch('https://api.github.com/repos/Uniquebylea/uniquebylea/contents/content/vouchers.json?ref=main', {
-        headers: { 'Authorization': `token ${ghToken}`, 'Accept': 'application/vnd.github+json', 'User-Agent': 'UniqueByLea-Checkout' }
-      });
-      if (ghRes.ok) {
-        const ghJson = await ghRes.json();
-        return JSON.parse(Buffer.from(ghJson.content, 'base64').toString('utf8')).vouchers || [];
-      }
-    } catch (e) {}
-  }
-  try {
-    if (fs.existsSync(vPath)) return JSON.parse(fs.readFileSync(vPath, 'utf8')).vouchers || [];
-  } catch (e) {}
-  return [];
-}
+const { loadVouchers, applyVoucherLedger } = require('./_voucher');
+const notify = require('./_notify');
 
 module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
@@ -176,38 +159,46 @@ module.exports = async (req, res) => {
       }
       // Gutscheine dürfen keine Gutscheine bezahlen
       if (!onlyVouchers) {
-        appliedDiscountChf = Math.min(totalItemAmount, remainingBal); // Stripe-Coupons rabattieren nur Positionen, nicht den Versand
         appliedVoucherCode = codeUpper;
+        // Kann Warenwert und bei Vollabdeckung auch Versand abdecken
+        appliedDiscountChf = Math.min(grandTotal, remainingBal);
         const discountCents = Math.round(appliedDiscountChf * 100);
 
-        const cpBody = new URLSearchParams();
-        cpBody.append('amount_off', discountCents.toString());
-        cpBody.append('currency', 'chf');
-        cpBody.append('duration', 'once');
-        cpBody.append('max_redemptions', '1');
-        cpBody.append('name', `Gutschein: ${codeUpper}`);
+        // Falls nach Abzug des Gutscheins noch ein Restbetrag bleibt:
+        // Stripe-Coupons rabattieren nur Line-Items (Warenwert), daher darf Coupon maximal den Warenwert betragen
+        if (grandTotal > appliedDiscountChf) {
+          const couponDiscountCents = Math.min(Math.round(totalItemAmount * 100), discountCents);
+          const cpBody = new URLSearchParams();
+          cpBody.append('amount_off', couponDiscountCents.toString());
+          cpBody.append('currency', 'chf');
+          cpBody.append('duration', 'once');
+          cpBody.append('max_redemptions', '1');
+          cpBody.append('name', `Gutschein: ${codeUpper}`);
 
-        const cpRes = await fetch('https://api.stripe.com/v1/coupons', {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${stripeKey}`, 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: cpBody.toString()
-        });
-        const cpData = await cpRes.json();
-        if (!cpData.id) {
-          console.error('Stripe Coupon Fehler:', cpData.error && cpData.error.message);
-          return res.status(502).json({ error: 'Gutschein konnte nicht angewendet werden. Bitte später erneut versuchen.' });
+          const cpRes = await fetch('https://api.stripe.com/v1/coupons', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${stripeKey}`, 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: cpBody.toString()
+          });
+          const cpData = await cpRes.json();
+          if (!cpData.id) {
+            console.error('Stripe Coupon Fehler:', cpData.error && cpData.error.message);
+            return res.status(502).json({ error: 'Gutschein konnte nicht angewendet werden. Bitte später erneut versuchen.' });
+          }
+          stripeCouponId = cpData.id;
         }
-        stripeCouponId = cpData.id;
       } else {
         return res.status(400).json({ error: 'Gutscheine können nicht mit Gutscheinen bezahlt werden.' });
       }
     }
 
-    // 3b. Bestellung (ausstehend) anlegen. Doppelklick/Wiederholung: identischer Warenkorb innerhalb von 10 Min. -> gleiche Session
+    // 3b. Bestellung anlegen. Doppelklick/Wiederholung: identischer Warenkorb innerhalb von 10 Min.
     const toCents = v => Math.round(v * 100);
     const subtotalCents = validatedItems.reduce((a, i) => a + toCents(i.validatedPrice) * i.quantity, 0);
     const shippingCents = toCents(shippingCost);
     const discountCents = toCents(appliedDiscountChf);
+    const totalCents = Math.max(0, subtotalCents + shippingCents - discountCents);
+
     const cartHash = crypto.createHash('sha256').update(JSON.stringify({
       i: validatedItems.map(i => [i.name, i.validatedPrice, i.quantity, i.color || '', i.size || '', i.customName || '', i.optionsSummary || '']),
       s: shippingType, v: appliedVoucherCode
@@ -219,13 +210,76 @@ module.exports = async (req, res) => {
       return res.status(200).json({ url: existing[0].stripe_session_url, orderNumber: existing[0].order_number });
     }
 
+    // FALL 1: VOLLRABATT (Total 0 CHF) -> Direkt abschliessen ohne Stripe-Session
+    if (totalCents === 0 && appliedVoucherCode && discountCents > 0) {
+      const cust = body.customer || {};
+      const [order] = await db.insert('orders', [{
+        shipping_type: shippingType,
+        currency: 'CHF',
+        subtotal_cents: subtotalCents,
+        shipping_cents: shippingCents,
+        discount_cents: discountCents,
+        total_cents: 0,
+        voucher_code: appliedVoucherCode,
+        cart_hash: cartHash,
+        payment_status: 'paid',
+        status: 'processing',
+        paid_at: new Date().toISOString(),
+        customer_email: cust.email || null,
+        customer_name: cust.name || null,
+        customer_phone: cust.phone || null,
+        shipping_address: cust.address || null,
+        billing_address: cust.address || null
+      }]);
+
+      await db.insert('order_items', validatedItems.map(i => ({
+        order_id: order.id,
+        product_id: i.id ? String(i.id).substring(0, 100) : null,
+        sku: i.sku ? String(i.sku).substring(0, 100) : null,
+        product_name: String(i.name).substring(0, 250),
+        unit_price_cents: toCents(i.validatedPrice),
+        quantity: i.quantity,
+        attributes: {
+          color: i.color ? String(i.color).substring(0, 60) : undefined,
+          size: i.size ? String(i.size).substring(0, 40) : undefined,
+          customName: i.customName ? String(i.customName).substring(0, 60) : undefined,
+          optionsSummary: i.optionsSummary ? String(i.optionsSummary).substring(0, 300) : undefined,
+          voucherConfig: i.voucherConfig ? {
+            wert: i.voucherConfig.wert, fuer: String(i.voucherConfig.fuer || '').substring(0, 100),
+            von: String(i.voucherConfig.von || '').substring(0, 100), theme: String(i.voucherConfig.theme || '').substring(0, 40)
+          } : undefined
+        }
+      })), 'return=minimal');
+
+      await db.insert('order_status_history', [
+        { order_id: order.id, kind: 'order_status', from_value: null, to_value: 'processing', actor: 'checkout', detail: 'Bestellung vollständig mit Gutschein bezahlt (0 CHF)' },
+        { order_id: order.id, kind: 'payment_status', from_value: null, to_value: 'paid', actor: 'checkout', detail: `Vollständig mit Gutschein ${appliedVoucherCode} beglichen` }
+      ], 'return=minimal');
+
+      // Gutschein buchen (idempotent über order.id)
+      await db.insert('voucher_redemptions', [{ stripe_session_id: `zero-order-${order.id}`, order_id: order.id, voucher_code: appliedVoucherCode, amount_cents: discountCents }], 'resolution=ignore-duplicates,return=minimal');
+      await applyVoucherLedger(appliedVoucherCode, discountCents, `zero-order-${order.id}`);
+
+      // E-Mails vorbereiten und senden
+      await notify.queue(order, ['operator_new_order', 'customer_order_confirmation']);
+      notify.sendPending(order.id).catch(() => {});
+
+      return res.status(200).json({
+        zeroAmount: true,
+        orderNumber: order.order_number,
+        orderId: order.id,
+        url: `${baseUrl}/shop.html?checkout=success&order_id=${order.id}`
+      });
+    }
+
+    // FALL 2: NORMALER CHECKOUT MIT RESTBETRAG (Stripe-Session erforderlich)
     const [order] = await db.insert('orders', [{
       shipping_type: shippingType,
       currency: 'CHF',
       subtotal_cents: subtotalCents,
       shipping_cents: shippingCents,
       discount_cents: discountCents,
-      total_cents: subtotalCents + shippingCents - discountCents,
+      total_cents: totalCents,
       voucher_code: appliedVoucherCode || null,
       cart_hash: cartHash
     }]);
