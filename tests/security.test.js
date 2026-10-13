@@ -60,6 +60,11 @@ async function call(body) {
     assert.strictEqual(res.code, 200);
     assert.strictEqual(params.get('line_items[0][price_data][unit_amount]'), String(Math.round(cheap * 100)));
   });
+  await test('Mehrere Produkte mit gleichem Namen: spezifischer Artikel (Knotenmütze 7 CHF) wird exakt zugeordnet', async () => {
+    const { res, params } = await call({ items: [{ id: 701883002, sku: '9213', name: 'Knotenmütze', priceNum: 7, quantity: 1 }], shippingType: 'pickup' });
+    assert.strictEqual(res.code, 200);
+    assert.strictEqual(params.get('line_items[0][price_data][unit_amount]'), '700');
+  });
   await test('Fremde Versandkosten (0) werden ignoriert', async () => {
     const { params } = await call({ items: [{ id: unique.id, name: unique.name, quantity: 1 }], shippingType: 'apost', shippingCost: 0 });
     const expected = cheap >= 100 ? 0 : 900;

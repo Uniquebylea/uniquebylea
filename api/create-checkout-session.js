@@ -81,11 +81,24 @@ module.exports = async (req, res) => {
     // 1. Katalog laden (vertrauenswürdige Quelle)
     let catalogProducts = [];
     try {
-      const prodPath = path.join(process.cwd(), 'content', 'products.json');
-      const pRaw = JSON.parse(fs.readFileSync(prodPath, 'utf8'));
-      catalogProducts = pRaw.produkte || [];
+      const dir = path.join(process.cwd(), 'content', 'products');
+      if (fs.existsSync(dir)) {
+        const files = fs.readdirSync(dir).filter(f => f.endsWith('.json'));
+        if (files.length > 0) {
+          catalogProducts = files
+            .map(f => {
+              try { return JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')); } catch (e) { return null; }
+            })
+            .filter(Boolean);
+        }
+      }
+      if (!catalogProducts.length) {
+        const prodPath = path.join(process.cwd(), 'content', 'products.json');
+        const pRaw = JSON.parse(fs.readFileSync(prodPath, 'utf8'));
+        catalogProducts = pRaw.produkte || [];
+      }
     } catch (e) {
-      console.error('products.json nicht lesbar:', e.message);
+      console.error('Katalog nicht lesbar:', e.message);
       return res.status(500).json({ error: 'Katalog derzeit nicht verfügbar. Bitte später erneut versuchen.' });
     }
 
@@ -94,11 +107,28 @@ module.exports = async (req, res) => {
     const validatedItems = [];
     for (const item of items) {
       const nameKey = (item.name || '').trim().toLowerCase();
-      const found = catalogProducts.find(p =>
-        (item.id && p.id === item.id) ||
-        (item.sku && p.sku === item.sku) ||
-        (p.name || '').trim().toLowerCase() === nameKey
-      );
+      let found = null;
+
+      // 1. Eindeutig nach ID suchen (Typ-sicher: String vs Number)
+      if (item.id !== undefined && item.id !== null) {
+        found = catalogProducts.find(p => p.id !== undefined && String(p.id) === String(item.id));
+      }
+      // 2. Nach SKU / Artikelnummer suchen
+      if (!found && item.sku) {
+        found = catalogProducts.find(p => p.sku !== undefined && String(p.sku) === String(item.sku));
+      }
+      // 3. Nach Bildpfad suchen (unterscheidet Produkte mit gleichem Namen)
+      if (!found && item.img) {
+        found = catalogProducts.find(p => p.img && (p.img === item.img || item.img.endsWith(p.img) || p.img.endsWith(item.img)));
+      }
+      // 4. Nach Name + Basispreis suchen (falls mehrere Artikel gleichen Namen aber unterschiedliche Preise haben)
+      if (!found && item.priceNum !== undefined) {
+        found = catalogProducts.find(p => (p.name || '').trim().toLowerCase() === nameKey && Math.abs(parsePrice(p.price) - Number(item.priceNum)) < 0.01);
+      }
+      // 5. Fallback: Nach Name allein
+      if (!found) {
+        found = catalogProducts.find(p => (p.name || '').trim().toLowerCase() === nameKey);
+      }
 
       let qty = Math.max(1, Math.min(MAX_QTY, parseInt(item.quantity, 10) || 1));
       let price;
