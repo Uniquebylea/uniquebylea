@@ -312,6 +312,10 @@ module.exports = async (req, res) => {
     params.append('mode', 'payment');
     params.append('billing_address_collection', 'required');
 
+    // Schweizer Zahlungsmethoden: Karte (inkl. Apple/Google Pay) und TWINT explizit aktivieren
+    params.append('payment_method_types[0]', 'card');
+    params.append('payment_method_types[1]', 'twint');
+
     if (!isVoucherEmailOnly) {
       params.append('shipping_address_collection[allowed_countries][0]', 'CH');
       params.append('shipping_address_collection[allowed_countries][1]', 'LI');
@@ -387,7 +391,7 @@ module.exports = async (req, res) => {
     params.append('metadata[order_number]', order.order_number);
     params.append('expires_at', String(Math.floor(Date.now() / 1000) + 31 * 60));
 
-    const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
+    let response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${stripeKey}`,
@@ -396,7 +400,23 @@ module.exports = async (req, res) => {
       },
       body: params.toString()
     });
-    const session = await response.json();
+    let session = await response.json();
+
+    // Fallback: Falls auf dem Stripe-Account twint noch nicht aktiv geschaltet ist
+    if (session.error && session.error.message && session.error.message.toLowerCase().includes('twint')) {
+      params.delete('payment_method_types[0]');
+      params.delete('payment_method_types[1]');
+      response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${stripeKey}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Idempotency-Key': `order-${order.id}-retry`
+        },
+        body: params.toString()
+      });
+      session = await response.json();
+    }
 
     if (session.error || !session.id) {
       console.error('Stripe API Fehler:', session.error && session.error.message);
