@@ -138,7 +138,11 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'E-Mail-Versand ist nur für Gutscheine möglich.' });
     }
 
-    const shippingCost = isVoucherEmailOnly ? 0 : computeShipping(shippingType, totalItemAmount, onlyVouchers);
+    // Nur physische Artikel zählen für die 100-CHF-Freigrenze beim Paketversand
+    const physicalItemsAmount = validatedItems.filter(i => !isVoucherItem(i))
+                                              .reduce((acc, i) => acc + i.validatedPrice * i.quantity, 0);
+
+    const shippingCost = isVoucherEmailOnly ? 0 : computeShipping(shippingType, physicalItemsAmount, onlyVouchers);
     const grandTotal = totalItemAmount + shippingCost;
 
     // 3. Gutschein: nur berechnen und als Stripe-Rabatt anwenden. Abbuchung erfolgt im Webhook.

@@ -152,8 +152,8 @@
     <!-- SLIDE-OVER WARENKORB (DRAWER VON RECHTS) -->
     <div id="cartModal" class="fixed inset-0 z-50 overflow-hidden hidden">
         <div id="cartBackdrop" onclick="closeCart()" class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"></div>
-        <div class="fixed inset-y-0 right-0 max-w-full flex">
-            <div id="cartPanel" class="w-screen max-w-md bg-creme shadow-2xl flex flex-col border-l border-darkbrown/10 transform transition-transform duration-300 translate-x-full">
+        <div class="fixed inset-y-0 right-0 max-w-full flex pl-4 sm:pl-10">
+            <div id="cartPanel" class="w-screen max-w-xl bg-creme shadow-2xl flex flex-col border-l border-darkbrown/10 transform transition-transform duration-300 translate-x-full">
                 
                 <!-- Kopfzeile -->
                 <div class="p-5 border-b border-darkbrown/10 flex justify-between items-center bg-sand/30">
@@ -1504,24 +1504,29 @@ let currentGalleryImages = [];
                 const isMaxedOut = item.quantity >= item.maxStock;
 
                 container.innerHTML += `
-                <div class="flex items-center gap-3 bg-white p-3 rounded-2xl border border-darkbrown/5 shadow-sm">
-                    <img src="${item.img}" alt="${item.name}" onerror="this.src='images/logo.png'" class="w-14 h-16 ${item.name && item.name.toLowerCase().includes('gutschein') ? 'object-contain p-1' : 'object-cover'} rounded-xl bg-sand/30 flex-shrink-0">
-                    <div class="flex-1 min-w-0">
-                        <h4 class="font-serif text-xs font-bold uppercase tracking-wider truncate mb-0.5">${item.name}</h4>
-                        <p class="text-terracotta text-xs font-bold mb-1">${formatCHF(item.priceNum)}</p>
+                <div class="flex items-start gap-3.5 bg-white p-3.5 rounded-2xl border border-darkbrown/10 shadow-sm hover:border-terracotta/30 transition">
+                    <img src="${item.img}" alt="${item.name}" onerror="this.src='images/logo.png'" class="w-16 h-20 ${item.name && item.name.toLowerCase().includes('gutschein') ? 'object-contain p-1.5' : 'object-cover'} rounded-xl bg-sand/30 flex-shrink-0 border border-darkbrown/5">
+                    <div class="flex-1 min-w-0 pr-1">
+                        <div class="flex items-start justify-between gap-2">
+                            <h4 class="font-serif text-xs font-bold uppercase tracking-wider text-darkbrown leading-snug break-words mb-1">${item.name}</h4>
+                            <button onclick="removeFromCart(${idx})" class="text-darkbrown/40 hover:text-red-500 p-1 -mr-1 -mt-1 transition text-sm flex-shrink-0" title="Aus Nähkörbchen entfernen">🗑️</button>
+                        </div>
+                        <p class="text-terracotta text-xs font-bold mb-1.5">${formatCHF(item.priceNum)}</p>
                         
                         ${variantDetails.length > 0 ? `
-                            <p class="text-[10px] text-darkbrown/60 mb-2 leading-tight">${variantDetails.join(' · ')}</p>
+                            <p class="text-[11px] text-darkbrown/70 mb-2.5 leading-relaxed bg-sand/20 p-1.5 rounded-lg border border-darkbrown/5">${variantDetails.join(' · ')}</p>
                         ` : ''}
 
-                        <div class="flex items-center border border-darkbrown/15 rounded-lg bg-creme w-fit">
-                            <button onclick="changeQuantity(${idx}, -1)" class="w-6 h-6 flex items-center justify-center text-xs font-bold text-darkbrown hover:bg-darkbrown/10 rounded-l-lg">-</button>
-                            <span class="w-6 text-center text-xs font-bold">${item.quantity}</span>
-                            <button onclick="changeQuantity(${idx}, 1)" ${isMaxedOut ? 'disabled title="Maximaler Bestand erreicht"' : ''} 
-                                    class="w-6 h-6 flex items-center justify-center text-xs font-bold text-darkbrown hover:bg-darkbrown/10 rounded-r-lg ${isMaxedOut ? 'opacity-30 cursor-not-allowed' : ''}">+</button>
+                        <div class="flex items-center gap-2">
+                            <div class="flex items-center border border-darkbrown/15 rounded-lg bg-creme w-fit shadow-xs">
+                                <button onclick="changeQuantity(${idx}, -1)" class="w-7 h-7 flex items-center justify-center text-xs font-bold text-darkbrown hover:bg-darkbrown/10 rounded-l-lg transition">-</button>
+                                <span class="w-7 text-center text-xs font-bold text-darkbrown">${item.quantity}</span>
+                                <button onclick="changeQuantity(${idx}, 1)" ${isMaxedOut ? 'disabled title="Maximaler Bestand erreicht"' : ''} 
+                                        class="w-7 h-7 flex items-center justify-center text-xs font-bold text-darkbrown hover:bg-darkbrown/10 rounded-r-lg transition ${isMaxedOut ? 'opacity-30 cursor-not-allowed' : ''}">+</button>
+                            </div>
+                            <span class="text-[11px] text-darkbrown/50 font-medium">= ${formatCHF(item.priceNum * item.quantity)}</span>
                         </div>
                     </div>
-                    <button onclick="removeFromCart(${idx})" class="text-darkbrown/40 hover:text-red-500 p-2 transition text-base">🗑️</button>
                 </div>`;
             });
 
@@ -1566,6 +1571,8 @@ let currentGalleryImages = [];
                 } else {
                     const activeShip = (prevSelected === 'apost' || prevSelected === 'pickup') ? prevSelected : 'bpost';
                     const subtotal = cart.reduce((acc, item) => acc + (item.priceNum * item.quantity), 0);
+                    const physicalSubtotal = cart.filter(item => !(item.cat === 'Gutscheine' || (item.name && item.name.toLowerCase().includes('gutschein'))))
+                                                 .reduce((acc, item) => acc + (item.priceNum * item.quantity), 0);
                     shippingLabel.textContent = "Versandart (Schweiz):";
                     let optsHtml = 
                         '<label class="flex items-center justify-between p-2.5 rounded-xl border border-darkbrown/10 bg-creme cursor-pointer hover:border-terracotta transition">' +
@@ -1573,7 +1580,7 @@ let currentGalleryImages = [];
                                 '<input type="radio" name="shipping" value="bpost" ' + (activeShip === 'bpost' ? 'checked' : '') + ' onchange="updateCartTotals()" class="accent-terracotta">' +
                                 '<span>📦 Schweizer Post (B-Post Paket)</span>' +
                             '</span>' +
-                            '<span id="bpostCost" class="font-bold">' + (subtotal >= 100 ? 'Kostenlos' : '7.00 CHF') + '</span>' +
+                            '<span id="bpostCost" class="font-bold">' + (physicalSubtotal >= 100 ? 'Kostenlos' : '7.00 CHF') + '</span>' +
                         '</label>' +
                         '<label class="flex items-center justify-between p-2.5 rounded-xl border border-darkbrown/10 bg-creme cursor-pointer hover:border-terracotta transition">' +
                             '<span class="flex items-center gap-2">' +
@@ -1717,9 +1724,10 @@ let currentGalleryImages = [];
 
         window.updateCartTotals = function() {
             const subtotal = cart.reduce((acc, item) => acc + (item.priceNum * item.quantity), 0);
-            const isOnlyVouchers = cart.length > 0 && cart.every(item => 
-                item.cat === 'Gutscheine' || (item.name && item.name.toLowerCase().includes('gutschein'))
-            );
+            const isVoucher = item => item.cat === 'Gutscheine' || (item.name && item.name.toLowerCase().includes('gutschein'));
+            const isOnlyVouchers = cart.length > 0 && cart.every(isVoucher);
+            // Physische Produkte (nur diese qualifizieren für den portofreien Paketversand ab 100 CHF)
+            const physicalSubtotal = cart.filter(item => !isVoucher(item)).reduce((acc, item) => acc + (item.priceNum * item.quantity), 0);
 
             const shippingType = document.querySelector('input[name="shipping"]:checked') ? document.querySelector('input[name="shipping"]:checked').value : (isOnlyVouchers ? 'email' : 'bpost');
 
@@ -1733,7 +1741,7 @@ let currentGalleryImages = [];
                     shippingCost = 0.00; // email or pickup is gratis
                 }
             } else {
-                if (subtotal >= 100) {
+                if (physicalSubtotal >= 100) {
                     if (bpostCostElem) bpostCostElem.textContent = "Kostenlos";
                     if (shippingType === 'bpost') shippingCost = 0.00;
                     else if (shippingType === 'apost') shippingCost = 9.00;
@@ -1778,13 +1786,13 @@ let currentGalleryImages = [];
                 bar.style.width = '100%';
                 text.innerHTML = '💌 <span class="font-bold text-terracotta">Gutschein-Versand:</span> Per E-Mail gratis als PDF oder per Post-Briefversand.';
             } else {
-                const progress = Math.min(100, (subtotal / 100) * 100);
+                const progress = Math.min(100, (physicalSubtotal / 100) * 100);
                 bar.style.width = progress + '%';
-                if (subtotal >= 100) {
+                if (physicalSubtotal >= 100) {
                     text.innerHTML = '🎉 <span class="font-bold text-terracotta">Gratulation!</span> Du hast kostenlosen Paketversand erreicht.';
                 } else {
-                    const diff = (100 - subtotal).toFixed(2);
-                    text.textContent = 'Noch ' + diff + ' CHF bis zum kostenlosen Paketversand!';
+                    const diff = (100 - physicalSubtotal).toFixed(2);
+                    text.textContent = 'Noch ' + diff + ' CHF (physische Artikel) bis zum kostenlosen Paketversand!';
                 }
             }
 
@@ -1816,9 +1824,9 @@ let currentGalleryImages = [];
             }
 
             
-            const isOnlyVouchers = cart.length > 0 && cart.every(item => 
-                item.cat === 'Gutscheine' || (item.name && item.name.toLowerCase().includes('gutschein'))
-            );
+            const isVoucher = item => item.cat === 'Gutscheine' || (item.name && item.name.toLowerCase().includes('gutschein'));
+            const isOnlyVouchers = cart.length > 0 && cart.every(isVoucher);
+            const physicalSubtotal = cart.filter(item => !isVoucher(item)).reduce((acc, item) => acc + (item.priceNum * item.quantity), 0);
             const shippingType = document.querySelector('input[name="shipping"]:checked') ? document.querySelector('input[name="shipping"]:checked').value : (isOnlyVouchers ? 'email' : 'bpost');
             const subtotal = cart.reduce((acc, item) => acc + (item.priceNum * item.quantity), 0);
             let shippingCost = 0.00;
@@ -1826,7 +1834,7 @@ let currentGalleryImages = [];
             if (isOnlyVouchers) {
                 shippingCost = (shippingType === 'letter') ? 2.00 : 0.00;
             } else {
-                if (subtotal >= 100) {
+                if (physicalSubtotal >= 100) {
                     shippingCost = (shippingType === 'apost') ? 9.00 : 0.00;
                 } else {
                     shippingCost = (shippingType === 'pickup') ? 0.00 : (shippingType === 'apost' ? 9.00 : 7.00);
