@@ -2,210 +2,752 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="robots" content="noindex, nofollow">
-    <title>Bestellungen | Unique by Lea</title>
-    <link rel="icon" type="image/png" href="../images/logo.png">
+    <title>Atelier App | Unique by Lea</title>
+    
+    <!-- PWA & Mobile App Setup -->
+    <link rel="manifest" href="/admin/manifest.json">
+    <meta name="theme-color" content="#B08968">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Atelier">
+    <link rel="apple-touch-icon" href="/images/logo.png">
+    <link rel="icon" type="image/png" href="/images/logo.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
-        tailwind.config = { theme: { extend: {
-            colors: { sand: '#EAE3D9', creme: '#F9F6F2', terracotta: '#B08968', darkbrown: '#4A3728' },
-            fontFamily: { serif: ['Playfair Display', 'serif'], sans: ['Montserrat', 'sans-serif'] } } } }
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { sand: '#EAE3D9', creme: '#F9F6F2', terracotta: '#B08968', darkbrown: '#4A3728' },
+                    fontFamily: { serif: ['Playfair Display', 'serif'], sans: ['Montserrat', 'sans-serif'] }
+                }
+            }
+        };
     </script>
     <script src="/admin/admin-auth.js"></script>
+    <style>
+        /* Optimierung für Standalone Mobile App */
+        body { -webkit-tap-highlight-color: transparent; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </head>
-<body class="bg-sand text-darkbrown font-sans min-h-screen p-3 md:p-8">
+<body class="bg-sand text-darkbrown font-sans min-h-screen pb-24 md:pb-12">
 
+    <!-- LOGIN OVERLAY -->
     <div id="authOverlay" class="fixed inset-0 z-[9999] bg-sand flex items-center justify-center p-4">
-        <div class="bg-creme rounded-3xl p-8 max-w-sm w-full border border-darkbrown/15 shadow-2xl text-center space-y-4">
-            <span class="text-[10px] uppercase tracking-[0.2em] font-bold text-terracotta block">Geschützter Atelier-Bereich</span>
-            <h2 class="font-serif text-xl font-bold italic">Bestellungen</h2>
-            <form onsubmit="login(event)" class="space-y-3 pt-2">
+        <div class="bg-creme rounded-3xl p-6 sm:p-8 max-w-sm w-full border border-darkbrown/15 shadow-2xl text-center space-y-4">
+            <div class="w-16 h-16 mx-auto rounded-full bg-sand/60 flex items-center justify-center p-3 border border-darkbrown/10">
+                <img src="/images/logo.png" alt="Logo" class="w-full h-full object-contain">
+            </div>
+            <div>
+                <span class="text-[10px] uppercase tracking-[0.2em] font-bold text-terracotta block">Atelier Interlaken</span>
+                <h2 class="font-serif text-xl font-bold italic mt-0.5">Shop-Verwaltung</h2>
+            </div>
+            <form onsubmit="handleLogin(event)" class="space-y-3 pt-1">
                 <input type="password" id="pw" placeholder="Atelier-Passwort..." required autocomplete="current-password"
-                       class="w-full bg-white border border-darkbrown/20 rounded-xl py-3 px-4 text-xs text-center font-bold tracking-widest outline-none focus:ring-2 focus:ring-terracotta">
-                <button type="submit" class="w-full bg-terracotta hover:bg-darkbrown text-white py-3 rounded-xl font-bold uppercase text-xs tracking-wider transition">Bereich entsperren</button>
+                       class="w-full bg-white border border-darkbrown/20 rounded-xl py-3.5 px-4 text-xs text-center font-bold tracking-widest outline-none focus:ring-2 focus:ring-terracotta shadow-xs">
+                
+                <label class="flex items-center justify-center gap-2 text-xs text-darkbrown/80 cursor-pointer select-none pt-1">
+                    <input type="checkbox" id="rememberMe" checked class="accent-terracotta w-4 h-4 rounded">
+                    <span>Auf diesem Smartphone angemeldet bleiben</span>
+                </label>
+
+                <button type="submit" class="w-full bg-terracotta hover:bg-darkbrown text-white py-3.5 rounded-xl font-bold uppercase text-xs tracking-wider transition shadow-md">
+                    App entsperren
+                </button>
                 <div id="authErr" class="hidden text-xs text-red-600 font-medium">Passwort leider nicht korrekt.</div>
             </form>
         </div>
     </div>
 
-    <div class="max-w-6xl mx-auto">
-        <header class="flex flex-wrap items-center justify-between gap-3 mb-6">
-            <div>
-                <span class="text-[10px] uppercase tracking-[0.2em] font-bold text-terracotta block">Atelier Interlaken</span>
-                <h1 class="font-serif text-2xl font-bold italic">Bestellungen</h1>
+    <!-- APP HEADER -->
+    <header class="sticky top-0 z-40 bg-creme/95 backdrop-blur-md border-b border-darkbrown/10 px-4 py-3 shadow-xs">
+        <div class="max-w-4xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <img src="/images/logo.png" alt="Logo" class="w-8 h-8 object-contain rounded-full bg-sand/40 border border-darkbrown/10">
+                <div>
+                    <span class="text-[9px] uppercase tracking-[0.2em] font-bold text-terracotta block leading-none">Atelier App</span>
+                    <h1 id="appHeaderTitle" class="font-serif text-base font-bold italic leading-tight text-darkbrown">Bestellungen</h1>
+                </div>
             </div>
-            <div class="flex gap-2 text-xs">
-                <a href="/admin/gutschein" class="px-3 py-2 rounded-xl border border-darkbrown/15 hover:border-terracotta">Gutscheine</a>
-                <button onclick="logout()" class="px-3 py-2 rounded-xl border border-darkbrown/15 hover:border-terracotta">Abmelden</button>
+            <div class="flex items-center gap-2 text-xs">
+                <button onclick="refreshActiveTab()" title="Aktualisieren" class="p-2 rounded-xl bg-sand/40 hover:bg-sand border border-darkbrown/10 text-darkbrown transition">
+                    🔄
+                </button>
+                <button onclick="logout()" title="Abmelden" class="p-2 rounded-xl bg-sand/40 hover:bg-sand border border-darkbrown/10 text-darkbrown/70 hover:text-darkbrown transition">
+                    🚪
+                </button>
             </div>
-        </header>
-
-        <div class="flex flex-wrap gap-2 mb-4 text-xs" id="filters">
-            <select id="fStatus" onchange="loadList()" class="bg-creme border border-darkbrown/15 rounded-xl px-3 py-2">
-                <option value="">Alle Bestellstatus</option>
-                <option value="awaiting_payment">Wartet auf Zahlung</option>
-                <option value="processing">In Bearbeitung</option>
-                <option value="shipped">Versandt</option>
-                <option value="completed">Abgeschlossen</option>
-                <option value="cancelled">Storniert</option>
-            </select>
-            <select id="fPay" onchange="loadList()" class="bg-creme border border-darkbrown/15 rounded-xl px-3 py-2">
-                <option value="">Alle Zahlungsstatus</option>
-                <option value="paid">Bezahlt</option>
-                <option value="pending">Zahlung ausstehend</option>
-                <option value="failed">Fehlgeschlagen</option>
-                <option value="expired">Abgelaufen/abgebrochen</option>
-                <option value="refunded">Zurückerstattet</option>
-            </select>
-            <label class="flex items-center gap-2 bg-creme border border-darkbrown/15 rounded-xl px-3 py-2"><input type="checkbox" id="fUnread" onchange="loadList()"> Nur ungelesene bezahlte</label>
-            <button onclick="loadList()" class="px-3 py-2 rounded-xl bg-terracotta text-white">Aktualisieren</button>
         </div>
+    </header>
 
-        <div id="msg" class="hidden text-sm mb-3 rounded-xl px-4 py-3 bg-creme border border-darkbrown/15"></div>
-        <div class="bg-creme rounded-2xl border border-darkbrown/10 overflow-x-auto">
-            <table class="w-full text-xs">
-                <thead class="text-left uppercase tracking-wider text-[10px] text-darkbrown/60 border-b border-darkbrown/10">
-                    <tr><th class="p-3">Nr.</th><th class="p-3">Datum</th><th class="p-3">Kunde</th><th class="p-3 text-right">Betrag</th><th class="p-3">Bestellung</th><th class="p-3">Zahlung</th><th class="p-3"></th></tr>
-                </thead>
-                <tbody id="rows"></tbody>
-            </table>
+    <!-- STATUS / INFO TOAST -->
+    <div id="msg" class="hidden max-w-4xl mx-auto my-3 mx-4 p-3 rounded-2xl bg-white border border-darkbrown/15 text-xs shadow-sm flex items-center justify-between"></div>
+
+    <!-- HAUPTBEREICH (TABS) -->
+    <main class="max-w-4xl mx-auto p-3 sm:p-5">
+
+        <!-- ========================================== -->
+        <!-- TAB 1: BESTELLUNGEN                        -->
+        <!-- ========================================== -->
+        <section id="tabBestellungen" class="space-y-4">
+            
+            <!-- Filter-Pills (Horizontal scrollbar auf Handy) -->
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+                <button onclick="filterOrders('')" class="status-pill px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap bg-terracotta text-white shadow-xs" data-status="">
+                    Alle (<span id="countAll">0</span>)
+                </button>
+                <button onclick="filterOrders('processing')" class="status-pill px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap bg-creme text-darkbrown/80 border border-darkbrown/15 hover:border-terracotta" data-status="processing">
+                    🧵 In Bearbeitung (<span id="countProcessing">0</span>)
+                </button>
+                <button onclick="filterOrders('awaiting_payment')" class="status-pill px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap bg-creme text-darkbrown/80 border border-darkbrown/15 hover:border-terracotta" data-status="awaiting_payment">
+                    📥 Eingegangen / Unbezahlt (<span id="countAwaiting">0</span>)
+                </button>
+                <button onclick="filterOrders('shipped')" class="status-pill px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap bg-creme text-darkbrown/80 border border-darkbrown/15 hover:border-terracotta" data-status="shipped">
+                    🚚 Versendet (<span id="countShipped">0</span>)
+                </button>
+                <button onclick="filterOrders('completed')" class="status-pill px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap bg-creme text-darkbrown/80 border border-darkbrown/15 hover:border-terracotta" data-status="completed">
+                    ✅ Abgeschlossen (<span id="countCompleted">0</span>)
+                </button>
+            </div>
+
+            <!-- Suchfeld -->
+            <div class="relative">
+                <input type="text" id="orderSearchInput" oninput="renderOrdersList()" placeholder="🔍 Nach Name, Bestellnummer, Ort oder Artikel suchen..." 
+                       class="w-full bg-creme border border-darkbrown/15 rounded-2xl py-2.5 px-4 text-xs outline-none focus:ring-2 focus:ring-terracotta shadow-xs">
+            </div>
+
+            <!-- Liste der Bestell-Karten -->
+            <div id="ordersContainer" class="space-y-3.5">
+                <div class="text-center py-12 text-darkbrown/50 text-xs italic">Bestellungen werden geladen...</div>
+            </div>
+
+            <!-- Bestelldetail Modal / Dialog -->
+            <div id="orderDetailModal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-6 overflow-y-auto" onclick="closeOrderDetail(event)">
+                <div class="bg-creme rounded-3xl max-w-lg w-full max-h-[92vh] flex flex-col shadow-2xl border border-darkbrown/15 overflow-hidden my-auto" onclick="event.stopPropagation()">
+                    <div class="p-4 border-b border-darkbrown/10 bg-sand/30 flex items-center justify-between flex-shrink-0">
+                        <div>
+                            <span class="text-[9px] uppercase tracking-wider font-bold text-terracotta block">Bestelldetails</span>
+                            <h3 id="modalOrderNumber" class="font-serif text-base font-bold italic text-darkbrown"></h3>
+                        </div>
+                        <button onclick="closeOrderDetail()" class="w-8 h-8 rounded-full bg-darkbrown/5 hover:bg-darkbrown/10 flex items-center justify-center text-darkbrown font-bold transition">✕</button>
+                    </div>
+                    <div id="modalOrderContent" class="p-4 sm:p-5 overflow-y-auto space-y-4 text-xs flex-1"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 2: NEUES PRODUKT ERFASSEN              -->
+        <!-- ========================================== -->
+        <section id="tabNeuesProdukt" class="hidden space-y-4">
+            <div class="bg-creme p-4 sm:p-6 rounded-3xl border border-darkbrown/10 shadow-xs space-y-4">
+                <div class="border-b border-darkbrown/10 pb-3">
+                    <span class="text-[10px] uppercase tracking-wider font-bold text-terracotta block">Direkt im Atelier erfassen</span>
+                    <h2 class="font-serif text-xl font-bold italic text-darkbrown">Neues Produkt hinzufügen</h2>
+                    <p class="text-xs text-darkbrown/70 mt-0.5">Nimm ein Foto direkt mit der Handykamera auf oder lade es hoch.</p>
+                </div>
+
+                <form id="newProductForm" onsubmit="handleCreateProduct(event)" class="space-y-4 text-xs">
+                    
+                    <!-- Foto Upload / Kamera -->
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1.5">
+                            📸 Produktfoto (Kamera oder Mediathek) *
+                        </label>
+                        <div id="photoDropzone" onclick="document.getElementById('newProdPhotoInput').click()" 
+                             class="border-2 border-dashed border-darkbrown/20 rounded-2xl p-4 text-center bg-sand/30 hover:bg-sand/50 transition cursor-pointer flex flex-col items-center justify-center min-h-[160px]">
+                            <img id="photoPreview" src="" alt="Vorschau" class="hidden w-32 h-40 object-cover rounded-xl shadow-md border border-darkbrown/10 mb-2">
+                            <div id="photoPlaceholder" class="space-y-1">
+                                <span class="text-2xl block">📷</span>
+                                <span class="font-bold text-terracotta block">Foto aufnehmen oder auswählen</span>
+                                <span class="text-[10px] text-darkbrown/60 block">Tippe hier, um die Kamera zu öffnen</span>
+                            </div>
+                            <input type="file" id="newProdPhotoInput" accept="image/*" capture="environment" class="hidden" onchange="handlePhotoSelect(this)">
+                        </div>
+                    </div>
+
+                    <!-- Titel -->
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Produktname *</label>
+                        <input type="text" id="newProdName" required placeholder="z. B. Babyhose Musselin Salbeigrün" 
+                               class="w-full bg-white border border-darkbrown/20 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-1 focus:ring-terracotta shadow-xs">
+                    </div>
+
+                    <!-- Kategorie & Preis (nebeneinander) -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Kategorie *</label>
+                            <select id="newProdCat" required class="w-full bg-white border border-darkbrown/20 rounded-xl px-3 py-2.5 text-xs outline-none focus:ring-1 focus:ring-terracotta shadow-xs">
+                                <option value="Baby">Baby</option>
+                                <option value="Kinder">Kinder</option>
+                                <option value="Erwachsene">Erwachsene</option>
+                                <option value="Accessoires">Accessoires</option>
+                                <option value="Taschen">Taschen</option>
+                                <option value="Makramee">Makramee</option>
+                                <option value="Gutscheine">Gutscheine</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Preis (CHF) *</label>
+                            <input type="number" step="0.50" min="1" id="newProdPrice" required placeholder="z. B. 29.00" 
+                                   class="w-full bg-white border border-darkbrown/20 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:ring-1 focus:ring-terracotta shadow-xs">
+                        </div>
+                    </div>
+
+                    <!-- Unikat & Bestand -->
+                    <div class="bg-sand/30 p-3.5 rounded-2xl border border-darkbrown/10 space-y-2">
+                        <label class="flex items-center gap-2 cursor-pointer select-none">
+                            <input type="checkbox" id="newProdIsUnique" checked onchange="toggleStockField()" class="accent-terracotta w-4 h-4 rounded">
+                            <span class="font-bold text-darkbrown">✨ Dies ist ein Unikat (Einzelstück)</span>
+                        </label>
+                        <p class="text-[10px] text-darkbrown/60 leading-normal">
+                            Unikate sind sofort nach dem Verkauf im Shop als „Ausverkauft“ markiert.
+                        </p>
+                        <div id="stockFieldContainer" class="hidden pt-1">
+                            <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Verfügbare Stückzahl</label>
+                            <input type="number" min="1" id="newProdStock" value="1" 
+                                   class="w-32 bg-white border border-darkbrown/20 rounded-xl px-3 py-1.5 text-xs outline-none focus:ring-1 focus:ring-terracotta">
+                        </div>
+                    </div>
+
+                    <!-- Grösse & Farbe (optional) -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Grösse (optional)</label>
+                            <input type="text" id="newProdSize" placeholder="z. B. 74/80 oder 1-2 Jahre" 
+                                   class="w-full bg-white border border-darkbrown/20 rounded-xl px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-terracotta shadow-xs">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Farbe (optional)</label>
+                            <input type="text" id="newProdColor" placeholder="z. B. Salbeigrün" 
+                                   class="w-full bg-white border border-darkbrown/20 rounded-xl px-3 py-2 text-xs outline-none focus:ring-1 focus:ring-terracotta shadow-xs">
+                        </div>
+                    </div>
+
+                    <!-- Beschreibung -->
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 mb-1">Beschreibung & Pflegehinweise</label>
+                        <textarea id="newProdDesc" rows="3" placeholder="Liebevoll genäht aus Bio-Musselin. Waschbar bei 30°C..." 
+                                  class="w-full bg-white border border-darkbrown/20 rounded-xl p-3 text-xs outline-none focus:ring-1 focus:ring-terracotta shadow-xs"></textarea>
+                    </div>
+
+                    <button type="submit" id="saveProdBtn" 
+                            class="w-full bg-terracotta hover:bg-darkbrown text-white py-4 rounded-2xl font-bold uppercase text-xs tracking-wider transition shadow-md flex items-center justify-center gap-2">
+                        <span>🚀 Produkt im Shop veröffentlichen</span>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 3: PRODUKTE & BESTÄNDE                 -->
+        <!-- ========================================== -->
+        <section id="tabProdukte" class="hidden space-y-4">
+            <div class="flex items-center justify-between gap-2">
+                <input type="text" id="prodSearchInput" oninput="renderCatalogList()" placeholder="🔍 Produkte durchsuchen..." 
+                       class="flex-1 bg-creme border border-darkbrown/15 rounded-2xl py-2 px-3.5 text-xs outline-none focus:ring-1 focus:ring-terracotta shadow-xs">
+                <button onclick="loadCatalog()" class="px-3 py-2 rounded-xl bg-creme border border-darkbrown/15 text-xs">Neu laden</button>
+            </div>
+
+            <div id="catalogListContainer" class="space-y-2.5">
+                <div class="text-center py-12 text-darkbrown/50 text-xs italic">Produkte werden geladen...</div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- UNTERE NAVIGATION (MOBILE-FIRST APP BAR) -->
+    <nav class="fixed bottom-0 inset-x-0 z-40 bg-creme/95 backdrop-blur-md border-t border-darkbrown/10 shadow-lg px-2 py-2">
+        <div class="max-w-md mx-auto flex items-center justify-around">
+            <button onclick="switchTab('bestellungen')" id="navBtnBestellungen" class="nav-btn flex flex-col items-center py-1 px-3 rounded-xl text-terracotta transition font-bold">
+                <span class="text-xl">📦</span>
+                <span class="text-[10px] tracking-tight">Bestellungen</span>
+            </button>
+            <button onclick="switchTab('neuesProdukt')" id="navBtnNeuesProdukt" class="nav-btn flex flex-col items-center py-1 px-3 rounded-xl text-darkbrown/60 hover:text-terracotta transition font-medium">
+                <span class="text-xl">➕</span>
+                <span class="text-[10px] tracking-tight">Neues Produkt</span>
+            </button>
+            <button onclick="switchTab('produkte')" id="navBtnProdukte" class="nav-btn flex flex-col items-center py-1 px-3 rounded-xl text-darkbrown/60 hover:text-terracotta transition font-medium">
+                <span class="text-xl">🏷️</span>
+                <span class="text-[10px] tracking-tight">Produkte</span>
+            </button>
+            <a href="/admin/gutscheine.html" class="flex flex-col items-center py-1 px-3 rounded-xl text-darkbrown/60 hover:text-terracotta transition font-medium">
+                <span class="text-xl">💌</span>
+                <span class="text-[10px] tracking-tight">Gutscheine</span>
+            </a>
         </div>
+    </nav>
 
-        <section id="detail" class="hidden mt-6 bg-creme rounded-2xl border border-darkbrown/10 p-5 text-xs space-y-4"></section>
-    </div>
+    <!-- JAVASCRIPT APP LOGIK -->
+    <script>
+        const STATUS = {
+            awaiting_payment: '📥 Eingegangen (unbezahlt)',
+            processing: '🧵 In Bearbeitung',
+            shipped: '🚚 Versendet',
+            completed: '✅ Abgeschlossen',
+            cancelled: '❌ Storniert'
+        };
 
-<script>
-const STATUS = { awaiting_payment: 'Wartet auf Zahlung', processing: 'In Bearbeitung', shipped: 'Versandt', completed: 'Abgeschlossen', cancelled: 'Storniert' };
-const PAY = { pending: 'Ausstehend', paid: 'Bezahlt', failed: 'Fehlgeschlagen', expired: 'Abgelaufen', refunded: 'Zurückerstattet', partially_refunded: 'Teilweise erstattet' };
-const NEXT = { awaiting_payment: ['cancelled'], processing: ['shipped', 'completed', 'cancelled'], shipped: ['completed'], completed: [], cancelled: [] };
-const chf = c => 'CHF ' + (c / 100).toFixed(2);
-const fmt = d => d ? new Date(d).toLocaleString('de-CH') : '–';
+        const PAY_STATUS = {
+            paid: '✅ Bezahlt',
+            pending: '⏳ Zahlung ausstehend',
+            failed: '❌ Fehlgeschlagen',
+            expired: '⌛ Abgelaufen',
+            refunded: '↩️ Rückerstattet'
+        };
 
-// Sicheres Rendern: ausschliesslich textContent (Kundendaten werden nie als HTML interpretiert)
-function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined && text !== null) e.textContent = text; return e; }
-function badge(text, tone) { return el('span', 'inline-block px-2 py-0.5 rounded-full text-[10px] font-bold ' + (tone || 'bg-darkbrown/10'), text); }
-function payTone(p) { return p === 'paid' ? 'bg-green-100 text-green-800' : (p === 'pending' ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-800'); }
+        let allOrders = [];
+        let currentStatusFilter = '';
+        let catalogProducts = [];
+        let currentPhotoBase64 = '';
+        let currentPhotoFileName = '';
 
-function showMsg(t) { const m = document.getElementById('msg'); m.textContent = t; m.classList.toggle('hidden', !t); }
+        const chf = cents => 'CHF ' + (cents / 100).toFixed(2);
+        const fmtDate = d => d ? new Date(d).toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '–';
 
-async function api(path, opts) {
-    const res = await adminFetch(path, opts);
-    if (res.status === 401) { document.getElementById('authOverlay').classList.remove('hidden'); throw new Error('Nicht angemeldet'); }
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(data.error || 'Fehler ' + res.status);
-    return data;
-}
+        function showToast(text, isErr = false) {
+            const m = document.getElementById('msg');
+            m.className = isErr ? 'max-w-4xl mx-auto my-3 mx-4 p-3 rounded-2xl bg-red-50 border border-red-200 text-red-800 text-xs shadow-sm flex items-center justify-between'
+                                : 'max-w-4xl mx-auto my-3 mx-4 p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs shadow-sm flex items-center justify-between';
+            m.innerHTML = `<span>${text}</span><button onclick="document.getElementById('msg').classList.add('hidden')" class="font-bold ml-2">✕</button>`;
+            m.classList.remove('hidden');
+            setTimeout(() => m.classList.add('hidden'), 5000);
+        }
 
-async function login(e) {
-    e.preventDefault();
-    const val = document.getElementById('pw').value.trim();
-    const r = await fetch('/api/admin-check', { headers: { Authorization: 'Bearer ' + val } });
-    if (r.ok) { sessionStorage.setItem('uniquebylea_admin_pw', val); document.getElementById('authOverlay').classList.add('hidden'); loadList(); openFromUrl(); }
-    else document.getElementById('authErr').classList.remove('hidden');
-}
-function logout() { clearAdminToken(); location.reload(); }
+        // --- AUTH & LOGIN ---
+        async function handleLogin(e) {
+            e.preventDefault();
+            const pw = document.getElementById('pw').value.trim();
+            const remember = document.getElementById('rememberMe').checked;
+            try {
+                const res = await fetch('/api/admin-check', { headers: { Authorization: 'Bearer ' + pw } });
+                if (res.ok) {
+                    window.setAdminToken(pw, remember);
+                    document.getElementById('authOverlay').classList.add('hidden');
+                    initApp();
+                } else {
+                    document.getElementById('authErr').classList.remove('hidden');
+                }
+            } catch (err) {
+                document.getElementById('authErr').textContent = "Verbindungsfehler: " + err.message;
+                document.getElementById('authErr').classList.remove('hidden');
+            }
+        }
 
-async function loadList() {
-    showMsg('');
-    const p = new URLSearchParams();
-    if (fStatus.value) p.set('status', fStatus.value);
-    if (fPay.value) p.set('payment_status', fPay.value);
-    if (fUnread.checked) p.set('unread', '1');
-    try {
-        const { orders } = await api('/api/admin-orders?' + p.toString());
-        const tb = document.getElementById('rows'); tb.replaceChildren();
-        if (!orders.length) { const tr = el('tr'); const td = el('td', 'p-4 text-darkbrown/60', 'Keine Bestellungen gefunden.'); td.colSpan = 7; tr.append(td); tb.append(tr); }
-        orders.forEach(o => {
-            const tr = el('tr', 'border-b border-darkbrown/5 hover:bg-sand/40 cursor-pointer' + ((o.payment_status === 'paid' && !o.admin_read_at) ? ' font-bold' : ''));
-            tr.onclick = () => openOrder(o.id);
-            const nr = el('td', 'p-3', o.order_number);
-            if (o.needs_attention) nr.append(' ', badge('Prüfen', 'bg-red-100 text-red-800'));
-            if (o.email_failed) nr.append(' ', badge('Mail-Fehler', 'bg-red-100 text-red-800'));
-            tr.append(nr, el('td', 'p-3', fmt(o.created_at)), el('td', 'p-3', o.customer_name || o.customer_email || '–'),
-                el('td', 'p-3 text-right', chf(o.total_cents)));
-            const s1 = el('td', 'p-3'); s1.append(badge(STATUS[o.status] || o.status));
-            const s2 = el('td', 'p-3'); s2.append(badge(PAY[o.payment_status] || o.payment_status, payTone(o.payment_status)));
-            tr.append(s1, s2, el('td', 'p-3 text-terracotta', 'Öffnen'));
-            tb.append(tr);
-        });
-    } catch (err) { showMsg(err.message); }
-}
+        function logout() {
+            window.clearAdminToken();
+            location.reload();
+        }
 
-async function openOrder(id) {
-    try {
-        const d = await api('/api/admin-orders?id=' + encodeURIComponent(id));
-        const o = d.order, box = document.getElementById('detail');
-        box.replaceChildren(); box.classList.remove('hidden');
-        const head = el('div', 'flex flex-wrap items-center justify-between gap-2');
-        head.append(el('h2', 'font-serif text-lg font-bold italic', 'Bestellung ' + o.order_number));
-        const bs = el('div', 'flex gap-2'); bs.append(badge(STATUS[o.status] || o.status), badge(PAY[o.payment_status] || o.payment_status, payTone(o.payment_status)));
-        head.append(bs); box.append(head);
-        if (o.needs_attention) box.append(el('div', 'rounded-xl bg-red-50 border border-red-200 text-red-800 p-3', 'Achtung: ' + o.needs_attention));
+        // --- TAB NAVIGATION ---
+        function switchTab(tabId) {
+            ['bestellungen', 'neuesProdukt', 'produkte'].forEach(t => {
+                const sec = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
+                const btn = document.getElementById('navBtn' + t.charAt(0).toUpperCase() + t.slice(1));
+                if (sec) sec.classList.toggle('hidden', t !== tabId);
+                if (btn) {
+                    btn.classList.toggle('text-terracotta', t === tabId);
+                    btn.classList.toggle('font-bold', t === tabId);
+                    btn.classList.toggle('text-darkbrown/60', t !== tabId);
+                }
+            });
 
-        const grid = el('div', 'grid md:grid-cols-3 gap-4');
-        const addr = a => a ? [a.name, a.line1, a.line2, [a.postal_code, a.city].filter(Boolean).join(' '), a.country].filter(Boolean).join('\n') : '–';
-        [['Kunde', [o.customer_name, o.customer_email, o.customer_phone].filter(Boolean).join('\n') || '–'],
-         ['Lieferadresse (' + o.shipping_type + ')', addr(o.shipping_address)],
-         ['Rechnungsadresse', addr(o.billing_address)]].forEach(([t, v]) => {
-            const c = el('div'); c.append(el('div', 'uppercase text-[10px] font-bold text-terracotta mb-1', t), el('div', 'whitespace-pre-line', v)); grid.append(c); });
-        box.append(grid);
+            const titles = { bestellungen: 'Bestellungen', neuesProdukt: 'Produkt erfassen', produkte: 'Shop-Katalog' };
+            document.getElementById('appHeaderTitle').textContent = titles[tabId] || 'Atelier App';
 
-        const tbl = el('table', 'w-full'); const th = el('tr', 'text-left text-[10px] uppercase text-darkbrown/60');
-        ['Produkt', 'Menge', 'Einzelpreis', 'Summe'].forEach(h => th.append(el('th', 'py-1 pr-2', h))); tbl.append(th);
-        d.items.forEach(i => {
-            const a = i.attributes || {}; const extra = [a.color && 'Farbe: ' + a.color, a.size && 'Grösse: ' + a.size, a.customName && 'Wunschname: ' + a.customName, a.optionsSummary].filter(Boolean).join(', ');
-            const tr = el('tr', 'border-t border-darkbrown/5'); const nameTd = el('td', 'py-1 pr-2', i.product_name);
-            if (extra) nameTd.append(el('div', 'text-darkbrown/60', extra));
-            tr.append(nameTd, el('td', 'py-1 pr-2', String(i.quantity)), el('td', 'py-1 pr-2', chf(i.unit_price_cents)), el('td', 'py-1 pr-2', chf(i.unit_price_cents * i.quantity))); tbl.append(tr); });
-        box.append(tbl);
-        const sums = el('div', 'text-right space-y-0.5');
-        sums.append(el('div', '', 'Zwischensumme: ' + chf(o.subtotal_cents)), el('div', '', 'Versand: ' + chf(o.shipping_cents)));
-        if (o.discount_cents) sums.append(el('div', '', 'Gutschein ' + (o.voucher_code || '') + ': −' + chf(o.discount_cents)));
-        sums.append(el('div', 'font-bold', 'Total: ' + chf(o.total_cents) + ' (MwSt. nicht ausgewiesen)')); box.append(sums);
+            if (tabId === 'produkte' && catalogProducts.length === 0) loadCatalog();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
 
-        const meta = el('div', 'text-darkbrown/70'); meta.textContent = 'Bestellt: ' + fmt(o.created_at) + ' · Bezahlt: ' + fmt(o.paid_at) + ' · Versandt: ' + fmt(o.shipped_at) + (o.tracking_number ? ' · Tracking: ' + o.tracking_number : '');
-        box.append(meta);
-        if (d.stripe_url) { const a = el('a', 'text-terracotta underline', 'Zahlung in Stripe öffnen'); a.href = d.stripe_url; a.target = '_blank'; a.rel = 'noopener noreferrer'; box.append(a); }
+        function refreshActiveTab() {
+            loadOrders();
+            loadCatalog();
+            showToast('Aktualisiert!');
+        }
 
-        // Aktionen
-        const act = el('div', 'flex flex-wrap items-center gap-2 pt-2 border-t border-darkbrown/10');
-        const tracking = el('input', 'bg-white border border-darkbrown/20 rounded-xl px-3 py-2'); tracking.placeholder = 'Tracking-Nr. (optional)';
-        if ((NEXT[o.status] || []).includes('shipped')) act.append(tracking);
-        (NEXT[o.status] || []).forEach(t => {
-            const b = el('button', 'px-3 py-2 rounded-xl text-white ' + (t === 'cancelled' ? 'bg-red-700' : 'bg-terracotta'), '→ ' + STATUS[t]);
-            if ((t === 'shipped' || t === 'completed') && o.payment_status !== 'paid') { b.disabled = true; b.className += ' opacity-40'; b.title = 'Zahlung nicht bestätigt'; }
-            b.onclick = async () => {
-                if (t === 'cancelled' && !confirm(o.payment_status === 'paid' ? 'Bestellung stornieren? Eine Rückerstattung muss separat in Stripe erfolgen.' : 'Bestellung stornieren?')) return;
-                try { await api('/api/admin-orders', { method: 'POST', body: JSON.stringify({ action: 'set_status', id: o.id, status: t, tracking_number: tracking.value }) }); showMsg('Status aktualisiert.'); openOrder(o.id); loadList(); }
-                catch (err) { showMsg(err.message); } };
-            act.append(b); });
-        const retry = el('button', 'px-3 py-2 rounded-xl border border-darkbrown/20', 'Fehlgeschlagene E-Mails erneut senden');
-        retry.onclick = async () => { try { const r = await api('/api/admin-orders', { method: 'POST', body: JSON.stringify({ action: 'retry_email', id: o.id }) }); showMsg('E-Mail-Versand: ' + (r.results.map(x => x.kind + ' ' + x.status).join(', ') || 'nichts zu senden')); openOrder(o.id); } catch (err) { showMsg(err.message); } };
-        act.append(retry); box.append(act);
+        // --- BESTELLUNGEN LADEN & RENDERN ---
+        async function loadOrders() {
+            try {
+                const res = await window.adminFetch('/api/admin-orders');
+                if (res.status === 401) {
+                    document.getElementById('authOverlay').classList.remove('hidden');
+                    return;
+                }
+                const data = await res.json();
+                allOrders = data.orders || [];
+                updateStatusCounters();
+                renderOrdersList();
+            } catch (err) {
+                showToast("Fehler beim Laden: " + err.message, true);
+            }
+        }
 
-        // Benachrichtigungen + Historie
-        const h = el('div', 'grid md:grid-cols-2 gap-4');
-        const n = el('div'); n.append(el('div', 'uppercase text-[10px] font-bold text-terracotta mb-1', 'E-Mail-Benachrichtigungen'));
-        if (!d.notifications.length) n.append(el('div', 'text-darkbrown/60', 'Keine'));
-        d.notifications.forEach(m => n.append(el('div', m.status === 'failed' ? 'text-red-700' : '', m.kind + ' → ' + m.recipient + ': ' + m.status + ' (Versuche: ' + m.attempts + ')' + (m.error_detail ? ' – ' + m.error_detail : ''))));
-        const hs = el('div'); hs.append(el('div', 'uppercase text-[10px] font-bold text-terracotta mb-1', 'Historie'));
-        d.history.forEach(x => hs.append(el('div', '', fmt(x.created_at) + ' · ' + x.kind + ': ' + (x.from_value || '–') + ' → ' + (x.to_value || '–') + ' (' + x.actor + ')' + (x.detail ? ' – ' + x.detail : ''))));
-        h.append(n, hs); box.append(h);
-        if (o.payment_status === 'paid' && !o.admin_read_at) { await api('/api/admin-orders', { method: 'POST', body: JSON.stringify({ action: 'mark_read', id: o.id }) }); loadList(); }
-        box.scrollIntoView({ behavior: 'smooth' });
-    } catch (err) { showMsg(err.message); }
-}
+        function updateStatusCounters() {
+            document.getElementById('countAll').textContent = allOrders.length;
+            document.getElementById('countProcessing').textContent = allOrders.filter(o => o.status === 'processing').length;
+            document.getElementById('countAwaiting').textContent = allOrders.filter(o => o.status === 'awaiting_payment').length;
+            document.getElementById('countShipped').textContent = allOrders.filter(o => o.status === 'shipped').length;
+            document.getElementById('countCompleted').textContent = allOrders.filter(o => o.status === 'completed').length;
+        }
 
-function openFromUrl() { const id = new URLSearchParams(location.search).get('order'); if (id) openOrder(id); }
+        function filterOrders(status) {
+            currentStatusFilter = status;
+            document.querySelectorAll('.status-pill').forEach(btn => {
+                const active = btn.dataset.status === status;
+                btn.className = active ? 'status-pill px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap bg-terracotta text-white shadow-xs'
+                                       : 'status-pill px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap bg-creme text-darkbrown/80 border border-darkbrown/15 hover:border-terracotta';
+            });
+            renderOrdersList();
+        }
 
-(async function init() {
-    if (sessionStorage.getItem('uniquebylea_admin_pw')) {
-        document.getElementById('authOverlay').classList.add('hidden');
-        await loadList(); openFromUrl();
-    }
-})();
-</script>
+        function renderOrdersList() {
+            const container = document.getElementById('ordersContainer');
+            const search = (document.getElementById('orderSearchInput')?.value || '').toLowerCase().trim();
+
+            let list = allOrders;
+            if (currentStatusFilter) {
+                list = list.filter(o => o.status === currentStatusFilter);
+            }
+            if (search) {
+                list = list.filter(o => 
+                    (o.order_number && o.order_number.toLowerCase().includes(search)) ||
+                    (o.customer_name && o.customer_name.toLowerCase().includes(search)) ||
+                    (o.customer_email && o.customer_email.toLowerCase().includes(search)) ||
+                    (o.shipping_address && JSON.stringify(o.shipping_address).toLowerCase().includes(search))
+                );
+            }
+
+            if (!list.length) {
+                container.innerHTML = `
+                    <div class="bg-creme rounded-3xl p-8 text-center text-darkbrown/60 space-y-2 border border-darkbrown/10">
+                        <span class="text-3xl block">📭</span>
+                        <p class="font-bold text-sm">Keine Bestellungen gefunden</p>
+                        <p class="text-xs">In dieser Kategorie liegen aktuell keine Einträge vor.</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = list.map(o => {
+                const isPaid = o.payment_status === 'paid';
+                const statusBadgeBg = o.status === 'processing' ? 'bg-amber-100 text-amber-900 border-amber-300'
+                                    : (o.status === 'shipped' ? 'bg-blue-100 text-blue-900 border-blue-300'
+                                    : (o.status === 'completed' ? 'bg-emerald-100 text-emerald-900 border-emerald-300' : 'bg-sand/60 text-darkbrown border-darkbrown/20'));
+
+                return `
+                <div onclick="openOrderDetails('${o.id}')" 
+                     class="bg-creme hover:bg-white rounded-3xl p-4 sm:p-5 border border-darkbrown/10 shadow-xs hover:shadow-md transition cursor-pointer space-y-3">
+                    
+                    <div class="flex items-start justify-between gap-2">
+                        <div>
+                            <span class="text-[9px] font-mono text-darkbrown/50 block">${fmtDate(o.created_at)}</span>
+                            <h3 class="font-serif text-base font-bold text-darkbrown">${o.order_number}</h3>
+                        </div>
+                        <span class="font-serif text-base font-bold text-terracotta whitespace-nowrap">${chf(o.total_cents)}</span>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-1.5 text-[10px]">
+                        <span class="px-2.5 py-0.5 rounded-full font-bold border ${statusBadgeBg}">${STATUS[o.status] || o.status}</span>
+                        <span class="px-2.5 py-0.5 rounded-full font-bold ${isPaid ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}">
+                            ${PAY_STATUS[o.payment_status] || o.payment_status}
+                        </span>
+                        ${o.shipping_type ? `<span class="px-2 py-0.5 rounded-md bg-sand/40 text-darkbrown/70 font-mono">📦 ${o.shipping_type.toUpperCase()}</span>` : ''}
+                    </div>
+
+                    <div class="text-xs text-darkbrown/80 pt-1 border-t border-darkbrown/5 flex items-center justify-between">
+                        <span class="font-bold truncate">👤 ${o.customer_name || o.customer_email || 'Kunde'}</span>
+                        <span class="text-terracotta font-bold text-[11px] shrink-0">Details ansehen ➔</span>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // --- DETAIL-MODAL MIT PRODUKT-FOTOS & STATUS-BUTTONS ---
+        async function openOrderDetails(orderId) {
+            const modal = document.getElementById('orderDetailModal');
+            const content = document.getElementById('modalOrderContent');
+            const title = document.getElementById('modalOrderNumber');
+            
+            modal.classList.remove('hidden');
+            content.innerHTML = '<div class="text-center py-12 text-darkbrown/50 italic">Lade Bestelldetails mit Fotos...</div>';
+
+            try {
+                const res = await window.adminFetch('/api/admin-orders?id=' + encodeURIComponent(orderId));
+                const data = await res.json();
+                const o = data.order;
+                const items = data.items || [];
+
+                title.textContent = `${o.order_number} (${chf(o.total_cents)})`;
+
+                const addr = o.shipping_address || {};
+                const fullAddrText = [addr.name || o.customer_name, addr.line1, addr.line2, [addr.postal_code, addr.city].filter(Boolean).join(' '), addr.country || 'CH'].filter(Boolean).join('\n');
+
+                content.innerHTML = `
+                <!-- Kunde & Adresse -->
+                <div class="bg-sand/30 p-3.5 rounded-2xl border border-darkbrown/10 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] uppercase font-bold tracking-wider text-terracotta">Lieferadresse (${o.shipping_type})</span>
+                        <button onclick="copyToClipboard('${fullAddrText.replace(/\n/g, ', ')}')" class="text-[10px] text-terracotta hover:underline font-bold">📋 Adresse kopieren</button>
+                    </div>
+                    <p class="font-bold text-sm text-darkbrown leading-snug">${o.customer_name || '–'}</p>
+                    <p class="whitespace-pre-line text-darkbrown/85 leading-relaxed">${fullAddrText}</p>
+                    <div class="flex flex-wrap gap-3 pt-1 text-[11px] text-darkbrown/70 border-t border-darkbrown/10">
+                        ${o.customer_phone ? `<a href="tel:${o.customer_phone}" class="text-terracotta font-bold hover:underline flex items-center gap-1">📞 ${o.customer_phone}</a>` : ''}
+                        ${o.customer_email ? `<a href="mailto:${o.customer_email}" class="text-terracotta font-bold hover:underline flex items-center gap-1">✉️ ${o.customer_email}</a>` : ''}
+                    </div>
+                </div>
+
+                <!-- Bestelle Positionen mit Fotos -->
+                <div class="space-y-2.5">
+                    <span class="text-[10px] uppercase font-bold tracking-wider text-terracotta block">Bestellte Artikel (${items.length})</span>
+                    <div class="space-y-2">
+                        ${items.map(item => {
+                            const a = item.attributes || {};
+                            const extraParts = [];
+                            if (a.color) extraParts.push(`Farbe: ${a.color}`);
+                            if (a.size) extraParts.push(`Grösse: ${a.size}`);
+                            if (a.customName) extraParts.push(`Wunschname: "${a.customName}"`);
+                            if (a.optionsSummary) extraParts.push(a.optionsSummary);
+                            if (a.voucherConfig) extraParts.push(`Gutschein für: ${a.voucherConfig.fuer || ''} von: ${a.voucherConfig.von || ''}`);
+
+                            const photoSrc = item.img || a.img || '/images/logo.png';
+
+                            return `
+                            <div class="flex items-center gap-3 bg-white p-3 rounded-2xl border border-darkbrown/10 shadow-xs">
+                                <img src="${photoSrc}" alt="${item.product_name}" onerror="this.src='/images/logo.png'" 
+                                     class="w-14 h-16 object-cover rounded-xl border border-darkbrown/10 bg-sand/20 shrink-0">
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="font-serif text-xs font-bold uppercase tracking-wider text-darkbrown truncate">${item.product_name}</h4>
+                                    ${extraParts.length ? `<p class="text-[10px] text-darkbrown/70 leading-snug my-0.5">${extraParts.join(' · ')}</p>` : ''}
+                                    <div class="flex items-center justify-between text-[11px] pt-1">
+                                        <span class="text-darkbrown/60">${item.quantity}× ${chf(item.unit_price_cents)}</span>
+                                        <span class="font-bold text-terracotta">${chf(item.unit_price_cents * item.quantity)}</span>
+                                    </div>
+                                </div>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </div>
+
+                <!-- Summen -->
+                <div class="bg-sand/20 p-3 rounded-xl space-y-1 text-right text-xs">
+                    <div class="flex justify-between text-darkbrown/70"><span>Zwischensumme:</span><span>${chf(o.subtotal_cents)}</span></div>
+                    <div class="flex justify-between text-darkbrown/70"><span>Versand (${o.shipping_type}):</span><span>${chf(o.shipping_cents)}</span></div>
+                    ${o.discount_cents ? `<div class="flex justify-between text-emerald-700 font-bold"><span>Gutschein (${o.voucher_code || ''}):</span><span>-${chf(o.discount_cents)}</span></div>` : ''}
+                    <div class="flex justify-between text-sm font-bold text-darkbrown pt-1 border-t border-darkbrown/10"><span>Gesamttotal:</span><span class="text-terracotta font-serif">${chf(o.total_cents)}</span></div>
+                </div>
+
+                <!-- Status Update Buttons -->
+                <div class="space-y-2 pt-2 border-t border-darkbrown/10">
+                    <span class="text-[10px] uppercase font-bold tracking-wider text-darkbrown/70 block">Bestellstatus anpassen:</span>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="updateOrderStatus('${o.id}', 'processing')" 
+                                class="py-2.5 px-3 rounded-xl border text-xs font-bold transition flex items-center justify-center gap-1 ${o.status === 'processing' ? 'bg-amber-100 border-amber-300 text-amber-900' : 'bg-white border-darkbrown/15 hover:border-amber-400 text-darkbrown'}">
+                            🧵 In Bearbeitung
+                        </button>
+                        <button onclick="promptShipOrder('${o.id}')" 
+                                class="py-2.5 px-3 rounded-xl border text-xs font-bold transition flex items-center justify-center gap-1 ${o.status === 'shipped' ? 'bg-blue-100 border-blue-300 text-blue-900' : 'bg-white border-darkbrown/15 hover:border-blue-400 text-darkbrown'}">
+                            🚚 Als versendet
+                        </button>
+                        <button onclick="updateOrderStatus('${o.id}', 'completed')" 
+                                class="py-2.5 px-3 rounded-xl border text-xs font-bold transition flex items-center justify-center gap-1 ${o.status === 'completed' ? 'bg-emerald-100 border-emerald-300 text-emerald-900' : 'bg-white border-darkbrown/15 hover:border-emerald-400 text-darkbrown'}">
+                            ✅ Abgeschlossen
+                        </button>
+                        <button onclick="updateOrderStatus('${o.id}', 'cancelled')" 
+                                class="py-2.5 px-3 rounded-xl border text-xs font-bold transition flex items-center justify-center gap-1 text-red-700 bg-white border-red-200 hover:bg-red-50">
+                            ❌ Stornieren
+                        </button>
+                    </div>
+                </div>
+
+                ${data.stripe_url ? `
+                <div class="pt-2 text-center">
+                    <a href="${data.stripe_url}" target="_blank" rel="noopener noreferrer" 
+                       class="inline-flex items-center gap-1.5 text-xs text-terracotta hover:underline font-bold">
+                        <span>💳 Zahlung in Stripe öffnen</span><span>➔</span>
+                    </a>
+                </div>` : ''}
+                `;
+            } catch (err) {
+                content.innerHTML = `<div class="text-red-600 p-4">Fehler: ${err.message}</div>`;
+            }
+        }
+
+        function closeOrderDetail(e) {
+            if (e && e.target !== e.currentTarget && e.type === 'click') return;
+            document.getElementById('orderDetailModal').classList.add('hidden');
+        }
+
+        async function updateOrderStatus(orderId, newStatus, trackingNum = '') {
+            try {
+                const res = await window.adminFetch('/api/admin-orders', {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'set_status', id: orderId, status: newStatus, tracking_number: trackingNum })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Fehler beim Ändern des Status');
+                showToast(`Status auf "${STATUS[newStatus] || newStatus}" gesetzt!`);
+                openOrderDetails(orderId);
+                loadOrders();
+            } catch (err) {
+                showToast(err.message, true);
+            }
+        }
+
+        function promptShipOrder(orderId) {
+            const track = window.prompt('Tracking-Nummer (optional für Schweizer Post Paket):', '');
+            if (track === null) return; // Abgebrochen
+            updateOrderStatus(orderId, 'shipped', track.trim());
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => showToast('Adresse in die Zwischenablage kopiert!'));
+        }
+
+        // --- TAB 2: PRODUKT ERFASSEN ---
+        function toggleStockField() {
+            const isUnique = document.getElementById('newProdIsUnique').checked;
+            document.getElementById('stockFieldContainer').classList.toggle('hidden', isUnique);
+        }
+
+        function handlePhotoSelect(input) {
+            const file = input.files && input.files[0];
+            if (!file) return;
+
+            currentPhotoFileName = file.name;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentPhotoBase64 = e.target.result;
+                document.getElementById('photoPreview').src = currentPhotoBase64;
+                document.getElementById('photoPreview').classList.remove('hidden');
+                document.getElementById('photoPlaceholder').classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function handleCreateProduct(e) {
+            e.preventDefault();
+            const btn = document.getElementById('saveProdBtn');
+
+            if (!currentPhotoBase64) {
+                alert('Bitte wähle zuerst ein Foto aus (Kamera oder Mediathek)!');
+                return;
+            }
+
+            const name = document.getElementById('newProdName').value.trim();
+            const cat = document.getElementById('newProdCat').value;
+            const price = parseFloat(document.getElementById('newProdPrice').value);
+            const isUnique = document.getElementById('newProdIsUnique').checked;
+            const stock = isUnique ? 1 : (parseInt(document.getElementById('newProdStock').value, 10) || 1);
+            const size = document.getElementById('newProdSize').value.trim();
+            const color = document.getElementById('newProdColor').value.trim();
+            const desc = document.getElementById('newProdDesc').value.trim();
+
+            btn.disabled = true;
+            btn.innerHTML = '<span>⏳ Foto wird hochgeladen & gespeichert...</span>';
+
+            try {
+                const res = await window.adminFetch('/api/save-product', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        name: name,
+                        cat: cat,
+                        price: price.toFixed(2) + ' CHF',
+                        description: desc,
+                        isUnique: isUnique,
+                        badge: isUnique ? 'Unikat' : '',
+                        size: size,
+                        stock: stock,
+                        hasColorVariants: !!color,
+                        variants: [{
+                            imageBase64: currentPhotoBase64,
+                            fileName: currentPhotoFileName || 'produkt.jpg',
+                            color: color,
+                            size: size,
+                            stock: stock,
+                            price_add: 0
+                        }]
+                    })
+                });
+
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Fehler beim Erstellen des Produkts');
+
+                alert(`🎉 Perfekt! Das Produkt "${name}" wurde erfolgreich gespeichert und ist in wenigen Sekunden im Shop sichtbar!`);
+                document.getElementById('newProductForm').reset();
+                currentPhotoBase64 = '';
+                document.getElementById('photoPreview').classList.add('hidden');
+                document.getElementById('photoPlaceholder').classList.remove('hidden');
+                switchTab('bestellungen');
+                loadCatalog();
+            } catch (err) {
+                alert('Fehler beim Speichern: ' + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span>🚀 Produkt im Shop veröffentlichen</span>';
+            }
+        }
+
+        // --- TAB 3: KATALOG LADEN ---
+        async function loadCatalog() {
+            const container = document.getElementById('catalogListContainer');
+            try {
+                const res = await fetch('/api/products');
+                const data = await res.json();
+                catalogProducts = data.produkte || [];
+                renderCatalogList();
+            } catch (err) {
+                container.innerHTML = '<div class="text-xs text-red-600">Katalog konnte nicht geladen werden.</div>';
+            }
+        }
+
+        function renderCatalogList() {
+            const container = document.getElementById('catalogListContainer');
+            const search = (document.getElementById('prodSearchInput')?.value || '').toLowerCase().trim();
+
+            let list = catalogProducts;
+            if (search) {
+                list = list.filter(p => (p.name && p.name.toLowerCase().includes(search)) || (p.cat && p.cat.toLowerCase().includes(search)));
+            }
+
+            container.innerHTML = list.map(p => {
+                const isOut = (p.stock || 0) <= 0;
+                return `
+                <div class="flex items-center gap-3 bg-creme p-3 rounded-2xl border border-darkbrown/10 shadow-xs">
+                    <img src="${p.img || '/images/logo.png'}" alt="${p.name}" class="w-12 h-14 object-cover rounded-xl bg-sand/30 shrink-0 border border-darkbrown/5">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-start justify-between gap-1">
+                            <h4 class="font-serif text-xs font-bold text-darkbrown truncate">${p.name}</h4>
+                            <span class="font-bold text-terracotta text-xs shrink-0">${p.price || ''}</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-[10px] text-darkbrown/60 mt-1">
+                            <span class="bg-sand/50 px-2 py-0.5 rounded-md font-mono">${p.cat || 'Shop'}</span>
+                            <span class="${isOut ? 'text-red-700 font-bold' : 'text-emerald-700 font-bold'}">
+                                ${isOut ? '❌ Ausverkauft' : `✓ ${p.stock || 1}x an Lager`}
+                            </span>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // --- INITIALISIERUNG ---
+        function initApp() {
+            loadOrders();
+            loadCatalog();
+        }
+
+        (function autoAuth() {
+            const token = window.getAdminToken();
+            if (token) {
+                document.getElementById('authOverlay').classList.add('hidden');
+                initApp();
+            }
+        })();
+    </script>
 </body>
 </html>

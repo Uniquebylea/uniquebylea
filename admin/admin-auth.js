@@ -4,15 +4,24 @@
 (function () {
   var KEY = 'uniquebylea_admin_pw';
   window.getAdminToken = function (forcePrompt) {
-    var t = sessionStorage.getItem(KEY) || '';
+    var t = sessionStorage.getItem(KEY) || localStorage.getItem(KEY) || '';
     if (!t || forcePrompt) {
       t = (window.prompt('Atelier-Passwort:') || '').trim();
-      if (t) sessionStorage.setItem(KEY, t); else sessionStorage.removeItem(KEY);
+      if (t) sessionStorage.setItem(KEY, t); else { sessionStorage.removeItem(KEY); localStorage.removeItem(KEY); }
     }
     return t;
   };
-  window.clearAdminToken = function () { sessionStorage.removeItem(KEY); };
-  // Entfernt Altlasten früherer Versionen (Klartext-Passwörter in localStorage)
+  window.setAdminToken = function(t, remember) {
+    if (remember) {
+      localStorage.setItem(KEY, t);
+      sessionStorage.setItem(KEY, t);
+    } else {
+      sessionStorage.setItem(KEY, t);
+      localStorage.removeItem(KEY);
+    }
+  };
+  window.clearAdminToken = function () { sessionStorage.removeItem(KEY); localStorage.removeItem(KEY); };
+  // Entfernt alte Schlüssel (ausser unserem KEY)
   ['uniquebylea_admin_token', 'uniquebylea_admin_auth', 'uniquebylea_gh_token'].forEach(function (k) { localStorage.removeItem(k); });
   window.adminHeaders = function (extra) {
     var h = Object.assign({ 'Content-Type': 'application/json' }, extra || {});

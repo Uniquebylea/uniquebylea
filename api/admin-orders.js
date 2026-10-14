@@ -6,6 +6,8 @@
 //   POST /api/admin-orders {action:'retry_email', id}
 // Manuelle Statusänderungen ändern NIE den Zahlungsstatus. Rückerstattungen sind hier bewusst nicht
 // implementiert (finanzielle Aktion nur direkt im Stripe-Dashboard, danach hier dokumentieren).
+const fs = require('fs');
+const path = require('path');
 const db = require('./_db');
 const notify = require('./_notify');
 const { isAdmin } = require('./_auth');
@@ -43,8 +45,29 @@ module.exports = async (req, res) => {
         if (!orders.length) return res.status(404).json({ error: 'Bestellung nicht gefunden.' });
         const o = orders[0];
         const mode = String(process.env.STRIPE_SECRET_KEY || '').startsWith('sk_test') ? 'test/' : '';
+
+        // Produktfotos auflösen
+        let catalog = [];
+        try {
+          const raw = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'content', 'products.json'), 'utf8'));
+          catalog = raw.produkte || [];
+        } catch (e) {}
+
+        const enrichedItems = items.map(item => {
+          let img = item.attributes && item.attributes.img;
+          if (!img) {
+            const found = catalog.find(p =>
+              (item.product_id && String(p.id) === String(item.product_id)) ||
+              (item.sku && String(p.sku) === String(item.sku)) ||
+              (p.name && item.product_name && p.name.trim().toLowerCase() === item.product_name.trim().toLowerCase())
+            );
+            if (found && found.img) img = found.img;
+          }
+          return { ...item, img: img || '/images/logo.png' };
+        });
+
         return res.status(200).json({
-          order: o, items, history: hist, notifications: mails, payment_events: events,
+          order: o, items: enrichedItems, history: hist, notifications: mails, payment_events: events,
           stripe_url: o.stripe_payment_intent_id ? `https://dashboard.stripe.com/${mode}payments/${o.stripe_payment_intent_id}` : null
         });
       }

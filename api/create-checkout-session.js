@@ -278,6 +278,7 @@ module.exports = async (req, res) => {
           size: i.size ? String(i.size).substring(0, 40) : undefined,
           customName: i.customName ? String(i.customName).substring(0, 60) : undefined,
           optionsSummary: i.optionsSummary ? String(i.optionsSummary).substring(0, 300) : undefined,
+          img: i.img ? String(i.img).substring(0, 300) : undefined,
           voucherConfig: i.voucherConfig ? {
             wert: i.voucherConfig.wert, fuer: String(i.voucherConfig.fuer || '').substring(0, 100),
             von: String(i.voucherConfig.von || '').substring(0, 100), theme: String(i.voucherConfig.theme || '').substring(0, 40)
@@ -329,6 +330,7 @@ module.exports = async (req, res) => {
         size: i.size ? String(i.size).substring(0, 40) : undefined,
         customName: i.customName ? String(i.customName).substring(0, 60) : undefined,
         optionsSummary: i.optionsSummary ? String(i.optionsSummary).substring(0, 300) : undefined,
+        img: i.img ? String(i.img).substring(0, 300) : undefined,
         voucherConfig: i.voucherConfig ? {
           wert: i.voucherConfig.wert, fuer: String(i.voucherConfig.fuer || '').substring(0, 100),
           von: String(i.voucherConfig.von || '').substring(0, 100), theme: String(i.voucherConfig.theme || '').substring(0, 40)
