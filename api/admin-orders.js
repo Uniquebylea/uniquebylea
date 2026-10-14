@@ -110,11 +110,11 @@ module.exports = async (req, res) => {
 
       // 1. Alle Testbestellungen bereinigen
       if (action === 'reset_all_orders') {
-        await db.delete('order_items', 'id=not.is.null');
-        await db.delete('order_status_history', 'id=not.is.null');
-        await db.delete('email_notifications', 'id=not.is.null');
-        await db.delete('payment_events', 'order_id=not.is.null');
-        await db.delete('voucher_redemptions', 'id=not.is.null');
+        try { await db.delete('order_items', 'id=not.is.null'); } catch (e) {}
+        try { await db.delete('order_status_history', 'id=not.is.null'); } catch (e) {}
+        try { await db.delete('email_notifications', 'id=not.is.null'); } catch (e) {}
+        try { await db.delete('voucher_redemptions', 'id=not.is.null'); } catch (e) {}
+        try { await db.delete('payment_events', 'id=not.is.null'); } catch (e) {}
         await db.delete('orders', 'id=not.is.null');
         return res.status(200).json({ ok: true, message: 'Alle Testbestellungen wurden gelöscht.' });
       }
@@ -122,11 +122,11 @@ module.exports = async (req, res) => {
       // 2. Einzelne Bestellung löschen
       if (action === 'delete_order') {
         if (!UUID.test(id || '')) return res.status(400).json({ error: 'Ungültige ID.' });
-        await db.delete('order_items', `order_id=eq.${id}`);
-        await db.delete('order_status_history', `order_id=eq.${id}`);
-        await db.delete('email_notifications', `order_id=eq.${id}`);
-        await db.delete('payment_events', `order_id=eq.${id}`);
-        await db.delete('voucher_redemptions', `order_id=eq.${id}`);
+        try { await db.delete('order_items', `order_id=eq.${id}`); } catch (e) {}
+        try { await db.delete('order_status_history', `order_id=eq.${id}`); } catch (e) {}
+        try { await db.delete('email_notifications', `order_id=eq.${id}`); } catch (e) {}
+        try { await db.delete('voucher_redemptions', `order_id=eq.${id}`); } catch (e) {}
+        try { await db.delete('payment_events', `order_id=eq.${id}`); } catch (e) {}
         await db.delete('orders', `id=eq.${id}`);
         return res.status(200).json({ ok: true, message: 'Bestellung gelöscht.' });
       }
@@ -175,6 +175,6 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' });
   } catch (e) {
     console.error('admin-orders:', e.message);
-    return res.status(500).json({ error: 'Interner Fehler.' });
+    return res.status(500).json({ error: e.message || 'Interner Fehler.' });
   }
 };
