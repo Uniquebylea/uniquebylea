@@ -33,5 +33,6 @@ module.exports = {
   select: (table, query) => rest('GET', table, { query }),
   insert: (table, rows, prefer) => rest('POST', table, { body: rows, prefer: prefer || 'return=representation' }),
   // Gibt die geänderten Zeilen zurück (leer = Bedingung traf nicht zu => atomare "Compare-and-Set"-Updates)
-  update: (table, query, patch) => rest('PATCH', table, { query, body: patch, prefer: 'return=representation' })
+  update: (table, query, patch) => rest('PATCH', table, { query, body: patch, prefer: 'return=representation' }),
+  delete: (table, query) => rest('DELETE', table, { query, prefer: 'return=minimal' })
 };

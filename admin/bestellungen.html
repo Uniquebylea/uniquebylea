@@ -115,10 +115,16 @@
                 </button>
             </div>
 
-            <!-- Suchfeld -->
-            <div class="relative">
+            <!-- Suchfeld & Schnellaktionen -->
+            <div class="flex items-center gap-2">
                 <input type="text" id="orderSearchInput" oninput="renderOrdersList()" placeholder="🔍 Nach Name, Bestellnummer, Ort oder Artikel suchen..." 
-                       class="w-full bg-creme border border-darkbrown/15 rounded-2xl py-2.5 px-4 text-xs outline-none focus:ring-2 focus:ring-terracotta shadow-xs">
+                       class="flex-1 bg-creme border border-darkbrown/15 rounded-2xl py-2.5 px-4 text-xs outline-none focus:ring-2 focus:ring-terracotta shadow-xs">
+                <button onclick="confirmResetOrders()" title="Testbestellungen bereinigen" 
+                        class="shrink-0 px-3 py-2.5 rounded-2xl bg-creme hover:bg-red-50 border border-darkbrown/15 hover:border-red-300 text-red-700 font-bold text-xs transition shadow-xs flex items-center gap-1.5 active:scale-95">
+                    <span>🧹</span>
+                    <span class="hidden sm:inline">Testdaten löschen</span>
+                    <span class="sm:hidden">Bereinigen</span>
+                </button>
             </div>
 
             <!-- Liste der Bestell-Karten -->
@@ -309,6 +315,16 @@
 
         const chf = cents => 'CHF ' + (cents / 100).toFixed(2);
         const fmtDate = d => d ? new Date(d).toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '–';
+
+        function resolveImg(src) {
+            if (!src || typeof src !== 'string') return '/images/logo.png';
+            src = src.trim();
+            if (!src) return '/images/logo.png';
+            if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('data:') || src.startsWith('/')) {
+                return src;
+            }
+            return '/' + src;
+        }
 
         function showToast(text, isErr = false) {
             const m = document.getElementById('msg');
@@ -514,11 +530,11 @@
                             if (a.optionsSummary) extraParts.push(a.optionsSummary);
                             if (a.voucherConfig) extraParts.push(`Gutschein für: ${a.voucherConfig.fuer || ''} von: ${a.voucherConfig.von || ''}`);
 
-                            const photoSrc = item.img || a.img || '/images/logo.png';
+                            const photoSrc = resolveImg(item.img || a.img);
 
                             return `
                             <div class="flex items-center gap-3 bg-white p-3 rounded-2xl border border-darkbrown/10 shadow-xs">
-                                <img src="${photoSrc}" alt="${item.product_name}" onerror="this.src='/images/logo.png'" 
+                                <img src="${photoSrc}" alt="${item.product_name}" onerror="this.onerror=null; this.src='/images/logo.png'" 
                                      class="w-14 h-16 object-cover rounded-xl border border-darkbrown/10 bg-sand/20 shrink-0">
                                 <div class="flex-1 min-w-0">
                                     <h4 class="font-serif text-xs font-bold uppercase tracking-wider text-darkbrown truncate">${item.product_name}</h4>
@@ -564,13 +580,18 @@
                     </div>
                 </div>
 
-                ${data.stripe_url ? `
-                <div class="pt-2 text-center">
+                <!-- Aktionen & Stripe -->
+                <div class="pt-3 border-t border-darkbrown/10 flex items-center justify-between">
+                    <button onclick="confirmDeleteOrder('${o.id}', '${o.order_number}')" 
+                            class="text-[11px] text-red-600 hover:text-red-800 font-bold py-1.5 px-2.5 rounded-xl bg-red-50 hover:bg-red-100 transition flex items-center gap-1">
+                        <span>🗑️ Diese Bestellung löschen</span>
+                    </button>
+                    ${data.stripe_url ? `
                     <a href="${data.stripe_url}" target="_blank" rel="noopener noreferrer" 
-                       class="inline-flex items-center gap-1.5 text-xs text-terracotta hover:underline font-bold">
-                        <span>💳 Zahlung in Stripe öffnen</span><span>➔</span>
-                    </a>
-                </div>` : ''}
+                       class="inline-flex items-center gap-1 text-xs text-terracotta hover:underline font-bold">
+                        <span>💳 Stripe</span><span>➔</span>
+                    </a>` : '<span></span>'}
+                </div>
                 `;
             } catch (err) {
                 content.innerHTML = `<div class="text-red-600 p-4">Fehler: ${err.message}</div>`;
@@ -716,9 +737,12 @@
 
             container.innerHTML = list.map(p => {
                 const isOut = (p.stock || 0) <= 0;
+                const rawImg = p.img || p.image || (p.gallery && p.gallery[0]) || (p.images && p.images[0]);
+                const photoSrc = resolveImg(rawImg);
                 return `
                 <div class="flex items-center gap-3 bg-creme p-3 rounded-2xl border border-darkbrown/10 shadow-xs">
-                    <img src="${p.img || '/images/logo.png'}" alt="${p.name}" class="w-12 h-14 object-cover rounded-xl bg-sand/30 shrink-0 border border-darkbrown/5">
+                    <img src="${photoSrc}" alt="${p.name || 'Produkt'}" onerror="this.onerror=null; this.src='/images/logo.png'" 
+                         class="w-12 h-14 object-cover rounded-xl bg-sand/30 shrink-0 border border-darkbrown/5">
                     <div class="flex-1 min-w-0">
                         <div class="flex items-start justify-between gap-1">
                             <h4 class="font-serif text-xs font-bold text-darkbrown truncate">${p.name}</h4>
@@ -733,6 +757,43 @@
                     </div>
                 </div>`;
             }).join('');
+        }
+
+        async function confirmResetOrders() {
+            if (!confirm('Möchtest du wirklich ALLE Testbestellungen aus der Datenbank löschen?\n\nDieser Vorgang setzt alle Bestellungen unwiderruflich zurück.')) {
+                return;
+            }
+            try {
+                const res = await window.adminFetch('/api/admin-orders', {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'reset_all_orders' })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Fehler beim Löschen');
+                showToast(data.message || 'Alle Testbestellungen wurden gelöscht!');
+                loadOrders();
+            } catch (err) {
+                showToast('Fehler: ' + err.message, true);
+            }
+        }
+
+        async function confirmDeleteOrder(orderId, orderNumber) {
+            if (!confirm(`Bestellung ${orderNumber || ''} wirklich endgültig löschen?`)) {
+                return;
+            }
+            try {
+                const res = await window.adminFetch('/api/admin-orders', {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'delete_order', id: orderId })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Fehler beim Löschen');
+                showToast(`Bestellung ${orderNumber || ''} gelöscht!`);
+                closeOrderDetail();
+                loadOrders();
+            } catch (err) {
+                showToast('Fehler: ' + err.message, true);
+            }
         }
 
         // --- INITIALISIERUNG ---

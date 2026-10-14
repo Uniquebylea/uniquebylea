@@ -49,19 +49,39 @@ module.exports = async (req, res) => {
         // Produktfotos auflösen
         let catalog = [];
         try {
-          const raw = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'content', 'products.json'), 'utf8'));
-          catalog = raw.produkte || [];
+          const dir = path.join(process.cwd(), 'content', 'products');
+          if (fs.existsSync(dir)) {
+            const files = fs.readdirSync(dir).filter(f => f.endsWith('.json'));
+            catalog = files.map(f => {
+              try { return JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')); } catch (e) { return null; }
+            }).filter(Boolean);
+          }
+          if (!catalog.length) {
+            const raw = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'content', 'products.json'), 'utf8'));
+            catalog = raw.produkte || [];
+          }
         } catch (e) {}
 
         const enrichedItems = items.map(item => {
           let img = item.attributes && item.attributes.img;
           if (!img) {
+            const pId = item.product_id ? String(item.product_id) : '';
+            const pSku = item.sku ? String(item.sku) : '';
+            const pName = item.product_name ? item.product_name.trim().toLowerCase() : '';
             const found = catalog.find(p =>
-              (item.product_id && String(p.id) === String(item.product_id)) ||
-              (item.sku && String(p.sku) === String(item.sku)) ||
-              (p.name && item.product_name && p.name.trim().toLowerCase() === item.product_name.trim().toLowerCase())
+              (pId && (String(p.id) === pId || String(p.sku) === pId)) ||
+              (pSku && (String(p.sku) === pSku || String(p.id) === pSku)) ||
+              (pName && p.name && p.name.trim().toLowerCase() === pName)
             );
-            if (found && found.img) img = found.img;
+            if (found) {
+              img = found.img || (found.gallery && found.gallery[0]) || (found.images && found.images[0]);
+              if (!img && found.variants && found.variants.length) {
+                img = found.variants[0].img || found.variants[0].image;
+              }
+            }
+          }
+          if (img && typeof img === 'string' && !img.startsWith('http') && !img.startsWith('/') && !img.startsWith('data:')) {
+            img = '/' + img;
           }
           return { ...item, img: img || '/images/logo.png' };
         });
@@ -87,6 +107,30 @@ module.exports = async (req, res) => {
       let body = req.body;
       if (typeof body === 'string') { try { body = JSON.parse(body); } catch (e) { body = {}; } }
       const { action, id } = body || {};
+
+      // 1. Alle Testbestellungen bereinigen
+      if (action === 'reset_all_orders') {
+        await db.delete('order_items', 'id=not.is.null');
+        await db.delete('order_status_history', 'id=not.is.null');
+        await db.delete('email_notifications', 'id=not.is.null');
+        await db.delete('payment_events', 'order_id=not.is.null');
+        await db.delete('voucher_redemptions', 'id=not.is.null');
+        await db.delete('orders', 'id=not.is.null');
+        return res.status(200).json({ ok: true, message: 'Alle Testbestellungen wurden gelöscht.' });
+      }
+
+      // 2. Einzelne Bestellung löschen
+      if (action === 'delete_order') {
+        if (!UUID.test(id || '')) return res.status(400).json({ error: 'Ungültige ID.' });
+        await db.delete('order_items', `order_id=eq.${id}`);
+        await db.delete('order_status_history', `order_id=eq.${id}`);
+        await db.delete('email_notifications', `order_id=eq.${id}`);
+        await db.delete('payment_events', `order_id=eq.${id}`);
+        await db.delete('voucher_redemptions', `order_id=eq.${id}`);
+        await db.delete('orders', `id=eq.${id}`);
+        return res.status(200).json({ ok: true, message: 'Bestellung gelöscht.' });
+      }
+
       if (!UUID.test(id || '')) return res.status(400).json({ error: 'Ungültige ID.' });
       const rows = await db.select('orders', `id=eq.${id}&select=*`);
       if (!rows.length) return res.status(404).json({ error: 'Bestellung nicht gefunden.' });
